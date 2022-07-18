@@ -4,55 +4,23 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Letter Generator</title>
+    <title>Application Template</title>
     <link rel="stylesheet" href="../css/normalize.css">
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
+    <nav>
+        <ul>
+            <li><a href="/asyncFunc">Async Function</a></li>
+            <li><a href="/func">Function</a></li>
+        </ul>
+    </nav>
     <main class='signin clearfix'>
-        <section class='logon'>
-            <% if (typeof messages !== 'undefined'){ %> 
-                <p class='message'><%= messages %></p>
-            <% } %>
-            <h2>Select from the following options:</h2>
-            
-
-            <h3>Letter Templates</h3>
-            <select>
-                <option>Select One</option>
-            </select>
-            <h3>Date Range</h3>
-            <label>Start Date</label>
-            <input type="date">
-            <label>End Date</label>
-            <input type="date">
-
-            <h3>Due Date</h3>
-            <label>Due Date</label>
-            <input type="date">
-
-            <h3>Plannner</h3>
-            <% if (typeof planners === 'undefined'){ %> 
-
-                <a href="/auth/signin" class="">Click here to sign in</a>
-
-            <% } else { %> 
-
-                <label>Select a Planner</label>
-                <select>
-                    <option>Select One</option>
-                    <% planners.foreach( planner => { %> 
-                    <option><% planner.name %> </option>
-                    <% }) %>
-                </select>
-
-           <% } %>
-
-            <h3>Exchange Login</h3>
+            <h1>Login</h1>
             <form class="login-form" action="../login" method="POST">
                 <input type="text" name='email' placeholder="email">
                 <input type="password" name='password' placeholder="password">
-                <input type="submit" value='Test'>
+                <input type="submit" value='Submit'>
             </form>
         </section>
     </main>
