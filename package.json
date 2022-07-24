@@ -18,8 +18,16 @@
   },
   "homepage": "https://github.com/diannedejesus/debt_tracker#readme",
   "dependencies": {
+    "bcrypt": "^5.0.1",
+    "connect-flash": "^0.1.1",
+    "connect-mongo": "^4.6.0",
     "dotenv": "^16.0.1",
     "ejs": "^3.1.8",
-    "express": "^4.18.1"
+    "express": "^4.18.1",
+    "express-session": "^1.17.3",
+    "mongoose": "^6.4.5",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0",
+    "validator": "^13.7.0"
   }
 }
