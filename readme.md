@@ -311,7 +311,9 @@ Once these wireframes are approved by the client, include them in the user inter
 
 
 <!-- NOTES
-### Initial loading of information
+Admin Account Creation
+There is a seperate module function that verifies if an admin account exists, it it doesnt then it creates a variable in the session to indicate that we are creating an admin account. It then calls the module function that creates a new user. 
+Originally the value was passed as an argument/paramenter but this may lead to an issue of someone passing the value and gaining an admin account erroneously. 
 
 
 

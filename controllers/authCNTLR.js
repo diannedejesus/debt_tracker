@@ -10,8 +10,9 @@ module.exports = {
 
   addUser: async (req, res, next) => {
     const errors = [];
+
     if(!validator.isEmail(req.body.email)) {
-      errors.push({msg: 'not a valid email for reg'});
+      errors.push({msg: 'not a valid email'});
     }
     if(!validator.isLength(req.body.password, {min: 0})) {
       errors.push({msg: 'password must be at least 8 chars long'});
@@ -21,24 +22,29 @@ module.exports = {
     }
     if(errors.length) {
       req.flash('errors', errors);
-      return res.redirect('/');
+      return res.render('administrator', { messages: req.flash('errors') });
     }
     req.body.email = validator.normalizeEmail(req.body.email, {gmail_remove_dots: false});
     const hashPass = await bcrypt.hash(req.body.password, 10);
     const user = new User({
       //username: req.body.username,
       email: req.body.email,
-      password: hashPass
+      password: hashPass,
+      admin: req.session.admin ? true : false,
       }
     )
+    //NOTE FIX THIS CHECK
+    let adminCheck = req.session.admin ? true : false
+    req.session.admin = '';
+
     User.findOne({$or: [
-      //{username: req.body.username},
+      adminCheck ? {admin: true} : '',
       {email: req.body.email}
     ]}, (err, doc) => {
       if(err) return next(err);
       if(doc) {
         req.flash('errors', {msg: 'an account with that email/username already exists'});
-        return res.redirect('/')
+        return res.render('administrator', { messages: req.flash('errors') });
       }
       user.save((err) => {
         if (err) { return next(err) }
@@ -49,6 +55,22 @@ module.exports = {
           res.redirect('/func')
         })
       })
+    })
+  },
+
+  addAdmin: async (req, res, next) => {
+    const errors = [];
+    User.findOne({$or: [
+      {admin: true},
+      //{email: req.body.email}
+    ]}, (err, doc) => {
+      if(err) return next(err);
+      if(doc) {
+        req.flash('errors', {msg: 'an admin account already exists'});
+        return res.render('administrator', { messages: req.flash('errors') });
+      }
+      req.session.admin = true;
+      module.exports.addUser(req, res, next)
     })
   },
 

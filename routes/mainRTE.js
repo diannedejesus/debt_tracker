@@ -9,4 +9,9 @@ router.get('/', ensureGuest, mainController.index) //define a url and which code
 router.get('/asyncFunc', mainController.useAsyncFunction) //define a url and which code to execute for that url. In this example if the url /asyncFunc is accessed then execute the function useAsyncFunction from the file that is stored in mainController
 router.get('/func', ensureAuth, mainController.useFunction) //define a url and which code to execute for that url. In this example if the url /func is accessed then execute the function useFunction from the file that is stored in mainController
 
+router.get('/administrator', mainController.getAdminCreator)
+
+router.post('/administrator', mainController.createAdmin)
+
+
 module.exports = router
