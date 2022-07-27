@@ -5,7 +5,22 @@ const bcrypt = require('bcrypt');
 
 module.exports = {
   getPage: async (req, res) => {
-    res.render('login', {msg: 'none'});
+    res.render('login', {messages: 'none'});
+  },
+
+  getAdmin: async (req, res) => {
+    console.log(req.session)
+    res.render('administrator', { messages: req.flash('errors') });
+  },
+
+  getUser: async (req, res) => {
+    //grab user list from database email, registered, revoked
+    const userList = await User.find({}).select("email registered revoked");
+
+    res.render('createUser', { 
+      userList,
+      messages: req.flash('errors') 
+    });
   },
 
   addUser: async (req, res, next) => {
@@ -22,29 +37,36 @@ module.exports = {
     }
     if(errors.length) {
       req.flash('errors', errors);
-      return res.render('administrator', { messages: req.flash('errors') });
+      return req.session.admin ? res.render('administrator', { messages: req.flash('errors') }) : res.render('createUser', { messages: req.flash('errors') });
     }
+
     req.body.email = validator.normalizeEmail(req.body.email, {gmail_remove_dots: false});
     const hashPass = await bcrypt.hash(req.body.password, 10);
+
     const user = new User({
-      //username: req.body.username,
       email: req.body.email,
       password: hashPass,
-      admin: req.session.admin ? true : false,
       }
     )
-    //NOTE FIX THIS CHECK
-    let adminCheck = req.session.admin ? true : false
+
+    const userCheck = [
+      {email: req.body.email}
+    ]
+
+    if(req.session.admin){
+      user.admin = req.session.admin
+      userCheck.push({admin:req.session.admin})
+    }
+
     req.session.admin = '';
 
-    User.findOne({$or: [
-      adminCheck ? {admin: true} : '',
-      {email: req.body.email}
-    ]}, (err, doc) => {
+    User.findOne({$or: 
+      userCheck
+    }, (err, doc) => {
       if(err) return next(err);
       if(doc) {
         req.flash('errors', {msg: 'an account with that email/username already exists'});
-        return res.render('administrator', { messages: req.flash('errors') });
+        return req.session.admin ? res.render('administrator', { messages: req.flash('errors') }) : res.render('createUser', { messages: req.flash('errors') });
       }
       user.save((err) => {
         if (err) { return next(err) }
@@ -52,7 +74,7 @@ module.exports = {
           if (err) {
             return next(err)
           }
-          res.redirect('/func')
+          res.redirect('/auth/user')
         })
       })
     })

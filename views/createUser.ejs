@@ -22,9 +22,29 @@
         </ul>
     </nav>
     <main class='signin clearfix'>
-            <h2>Create Administration Account</h2>
-            <p>To create the administrator account you need to fill out the form below, then complete the verification process.</p>
-            <form class="login-form" action="/auth/admin" method="POST">
+        <seccion>
+            <h2>User Accounts</h2>
+            <table>
+                <tr>
+                    <th>User</th>
+                    <th>Registered</th>
+                    <th>Revoked</th>
+                </tr>
+                <% if (typeof userList !== 'undefined'){ %> 
+                    <% userList.forEach( (user)=> { %>
+                <tr>
+                    <td><%= user.email %></td>
+                    <td><%= user.registered ? "Yes" : "No" %></td>
+                    <td><%= user.revoked ? "Yes" : "No"  %></td>
+                </tr>
+                    <% }) %>
+                <% } %>
+            </table>
+        </seccion>
+        <section>
+            <h2>Create User Account</h2>
+            <p>To create an user account you need to fill out the form below, then complete the verification process.</p>
+            <form class="login-form" action="/auth/user" method="POST">
                 <input type="text" name='email' placeholder="email">
                 <input type="password" name='password' placeholder="password">
                 <input type="password" name='confirmPassword' placeholder="password">
