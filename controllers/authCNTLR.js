@@ -10,9 +10,10 @@ module.exports = {
 
   getAdmin: async (req, res) => {
     const errors = [];
-    const adminAccount = await User.find({}).select({admin:true})
+    const adminAccount = await User.findOne({admin:true})
 
     if(adminAccount){
+      console.log(adminAccount)
       errors.push('Administrator account already exists');
       req.flash('errors', errors);
 
@@ -26,7 +27,7 @@ module.exports = {
     res.render('login', { user: req.user, messages: req.flash('errors') });
   },
 
-  getUser: async (req, res) => {
+  getUserAdmin: async (req, res) => {
     const errors = [];
 
     if(req.user.admin){
@@ -82,10 +83,18 @@ module.exports = {
     if(req.body.password !== req.body.confirmPassword) {
       errors.push({msg: 'passwords do not match'});
     }
+    
+//--------------------------------------------------------------------------------
+    if(!req.session.admin && !req.user.admin) {
+      errors.push({msg: 'not an administrator account'});
+    }
+//--------------------------------------------------------------------------------
+
     if(errors.length) {
       req.flash('errors', errors);
       return req.session.admin ? res.render('administrator', { user: req.user, messages: req.flash('errors') }) : res.render('createUser', { user: req.user, messages: req.flash('errors') });
     }
+    
 
     req.body.email = validator.normalizeEmail(req.body.email, {gmail_remove_dots: false});
     const hashPass = await bcrypt.hash(req.body.password, 10);
@@ -130,9 +139,7 @@ module.exports = {
   addAdmin: async (req, res, next) => {
     const errors = [];
 
-    User.findOne({$or: [
-      {admin: true},
-    ]}, (err, doc) => {
+    User.findOne({ admin: true }, (err, doc) => {
       if(err) return next(err);
       if(doc) {
         req.flash('errors', {msg: 'an admin account already exists'});

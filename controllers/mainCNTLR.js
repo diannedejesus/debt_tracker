@@ -24,7 +24,7 @@ module.exports = { //create a module that will be readable to any code that call
         }
     },
 
-    useFunction: function(req,res){ //defining a method with the name useFunction, it with be a function as defined by function keyword or could be rewitten as an arrow key function. 
+    getDashboard: function(req,res){ //defining a method with the name useFunction, it with be a function as defined by function keyword or could be rewitten as an arrow key function. 
         res.render('dashboard.ejs', { //res as in respond, so we are responding by invoking the render method and telling it to render the page (interprete the code and show the resulting html) index.ejs. We can also pass it an object with key/value pairs for the page to use.
             user: req.user,
             messages: req.flash('errors'),
