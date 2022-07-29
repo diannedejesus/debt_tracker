@@ -9,12 +9,34 @@
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-    <nav>
-        <ul>
-            <li><a href="/asyncFunc">Async Function</a></li>
-            <li><a href="/func">Function</a></li>
-        </ul>
-    </nav>
+    <header>
+        <section><h1>&#128507; &#9889;</h1></section>
+        <nav>
+             <ul>
+                 <li><a href="/asyncFunc">Async Function</a></li>
+                 <li><a href="/func">Function</a></li>
+             </ul>
+         </nav>
+         <section>
+            <% if (typeof user !== 'undefined'){ %> 
+                <% if (user.admin){ %> 
+                    <%= user.email %> (Administrator)
+                <% }else{ %>
+                    <%= user.email %>
+                <% } %>
+                <a href="/auth/logout">Logout</a>
+            <% }else{ %>
+                <a href="/auth/login">Login</a>
+            <% } %>
+           </section>
+     </header>
+
+     <% if (typeof messages !== 'undefined'){ %> 
+        <% messages.forEach( (error)=> { %>
+            <p class='message'><%= error %></p>
+        <% }) %>
+    <% } %>
+
     <main class='signin clearfix'>
             <h1>Dashboard.</h1>
             <p>Welcome to this initial template, creation starts here.</p>

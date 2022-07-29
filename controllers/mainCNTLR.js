@@ -5,7 +5,8 @@ module.exports = { //create a module that will be readable to any code that call
     index: async (req,res)=>{ //defining a method with the name index, it with be an asychronous function as defined by the async keyword and the arrow function expression. 
         try{ //when working with async we are working with outside requests which can fail for various reasons. The try/catch pair with run the code and if a request fails it will defaults to catch.
             res.render('index.ejs', { //res as in respond, so we are responding by invoking the render method and telling it to render the page (interprete the code and show the resulting html) index.ejs. We can also pass it an object with key/value pairs for the page to use.
-                //user: user,
+                user: req.user,
+                messages: req.flash('errors'),
             })
         }catch(err){
             console.log(err) //display the error in the console
@@ -15,7 +16,8 @@ module.exports = { //create a module that will be readable to any code that call
     useAsyncFunction: async function(req,res){ //defining a method with the name useAsyncFunction, it with be an asychronous function as defined by the async and function keyword. 
         try{//when working with async we are working with outside requests which can fail for various reasons. The try/catch pair with run the code and if a request fails it will defaults to catch.
             res.render('index.ejs', { //res as in respond, so we are responding by invoking the render method and telling it to render the page (interprete the code and show the resulting html) index.ejs. We can also pass it an object with key/value pairs for the page to use.
-                //user: user,
+                user: req.user,
+                messages: req.flash('errors'),
             })
         }catch(err){
             console.log(err) //display the error in the console
@@ -24,14 +26,16 @@ module.exports = { //create a module that will be readable to any code that call
 
     useFunction: function(req,res){ //defining a method with the name useFunction, it with be a function as defined by function keyword or could be rewitten as an arrow key function. 
         res.render('dashboard.ejs', { //res as in respond, so we are responding by invoking the render method and telling it to render the page (interprete the code and show the resulting html) index.ejs. We can also pass it an object with key/value pairs for the page to use.
-            //user: user,
+            user: req.user,
+            messages: req.flash('errors'),
         })
     },
 
     getAdminCreator: function(req,res){  
     //if no admin account exists then show message saying this, if not show the create administration account page.
         res.render('administrator.ejs', { 
-            //user: user,
+            user: req.user,
+            messages: req.flash('errors'),
         })
     },
 
@@ -46,7 +50,8 @@ module.exports = { //create a module that will be readable to any code that call
 
 
         res.render('administrator.ejs', { 
-            //user: user,
+            user: req.user,
+            messages: req.flash('errors'),
         })
     },
     

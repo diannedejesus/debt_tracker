@@ -5,22 +5,69 @@ const bcrypt = require('bcrypt');
 
 module.exports = {
   getPage: async (req, res) => {
-    res.render('login', {messages: 'none'});
+    res.render('login', {user: req.user, messages: 'none'});
   },
 
   getAdmin: async (req, res) => {
-    console.log(req.session)
-    res.render('administrator', { messages: req.flash('errors') });
+    const errors = [];
+    const adminAccount = await User.find({}).select({admin:true})
+
+    if(adminAccount){
+      errors.push('Administrator account already exists');
+      req.flash('errors', errors);
+
+      res.render('dashboard', { user: req.user, messages: req.flash('errors') });
+    }else {
+      res.render('administrator', { user: req.user, messages: req.flash('errors') });
+    }
+  },
+
+  getLogin: async (req, res) => {
+    res.render('login', { user: req.user, messages: req.flash('errors') });
   },
 
   getUser: async (req, res) => {
-    //grab user list from database email, registered, revoked
-    const userList = await User.find({}).select("email registered revoked");
+    const errors = [];
 
-    res.render('createUser', { 
-      userList,
-      messages: req.flash('errors') 
-    });
+    if(req.user.admin){
+      const userList = await User.find({}).select("email registered revoked");
+
+      res.render('createUser', { 
+        user: req.user,
+        userList,
+        messages: req.flash('errors') 
+      });
+    } else {
+      errors.push('Not an administrator account');
+      req.flash('errors', errors);
+
+      res.render('dashboard', { user: req.user, messages: req.flash('errors') });
+    }
+  },
+
+  loginUser: async (req, res, next) => {
+    const errors = [];
+    if(!validator.isEmail(req.body.email)) errors.push('email is invalid');
+    if(validator.isEmpty(req.body.password)) errors.push('password field cant be blank');
+
+    if(errors.length) {
+      req.flash('errors', errors);
+      return res.render('login', { user: req.user, messages: req.flash('errors') });
+    }
+    req.body.email = validator.normalizeEmail(req.body.email, { gmail_remove_dots: false });
+
+    passport.authenticate('local', (err, user, info) => {
+      if(err) return next(err);
+      if(!user) {
+        req.flash('errors', info);
+        //console.log('errors2', info)
+        return res.render('login', { user: req.user, messages: req.flash('errors') });
+      }
+      req.logIn(user, (err) => {
+        if(err) return next(err);
+        res.redirect(req.session.returnTo || '/')
+      })
+    })(req, res, next)
   },
 
   addUser: async (req, res, next) => {
@@ -37,7 +84,7 @@ module.exports = {
     }
     if(errors.length) {
       req.flash('errors', errors);
-      return req.session.admin ? res.render('administrator', { messages: req.flash('errors') }) : res.render('createUser', { messages: req.flash('errors') });
+      return req.session.admin ? res.render('administrator', { user: req.user, messages: req.flash('errors') }) : res.render('createUser', { user: req.user, messages: req.flash('errors') });
     }
 
     req.body.email = validator.normalizeEmail(req.body.email, {gmail_remove_dots: false});
@@ -66,7 +113,7 @@ module.exports = {
       if(err) return next(err);
       if(doc) {
         req.flash('errors', {msg: 'an account with that email/username already exists'});
-        return req.session.admin ? res.render('administrator', { messages: req.flash('errors') }) : res.render('createUser', { messages: req.flash('errors') });
+        return req.session.admin ? res.render('administrator', { user: req.user, messages: req.flash('errors') }) : res.render('createUser', { user: req.user, messages: req.flash('errors') });
       }
       user.save((err) => {
         if (err) { return next(err) }
@@ -82,26 +129,28 @@ module.exports = {
 
   addAdmin: async (req, res, next) => {
     const errors = [];
+
     User.findOne({$or: [
       {admin: true},
-      //{email: req.body.email}
     ]}, (err, doc) => {
       if(err) return next(err);
       if(doc) {
         req.flash('errors', {msg: 'an admin account already exists'});
-        return res.render('administrator', { messages: req.flash('errors') });
+        return res.render('administrator', { user: req.user, messages: req.flash('errors') });
       }
+
       req.session.admin = true;
       module.exports.addUser(req, res, next)
     })
   },
 
   logout:(req, res) => {
-    req.logout()
-    req.session.destroy((err) => {
-      if (err) console.log('Error : Failed to destroy the session during logout.', err)
-      req.user = null
-      res.redirect('/')
+    req.logout(function(err){
+      req.session.destroy((err) => {
+        if (err) console.log('Error : Failed to destroy the session during logout.', err)
+        req.user = null
+        res.redirect('/')
+      })
     })
   }
 }

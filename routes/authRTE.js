@@ -2,14 +2,18 @@ const express = require('express') //copied and pasted from microsoft nothing ne
 //const passport = require('passport')
 const router = express.Router()
 const authController = require('../controllers/authCNTLR');
+const {ensureAuth, ensureGuest} = require('../middleware/auth');
 
-router.get('/', authController.getPage);
+router.get('/', ensureGuest, authController.getLogin);
 
-router.post('/user', authController.addUser);
-router.get('/user', authController.getUser);
+router.post('/user', ensureAuth, authController.addUser);
+router.get('/user', ensureAuth, authController.getUser);
 
-router.post('/admin', authController.addAdmin);
-router.get('/admin', authController.getAdmin);
+router.post('/admin', ensureAuth, authController.addAdmin);
+router.get('/admin', ensureAuth, authController.getAdmin);
+
+router.get('/login', ensureGuest, authController.getLogin);
+router.post('/login', ensureGuest, authController.loginUser);
 
 router.get('/logout', authController.logout);
 

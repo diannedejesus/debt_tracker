@@ -9,18 +9,34 @@
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-    <h1>&#128507; &#9889;</h1>
+    <header>
+        <section><h1>&#128507; &#9889;</h1></section>
+        <nav>
+             <ul>
+                 <li><a href="/asyncFunc">Async Function</a></li>
+                 <li><a href="/func">Function</a></li>
+             </ul>
+         </nav>
+         <section>
+            <% if (typeof user !== 'undefined'){ %> 
+                <% if (user.admin){ %> 
+                    <%= user.email %> (Administrator)
+                <% }else{ %>
+                    <%= user.email %>
+                <% } %>
+                <a href="/auth/logout">Logout</a>
+            <% }else{ %>
+                <a href="/auth/login">Login</a>
+            <% } %>
+           </section>
+     </header>
+
     <% if (typeof messages !== 'undefined'){ %> 
         <% messages.forEach( (error)=> { %>
-            <p class='message'><%= error.msg %></p>
+            <p class='message'><%= error %></p>
         <% }) %>
     <% } %>
-    <nav>
-        <ul>
-            <li><a href="/asyncFunc">Async Function</a></li>
-            <li><a href="/func">Function</a></li>
-        </ul>
-    </nav>
+    
     <main class='signin clearfix'>
             <h2>Create Administration Account</h2>
             <p>To create the administrator account you need to fill out the form below, then complete the verification process.</p>
