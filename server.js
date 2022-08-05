@@ -1,22 +1,26 @@
-const express = require('express') 
+import express from 'express'
 const app = express()
-const connectDB = require('./config/database')
+import connectDB from './config/database.js'
 
 //routes path
-const mainRoutes = require('./routes/mainRTE')
-const loginRoutes = require('./routes/authRTE')
+import mainRoutes from './routes/mainRTE.js'
+import loginRoutes from './routes/authRTE.js'
 
 
-const mongoose = require('mongoose') //mongoose handles the structure for our mongodb data. It will assure that the data in our database matches the definition we created for it.
-const passport = require('passport') // handle authentication (logins) for this application
-const session = require('express-session') // Keeps track of session data. Meaning data that you need to pass around your application.
-const MongoStore = require('connect-mongo') //saving session data in the db
-const flash = require('connect-flash'); //to display error messages
+import mongoose from 'mongoose' //mongoose handles the structure for our mongodb data. It will assure that the data in our database matches the definition we created for it.
+import passport from 'passport' // handle authentication (logins) for this application
+import session from 'express-session' // Keeps track of session data. Meaning data that you need to pass around your application.
+import MongoStore from 'connect-mongo' //saving session data in the db
+import flash from 'connect-flash'; //to display error messages
 
-require('dotenv').config({path: '.env'}) //secrects file
+//import ('dotenv').config({path: '.env'}) //secrects file
+import dotenv from 'dotenv'
+dotenv.config({path: '.env'})
 
 // Passport config
-require('./config/passport')(passport)
+//require('./config/passport')(passport)
+import passportConfig from './config/passport.js'
+passportConfig(passport)
 
 connectDB()
 

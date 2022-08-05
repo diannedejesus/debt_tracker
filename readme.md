@@ -315,7 +315,11 @@ Admin Account Creation
 There is a seperate module function that verifies if an admin account exists, it it doesnt then it creates a variable in the session to indicate that we are creating an admin account. It then calls the module function that creates a new user. 
 Originally the value was passed as an argument/paramenter but this may lead to an issue of someone passing the value and gaining an admin account erroneously. 
 
+Account Creation & Login
 
+Only one administration account should exist, if that account is created you should not be able to access the admin creation page. If bypassed the user creation function will not be able to create an admin account if one is found in the database.
+
+Only an admin account can create user account. The user creation process will verify if the current user session is an administor before creating an account.
 
  -->
 

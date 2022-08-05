@@ -1,14 +1,15 @@
-const passport = require('passport');
-const User = require('../models/User');
-const validator = require('validator');
-const bcrypt = require('bcrypt');
+import passport from 'passport';
+import User from '../models/User.js';
+import validator from 'validator';
+import bcrypt from 'bcrypt';
+import { nanoid } from 'nanoid'
 
-module.exports = {
-  getPage: async (req, res) => {
-    res.render('login', {user: req.user, messages: 'none'});
-  },
+//module.exports = {
+  // getPage: async (req, res) => {
+  //   res.render('login', {user: req.user, messages: 'none'});
+  // },
 
-  getAdmin: async (req, res) => {
+  export async function getAdmin(req, res){
     const errors = [];
     const adminAccount = await User.findOne({admin:true})
 
@@ -21,13 +22,17 @@ module.exports = {
     }else {
       res.render('administrator', { user: req.user, messages: req.flash('errors') });
     }
-  },
+  }
 
-  getLogin: async (req, res) => {
+  export async function getVerifyAccount(req, res){
+    res.render('verifyAccount', { user: req.user, messages: req.flash('errors') });
+  }
+
+  export async function getLogin(req, res){
     res.render('login', { user: req.user, messages: req.flash('errors') });
-  },
+  }
 
-  getUserAdmin: async (req, res) => {
+  export async function getUserAdmin(req, res){
     const errors = [];
 
     if(req.user.admin){
@@ -44,18 +49,18 @@ module.exports = {
 
       res.render('dashboard', { user: req.user, messages: req.flash('errors') });
     }
-  },
+  }
 
-  loginUser: async (req, res, next) => {
+  export async function loginUser(req, res, next){
     const errors = [];
-    if(!validator.isEmail(req.body.email)) errors.push('email is invalid');
+    if(!validator.isEmail(req.body.email.trim())) errors.push('email is invalid');
     if(validator.isEmpty(req.body.password)) errors.push('password field cant be blank');
 
     if(errors.length) {
       req.flash('errors', errors);
       return res.render('login', { user: req.user, messages: req.flash('errors') });
     }
-    req.body.email = validator.normalizeEmail(req.body.email, { gmail_remove_dots: false });
+    req.body.email = validator.normalizeEmail(req.body.email.trim(), { gmail_remove_dots: false });
 
     passport.authenticate('local', (err, user, info) => {
       if(err) return next(err);
@@ -69,12 +74,12 @@ module.exports = {
         res.redirect(req.session.returnTo || '/')
       })
     })(req, res, next)
-  },
+  }
 
-  addUser: async (req, res, next) => {
+  export async function addUser(req, res, next){
     const errors = [];
 
-    if(!validator.isEmail(req.body.email)) {
+    if(!validator.isEmail(req.body.email.trim())) {
       errors.push({msg: 'not a valid email'});
     }
     if(!validator.isLength(req.body.password, {min: 0})) {
@@ -83,12 +88,9 @@ module.exports = {
     if(req.body.password !== req.body.confirmPassword) {
       errors.push({msg: 'passwords do not match'});
     }
-    
-//--------------------------------------------------------------------------------
     if(!req.session.admin && !req.user.admin) {
       errors.push({msg: 'not an administrator account'});
     }
-//--------------------------------------------------------------------------------
 
     if(errors.length) {
       req.flash('errors', errors);
@@ -96,12 +98,12 @@ module.exports = {
     }
     
 
-    req.body.email = validator.normalizeEmail(req.body.email, {gmail_remove_dots: false});
+    req.body.email = validator.normalizeEmail(req.body.email.trim(), {gmail_remove_dots: false});
     const hashPass = await bcrypt.hash(req.body.password, 10);
 
     const user = new User({
-      email: req.body.email,
-      password: hashPass,
+        email: req.body.email,
+        password: hashPass,
       }
     )
 
@@ -126,19 +128,17 @@ module.exports = {
       }
       user.save((err) => {
         if (err) { return next(err) }
-        req.logIn(user, (err) => {
-          if (err) {
-            return next(err)
-          }
+        // req.logIn(user, (err) => {
+        //   if (err) {
+        //     return next(err)
+        //   }
           res.redirect('/auth/user')
-        })
+        // })
       })
     })
-  },
+  }
 
-  addAdmin: async (req, res, next) => {
-    const errors = [];
-
+  export async function addAdmin(req, res, next){
     User.findOne({ admin: true }, (err, doc) => {
       if(err) return next(err);
       if(doc) {
@@ -149,9 +149,30 @@ module.exports = {
       req.session.admin = true;
       module.exports.addUser(req, res, next)
     })
-  },
+  }
 
-  logout:(req, res) => {
+  export async function sendCode(req, res, next){
+    //verify that if the account is verified or not
+    //create code
+    //save code in database with username
+    //send code to user by email
+    
+    // req.flash('errors', {msg: 'an admin account already exists'});
+    // return res.render('administrator', { user: req.user, messages: req.flash('errors') });
+  }
+
+  export async function verifyAccount(req, res, next){
+    //verify that code is correct
+    //verify account
+    //reset password
+    //log user in
+
+    // req.flash('errors', {msg: 'an admin account already exists'});
+    // return res.render('administrator', { user: req.user, messages: req.flash('errors') });
+  }
+
+
+  export function logout(req, res){
     req.logout(function(err){
       req.session.destroy((err) => {
         if (err) console.log('Error : Failed to destroy the session during logout.', err)
@@ -160,4 +181,3 @@ module.exports = {
       })
     })
   }
-}

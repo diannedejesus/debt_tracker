@@ -1,8 +1,8 @@
-const express = require('express') //copied and pasted from microsoft nothing new needs to be changed
+import express from 'express' //copied and pasted from microsoft nothing new needs to be changed
 //const passport = require('passport')
 const router = express.Router()
-const authController = require('../controllers/authCNTLR');
-const {ensureAuth, ensureGuest} = require('../middleware/auth');
+import * as authController from '../controllers/authCNTLR.js';
+import { ensureAuth, ensureGuest } from '../middleware/auth.js';
 
 router.get('/', ensureGuest, authController.getLogin);
 
@@ -15,6 +15,12 @@ router.get('/admin', authController.getAdmin);
 router.get('/login', ensureGuest, authController.getLogin);
 router.post('/login', ensureGuest, authController.loginUser);
 
+// router.get('/login', ensureGuest, authController.getLogin);
+// router.post('/login', ensureGuest, authController.loginUser);
+
+// router.get('/verifyAccount', ensureGuest, authController.getVerifyAccount);
+// router.post('/verifyAccount', ensureGuest, authController.VerifyAccount);
+
 router.get('/logout', authController.logout);
 
-module.exports = router
+export default router

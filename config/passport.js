@@ -1,9 +1,9 @@
-const localStrategy = require('passport-local');
-const mongoose = require('mongoose');
-const User = require('../models/User');
-const bcrypt = require('bcrypt');
+import localStrategy from 'passport-local';
+import mongoose from 'mongoose';
+import User from '../models/User.js';
+import bcrypt from 'bcrypt';
 
-module.exports = function (passport) {
+export default function (passport) {
   passport.use(
     new localStrategy({
       usernameField: 'email' //set up usernameField to be email field in inputs
