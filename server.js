@@ -13,12 +13,10 @@ import session from 'express-session' // Keeps track of session data. Meaning da
 import MongoStore from 'connect-mongo' //saving session data in the db
 import flash from 'connect-flash'; //to display error messages
 
-//import ('dotenv').config({path: '.env'}) //secrects file
 import dotenv from 'dotenv'
 dotenv.config({path: '.env'})
 
 // Passport config
-//require('./config/passport')(passport)
 import passportConfig from './config/passport.js'
 passportConfig(passport)
 

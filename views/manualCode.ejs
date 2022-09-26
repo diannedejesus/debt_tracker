@@ -13,7 +13,8 @@
        <section><h1>&#128507; &#9889;</h1></section>
        <nav>
             <ul>
-                <li><a href="/auth/admin">Admin Creation</a></li>
+                <li><a href="/asyncFunc">Async Function</a></li>
+                <li><a href="/func">Function</a></li>
             </ul>
         </nav>
         <section>
@@ -37,15 +38,14 @@
     <% } %>
     
     <main class='signin clearfix'>
-            <h1>Login</h1>
-            <form class="login-form" action="/auth/login" method="POST">
-                <input type="text" name='email' placeholder="email">
-                <input type="password" name='password' placeholder="password">
-                <!-- <input type="password" name='confirmPassword' placeholder="password"> -->
-                <input type="submit" value='Submit'>
-                <a href="auth/forgot/">Forgot Password</a>
-            </form>
-        </section>
+        <% if(typeof codeInfo !== 'undefined'){ %> 
+            <h1>Account Verification Code</h1>
+            <p>Send the following code and link to the user: <%= codeInfo.email %></p>
+            <p>Code: <%= codeInfo.code %></p>
+            <p>Link: <a href="/auth/verifyAccount">thispage.com/auth/verifyAccount</a></p>
+        <% }else{ %> 
+            
+        <% } %>
     </main>
 </body>
 </html>

@@ -57,15 +57,16 @@ The login should include a message for unregistered people, telling them that th
 #### **Pages Outline**
 - Login page
     - verify account existance, grant access or deny
-    - change password with initial login
+    <!-- - change password with initial login -->
 - change password page
     - verify user
-    - send secure reset link
+    <!-- - send secure reset link -->
+    - change password
 - registration page
     - admin restricted
     - create new accounts
-        - creates temporary password
-        - sends initial login link
+        <!-- - creates temporary password -->
+        <!-- - sends initial login link -->
     - can revoke account access
 
 #### **Pages Breakdown**
@@ -79,15 +80,18 @@ Login:
 
 
 Password Reset:
-- When a user request a password reset, verify the email then a link is sent to their email.
-- The link leads to a page that has a form that lets them change their password.
+- When the user request a password reset, the write the email for the account
+- A form appears that lets the enter a new password
+ <!-- - When a user request a password reset, verify the email then a link is sent to their email. -->
+<!-- - The link leads to a page that has a form that lets them change their password. -->
 
 Registration Page:
 - It will verify if it is the admin account,
 	- If it is not, block the page. 
 	- If so, show the registration form and list of users.
-- when a user is registered, a temporary password is created and sent to the user with a login link. This link has a form for them to log in. Logging in confirms the account and asks them to create a password. 
-- On this list, the admin can revoke access.
+- When the admin creates the account they also create a password for the account and manually gives it to the user.
+<!-- - when a user is registered, a temporary password is created and sent to the user with a login link. This link has a form for them to log in. Logging in confirms the account and asks them to create a password.  -->
+- On this list, the admin can revoke access through a button.
 
 
 ### Register debt
@@ -359,3 +363,22 @@ Your first draft of an SDD doesn’t necessarily need to be your last—it shoul
 
 <!-- Update your SDD
 Once you’ve written your software design document and gotten approval from stakeholders, don’t lock it away in some dusty drawer (or whatever the digital equivalent is). As your project progresses, team members should be referencing the SDD constantly. If there’s a delay, update your timeline. By treating an SDD as a living document, it will become an invaluable single source of truth. -->
+
+
+<!-- 
+NOTES:
+
+Login Process additional features:
+- change password with initial login
+    - the idea behind this is to add to the registration process the autocreation of a password or have a blank password for a created user. Then send them a link informing them that an account has been created for them and that they need to confirm it through the link or code. When they confirm the email, they are prompted to change/create a password for the created account.
+- send secure reset link (for password reset)
+    - The idea is to confirm that it is really the user through there email by sending them a unique code/link.
+- creates temporary password (for user creation)
+    - The idea is when a new user is created a temporary password is created to secure the account and is sent to the user as a unique identifier to confirm the identify through email.
+    - alternativly the password can be left blank and unique code is sent to confirm the account through email.
+- sends initial login link (for user restration)
+    - Sends a special link to a page that verifies newly created accounts. 
+    - alternativly a process can be added to the login process for this.
+
+
+ -->
