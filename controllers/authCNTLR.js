@@ -29,29 +29,32 @@ export async function getReset(req, res){
 };
 
 export async function resetPassword(req, res){
-  //verify email
   const errors = [];
-   
+
+  //verify email
   if(!validator.isEmail(req.body.email.trim())) errors.push('email is invalid');
   if(validator.isEmpty(req.body.password)) errors.push('password field cant be blank');
-
-  if(errors.length) {
-    req.flash('errors', errors);
-    return res.render('login', { user: req.user, messages: req.flash('errors') });
-  }
-  req.body.email = validator.normalizeEmail(req.body.email.trim(), { gmail_remove_dots: false });
-
-  //validate password
-
   if(!validator.isLength(req.body.password, {min: 0})) {
     errors.push({msg: 'password must be at least 8 chars long'});
   }
   if(req.body.password !== req.body.confirmPassword) {
     errors.push({msg: 'passwords do not match'});
   }
-  
+
+  if(errors.length) {
+    req.flash('errors', errors);
+    return res.render('login', { user: req.user, messages: req.flash('errors') });
+  }
+
+  req.body.email = validator.normalizeEmail(req.body.email.trim(), { gmail_remove_dots: false });
+
+  //check email
+  const userList = await User.find({email:  req.body.email})
+
   //change password
-  
+  if(userList){
+    //replace password
+  }
   
   
   
