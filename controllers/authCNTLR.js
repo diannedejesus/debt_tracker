@@ -24,6 +24,40 @@ export async function getCreateAdmin(req, res){
 
 
 
+export async function getReset(req, res){
+  res.render('reset', { user: req.user, messages: req.flash('errors') });
+};
+
+export async function resetPassword(req, res){
+  //verify email
+  const errors = [];
+   
+  if(!validator.isEmail(req.body.email.trim())) errors.push('email is invalid');
+  if(validator.isEmpty(req.body.password)) errors.push('password field cant be blank');
+
+  if(errors.length) {
+    req.flash('errors', errors);
+    return res.render('login', { user: req.user, messages: req.flash('errors') });
+  }
+  req.body.email = validator.normalizeEmail(req.body.email.trim(), { gmail_remove_dots: false });
+
+  //validate password
+
+  if(!validator.isLength(req.body.password, {min: 0})) {
+    errors.push({msg: 'password must be at least 8 chars long'});
+  }
+  if(req.body.password !== req.body.confirmPassword) {
+    errors.push({msg: 'passwords do not match'});
+  }
+  
+  //change password
+  
+  
+  
+  
+  res.render('reset', { user: req.user, messages: req.flash('errors') });
+};
+
 export async function getVerifyAccount(req, res){
   res.render('verifyAccount', { user: req.user, messages: req.flash('errors') });
 };

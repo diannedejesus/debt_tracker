@@ -98,7 +98,8 @@ Registration Page:
 On this page, a user will enter a new debt with all the accompanying information. As a safety measure, we will have a database for the debt information and another for the name and Id. The debtor's name will be the only identifiable information saved about the person who owes the debt.
 
 The new debt page will accept the following information:
-- name [string]
+- name [string
+]
 - debt amount [number]
 - file id [string]
 - minimum payment [number]

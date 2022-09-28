@@ -16,6 +16,9 @@ router.get('/admin', authController.getCreateAdmin);
 router.get('/login', ensureGuest, authController.getLogin);
 router.post('/login', ensureGuest, authController.loginUser);
 
+router.get('/reset', authController.getReset);
+router.post('/reset', authController.resetPassword);
+
 //router.get('/sendcode', authController.createCode)
 
 
