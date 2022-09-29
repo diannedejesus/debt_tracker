@@ -32,6 +32,7 @@ export async function resetPassword(req, res){
   const errors = [];
 
   //verify email
+  //verify that the current user is an admin
   if(!validator.isEmail(req.body.email.trim())) errors.push('email is invalid');
   if(validator.isEmpty(req.body.password)) errors.push('password field cant be blank');
   if(!validator.isLength(req.body.password, {min: 0})) {
@@ -43,21 +44,22 @@ export async function resetPassword(req, res){
 
   if(errors.length) {
     req.flash('errors', errors);
-    return res.render('login', { user: req.user, messages: req.flash('errors') });
+    return res.render('reset', { user: req.user, messages: req.flash('errors') });
   }
 
   req.body.email = validator.normalizeEmail(req.body.email.trim(), { gmail_remove_dots: false });
 
   //check email
-  const userList = await User.find({email:  req.body.email})
+  const userList = await User.find({email: req.body.email})
+  //req.user.email == email 
+  //req.user.admin
+  const hashPass = await bcrypt.hash(req.body.password, 10);
 
   //change password
   if(userList){
-    //replace password
+    User.findOneAndUpdate({email: req.body.email}, {password: hashPass})
   }
-  
-  
-  
+
   res.render('reset', { user: req.user, messages: req.flash('errors') });
 };
 
@@ -214,19 +216,6 @@ export async function addAdmin(req, res, next){
     req.session.admin = true; //this indicates, through the session, that we are making an administrator account
     addUser(req, res, next);
   })
-}
-
-export async function changePassword(req, res, next){
-  //verify that code is correct
-
-  //verify account
-
-  //reset password
-  
-  //log user in
-
-  // req.flash('errors', {msg: 'an admin account already exists'});
-  // return res.render('administrator', { user: req.user, messages: req.flash('errors') });
 }
 
 
