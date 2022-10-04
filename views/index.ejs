@@ -13,8 +13,7 @@
         <section><h1>&#128507; &#9889;</h1></section>
         <nav>
              <ul>
-                 <li><a href="/asyncFunc">Async Function</a></li>
-                 <li><a href="/func">Function</a></li>
+                 <li><a href="/dashboard">Dashboard</a></li>
              </ul>
          </nav>
          <section>
@@ -25,13 +24,11 @@
                     <%= user.email %>
                 <% } %>
                 <a href="/auth/logout">Logout</a>
-            <% }else{ %>
-                <a href="/auth/login">Login</a>
             <% } %>
            </section>
      </header>
 
-     <% if (typeof messages !== 'undefined'){ %>
+    <% if (typeof messages !== 'undefined'){ %>
         <% messages.forEach( (error)=> { %>
             <p class='message'><%= error %></p>
         <% }) %>
@@ -40,7 +37,9 @@
     <main>
         <h1>Hello World.</h1>
         <p>Welcome to this initial template, creation starts here.</p>
-        <button>Get started</button>
+        <% if (typeof user == 'undefined'){ %> 
+            <a href="/auth/login">Login</a>
+        <% } %>
     </main>
    
 </body>

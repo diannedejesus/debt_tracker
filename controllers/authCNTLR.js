@@ -31,8 +31,6 @@ export async function getReset(req, res){
 export async function resetPassword(req, res){
   const errors = [];
 
-  //verify email
-  //verify that the current user is an admin
   if(!validator.isEmail(req.body.email.trim())) errors.push('email is invalid');
   if(validator.isEmpty(req.body.password)) errors.push('password field cant be blank');
   if(!validator.isLength(req.body.password, {min: 0})) {
@@ -51,17 +49,24 @@ export async function resetPassword(req, res){
 
   //check email
   const userList = await User.find({email: req.body.email})
-  //req.user.email == email 
-  //req.user.admin
   const hashPass = await bcrypt.hash(req.body.password, 10);
 
   //change password
   if(userList){
-    User.findOneAndUpdate({email: req.body.email}, {password: hashPass})
+    User.findOneAndUpdate({email: req.body.email}, {tempPassword: hashPass})
   }
 
   res.render('reset', { user: req.user, messages: req.flash('errors') });
 };
+
+export async function approvePassword(req, res){
+
+
+  res.render('createUser', { user: req.user, messages: req.flash('errors') });
+}
+
+
+
 
 export async function getVerifyAccount(req, res){
   res.render('verifyAccount', { user: req.user, messages: req.flash('errors') });

@@ -14,8 +14,8 @@ const UserSchema = new mongoose.Schema({
     required: false,
     default: false,
   },
-  registered: {
-    type: Boolean,
+  tempPassword: {
+    type: String,
     required: false,
     default: false,
   },

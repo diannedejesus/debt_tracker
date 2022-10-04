@@ -14,7 +14,7 @@
         <nav>
              <ul>
                  <li><a href="/auth/user">User Administration</a></li>
-                 <li><a href="/registerdebt">register debt</a></li>
+                 <li><a href="/dashboard">Dashboard</a></li>
              </ul>
          </nav>
          <section>
@@ -38,8 +38,15 @@
     <% } %>
 
     <main class='signin clearfix'>
-            <h1>Dashboard.</h1>
-            <p>Welcome to this initial template, creation starts here.</p>
+        <h1>Register Debt</h1>
+        <form action="" method="">
+            <label>Name:</label> <input type="text" name="name"><br>
+            <label>Debt Amount:</label> <input type="number" name="debtamount"><br>
+            <label>File ID:</label> <input type="text" name="fileid"><br>
+            <label>Minimun Payment:</label> <input type="number" name="minpayment"><br>
+            <label>Start Date:</label> <input type="date" name="startdate"><br>
+            <input type="submit">
+        </form>
     </main>
 </body>
 </html>

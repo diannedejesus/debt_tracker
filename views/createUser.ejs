@@ -42,14 +42,14 @@
             <table>
                 <tr>
                     <th>User</th>
-                    <th>Registered</th>
+                    <th>Password Change</th>
                     <th>Revoked</th>
                 </tr>
                 <% if (typeof userList !== 'undefined'){ %> 
                     <% userList.forEach( (user)=> { %>
                 <tr>
                     <td><%= user.email %></td>
-                    <td><%= user.registered ? "Yes" : "No" %></td>
+                    <td><button>Approve</button></td>
                     <td><%= user.revoked ? "Yes" : "No"  %></td>
                 </tr>
                     <% }) %>
