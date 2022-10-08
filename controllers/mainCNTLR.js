@@ -29,42 +29,14 @@ export async function getRegdebt(req,res){
 }
 
 export async function regdebt(req,res){
-    // const errors = [];
     const debtorID = nanoid();
-    //verify data 
     const errors = validateDebtorInfo({
         name: req.body.name,
         debtamount: req.body.debtamount,
         fileid: req.body.fileid,
         minpayment: req.body.minpayment,
         startdate: req.body.startdate,
-    })   
-
-    // if(!req.body.name && !validator.isLength(req.body.name, {min: 0})){ 
-    //     errors.push('name cannot be empty'); 
-    // }else{
-    //     if(!validator.isAlpha(req.body.name, 'es-ES', {'ignore': ' '})){ errors.push('Name can only contain letters and spaces'); } //spaces
-    // }
-    // if(!req.body.debtamount && !validator.isLength(req.body.debtamount, {min: 0})){ 
-    //     errors.push('Debt amount can not be empty'); 
-    // }else{
-    //     if(!validator.isCurrency(req.body.debtamount, {require_symbol: false})){ errors.push('Debt Amount can only be a valid currency format (###.##)'); }
-    // }
-    // if(!req.body.fileid && !validator.isLength(req.body.fileid, {min: 0})){ 
-    //     errors.push('File id cannot be empty'); 
-    // }else{
-    //     if(!validator.isAlphanumeric(req.body.fileid, 'es-ES', {'ignore': '-'})){ errors.push('File ID can only contain letters, dashes and numbers'); } //dashes
-    // }
-    // if(!req.body.minpayment && !validator.isLength(req.body.minpayment, {min: 0})){ 
-    //     errors.push('Minumun payment cannot be empty'); 
-    // }else{
-    //     if(!validator.isCurrency(req.body.minpayment, {require_symbol: false})){ errors.push( 'Minimum Payment can only be a valid currency format (###.##))'); }
-    // }
-    // if(!req.body.startdate && !validator.isLength(req.body.startdate, {min: 0})){ 
-    //     errors.push('Start date cannot be empty'); 
-    // }else{
-    //     if(!validator.isDate(req.body.startdate)){ errors.push('Start Date can only be a valid date format, dd/mm/yyyy.'); } 
-    // }
+    })
 
     if(errors.length) {
         req.flash('errors', errors);
@@ -106,7 +78,7 @@ export async function regdebt(req,res){
         })
     })
 
-}
+}//
 
 function validateDebtorInfo(debtorInfo){
     const errors = [];
@@ -119,19 +91,19 @@ function validateDebtorInfo(debtorInfo){
     if(!debtorInfo.debtamount && !validator.isLength(debtorInfo.debtamount, {min: 0})){ 
         errors.push('Debt amount can not be empty'); 
     }else{
-        if(!validator.isCurrency(debtorInfo.debtamount, {require_symbol: false})){ errors.push('Debt Amount can only be a valid currency format (###.##)'); }
+        if(!validator.isCurrency(debtorInfo.debtamount, {require_symbol: false, allow_negatives: false})){ errors.push('Debt Amount can only be a valid positive currency format (###.##)'); }
     }
     if(!debtorInfo.fileid && !validator.isLength(debtorInfo.fileid, {min: 0})){ 
         errors.push('File id cannot be empty'); 
     }else{
         if(!validator.isAlphanumeric(debtorInfo.fileid, 'es-ES', {'ignore': '-'})){ errors.push('File ID can only contain letters, dashes and numbers'); } //dashes
     }
-    if(!req.body.minpayment && !validator.isLength(debtorInfo.minpayment, {min: 0})){ 
+    if(!debtorInfo.minpayment && !validator.isLength(debtorInfo.minpayment, {min: 0})){ 
         errors.push('Minumun payment cannot be empty'); 
     }else{
-        if(!validator.isCurrency(debtorInfo.minpayment, {require_symbol: false})){ errors.push( 'Minimum Payment can only be a valid currency format (###.##))'); }
+        if(!validator.isCurrency(debtorInfo.minpayment, {require_symbol: false, allow_negatives: false})){ errors.push( 'Minimum Payment can only be a valid positive currency format (###.##))'); }
     }
-    if(!req.body.startdate && !validator.isLength(debtorInfo.startdate, {min: 0})){ 
+    if(!debtorInfo.startdate && !validator.isLength(debtorInfo.startdate, {min: 0})){ 
         errors.push('Start date cannot be empty'); 
     }else{
         if(!validator.isDate(debtorInfo.startdate)){ errors.push('Start Date can only be a valid date format, dd/mm/yyyy.'); } 
