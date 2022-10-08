@@ -40,6 +40,36 @@
     <main class='signin clearfix'>
             <h1>Dashboard.</h1>
             <p>Welcome to this initial template, creation starts here.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="5">Debtor table</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Name</th>
+                        <th>File Id</th>
+                        <th>Started</th>
+                        <th>Payment</th>
+                        <th>Debt</th>
+                    </tr>
+                    <% if (typeof debtors !== 'undefined'){ %>
+                        <% for(let debts in debtors){ %>
+                    <tr>
+                        <td><%= debtors[debts].name %></td>
+                        <td><%= debtors[debts].fileid %></td>
+                        <% let formatDate = new Date(debtors[debts].startdate) %>
+                        <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
+                        <td><%= formatDate %></td>
+                        <td><%= debtors[debts].minpayment %></td>
+                        <td><%= debtors[debts].debtamount %></td>
+                    </tr>
+                        <% } %>
+                    <% } %>
+                </tbody>
+            </table>
     </main>
 </body>
 </html>

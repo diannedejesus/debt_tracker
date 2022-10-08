@@ -15,10 +15,35 @@ export async function index(req,res){ //defining a method with the name index, i
 }
 
 export async function getDashboard(req,res){
+    const debtsInfo = await Debt.find({})
+    const debtorsInfo = await Debtors.find({})
+    const debtorList = buildList(debtorsInfo, debtsInfo)
+
+    
+
     res.render('dashboard', {
         user: req.user,
+        debtors: debtorList,
         messages: req.flash('errors'),
     })
+}
+
+function buildList(list1, list2){
+    const newList = {}
+
+    for(let items of list1){
+        newList[items.debtorID] = {}
+        newList[items.debtorID]['name'] = items.name
+        newList[items.debtorID]['fileid'] = items.fileId
+    }
+
+    for(let items of list2){
+        newList[items.debtorID]['debtamount'] = items.debtAmount
+        newList[items.debtorID]['minpayment'] = items.minPayment
+        newList[items.debtorID]['startdate'] = items.startDate
+    }
+    
+    return newList;
 }
 
 export async function getRegdebt(req,res){
