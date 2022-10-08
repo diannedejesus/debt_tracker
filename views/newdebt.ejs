@@ -12,12 +12,12 @@
     <header>
         <section><h1>&#128507; &#9889;</h1></section>
         <nav>
-             <ul>
-                 <li><a href="/auth/user">User Administration</a></li>
-                 <li><a href="/dashboard">Dashboard</a></li>
-             </ul>
-         </nav>
-         <section>
+            <ul>
+                <li><a href="/auth/user">User Administration</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+            </ul>
+        </nav>
+        <section>
             <% if (typeof user !== 'undefined'){ %> 
                 <% if (user.admin){ %> 
                     <%= user.email %> (Administrator)
@@ -28,10 +28,10 @@
             <% }else{ %>
                 <a href="/auth/login">Login</a>
             <% } %>
-           </section>
-     </header>
+        </section>
+    </header>
 
-     <% if (typeof messages !== 'undefined'){ %> 
+    <% if (typeof messages !== 'undefined'){ %> 
         <% messages.forEach( (error)=> { %>
             <p class='message'><%= error %></p>
         <% }) %>
@@ -39,7 +39,7 @@
 
     <main class='signin clearfix'>
         <h1>Register Debt</h1>
-        <form action="" method="">
+        <form action="/registerdebt" method="POST">
             <label>Name:</label> <input type="text" name="name"><br>
             <label>Debt Amount:</label> <input type="number" name="debtamount"><br>
             <label>File ID:</label> <input type="text" name="fileid"><br>

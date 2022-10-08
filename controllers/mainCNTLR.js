@@ -1,4 +1,7 @@
 import validator from 'validator';
+import Debt from '../models/Debts.js';
+import Debtors from '../models/Debtors.js';
+import { nanoid } from 'nanoid';
 
 export async function index(req,res){ //defining a method with the name index, it with be an asychronous function as defined by the async keyword and the arrow function expression. 
     try{ //when working with async we are working with outside requests which can fail for various reasons. The try/catch pair with run the code and if a request fails it will defaults to catch.
@@ -26,44 +29,116 @@ export async function getRegdebt(req,res){
 }
 
 export async function regdebt(req,res){
-    //verify data
-        //req.body.name isAlpha(str [, locale, options]) 'en-US'
-        //req.body.debtamount isCurrency(str [, options]) require_symbol: false,
-        //req.body.fileid isAlphanumeric(str [, locale, options]) 'es-ES'
-        //req.body.minpayment
-        //req.body.startdate isDate(input [, options])
-    //submit data to db
-    
-    const errors = [];
+    // const errors = [];
+    const debtorID = nanoid();
+    //verify data 
+    const errors = validateDebtorInfo({
+        name: req.body.name,
+        debtamount: req.body.debtamount,
+        fileid: req.body.fileid,
+        minpayment: req.body.minpayment,
+        startdate: req.body.startdate,
+    })   
 
-    if(!req.body.name && !validator.isLength(req.body.name, {min: 0})){ errors.push({msg: 'name cannot be empty'}); }
-    if(!req.body.debtamount && !validator.isLength(req.body.debtamount, {min: 0})){ errors.push({msg: 'Debt amount can not be empty'}); }
-    if(!req.body.fileid && !validator.isLength(req.body.fileid, {min: 0})){ errors.push({msg: 'File id cannot be empty'}); }
-    if(!req.body.minpayment && !validator.isLength(req.body.minpayment, {min: 0})){ errors.push({msg: 'Minumun payment cannot be empty'}); }
-    if(!req.body.startdate && !validator.isLength(req.body.startdate, {min: 0})){ errors.push({msg: 'Start date cannot be empty'}); }
-
-
-    if(!validator.isAlpha(req.body.name, 'es-ES')){ errors.push({msg: 'Only letters can be used'}); } //spaces
-    if(!validator.isCurrency(req.body.debtamount, {require_symbol: false})){ errors.push({msg: 'Only currency format permite (numbers and one decimal point with two digits)'}); }
-    if(!validator.isCurrency(req.body.minpayment, {require_symbol: false})){ errors.push({msg: 'Only currency format permite (numbers and one decimal point with two digits)'}); }
-    if(!validator.isAlphanumeric(req.body.fileid, 'es-ES')){ errors.push({msg: 'Only letters, dashes and numbers can be used'}); } //dashes
-    if(!validator.isDate(req.body.startdate)){ errors.push({msg: 'Only a date in the following format, dd/mm/yyyy, can be used'}); } //dashes
-
-    if(!validator.isLength(req.body.password, {min: 0})) {
-        errors.push({msg: 'password must be at least 8 chars long'});
-    }
+    // if(!req.body.name && !validator.isLength(req.body.name, {min: 0})){ 
+    //     errors.push('name cannot be empty'); 
+    // }else{
+    //     if(!validator.isAlpha(req.body.name, 'es-ES', {'ignore': ' '})){ errors.push('Name can only contain letters and spaces'); } //spaces
+    // }
+    // if(!req.body.debtamount && !validator.isLength(req.body.debtamount, {min: 0})){ 
+    //     errors.push('Debt amount can not be empty'); 
+    // }else{
+    //     if(!validator.isCurrency(req.body.debtamount, {require_symbol: false})){ errors.push('Debt Amount can only be a valid currency format (###.##)'); }
+    // }
+    // if(!req.body.fileid && !validator.isLength(req.body.fileid, {min: 0})){ 
+    //     errors.push('File id cannot be empty'); 
+    // }else{
+    //     if(!validator.isAlphanumeric(req.body.fileid, 'es-ES', {'ignore': '-'})){ errors.push('File ID can only contain letters, dashes and numbers'); } //dashes
+    // }
+    // if(!req.body.minpayment && !validator.isLength(req.body.minpayment, {min: 0})){ 
+    //     errors.push('Minumun payment cannot be empty'); 
+    // }else{
+    //     if(!validator.isCurrency(req.body.minpayment, {require_symbol: false})){ errors.push( 'Minimum Payment can only be a valid currency format (###.##))'); }
+    // }
+    // if(!req.body.startdate && !validator.isLength(req.body.startdate, {min: 0})){ 
+    //     errors.push('Start date cannot be empty'); 
+    // }else{
+    //     if(!validator.isDate(req.body.startdate)){ errors.push('Start Date can only be a valid date format, dd/mm/yyyy.'); } 
+    // }
 
     if(errors.length) {
         req.flash('errors', errors);
-        return res.render('reset', { user: req.user, messages: req.flash('errors') });
+        return res.render('newdebt', { user: req.user, messages: req.flash('errors') });
     }
-    
-    res.render('newdebt', {
-        user: req.user,
-        messages: req.flash('errors'),
+
+    //submit data to db
+    const newDebt = new Debt({
+        debtorID: debtorID,
+        debtAmount: parseFloat(req.body.debtamount),
+        minPayment: parseFloat(req.body.minpayment),
+        startDate: req.body.startdate,
     })
+
+    const newDebtor = new Debtors({
+        debtorID: debtorID,
+        name: req.body.name, 
+        fileId: req.body.fileid,
+    })
+
+    newDebtor.save((err) => {
+        if(err && err.code === 11000){
+            console.error(err)
+            req.flash('errors', 'The file id already exist in the database.');
+            return res.render('newdebt', { user: req.user, messages: req.flash('errors') });
+        }else if(err){
+            console.error(err)
+            req.flash('errors', 'There was an error submitting the data to the database.');
+            return res.render('newdebt', { user: req.user, messages: req.flash('errors') });
+        }
+        newDebt.save((err) => {
+            if(err){
+                console.error(err)
+                req.flash('errors', 'There was an error submitting the data to the database.2');
+                return res.render('newdebt', { user: req.user, messages: req.flash('errors') });
+            }
+            
+            return res.render('newdebt', { user: req.user, messages: req.flash('errors') });
+        })
+    })
+
 }
 
+function validateDebtorInfo(debtorInfo){
+    const errors = [];
+
+    if(!debtorInfo.name && !validator.isLength(debtorInfo.name, {min: 0})){ 
+        errors.push('name cannot be empty'); 
+    }else{
+        if(!validator.isAlpha(debtorInfo.name, 'es-ES', {'ignore': ' '})){ errors.push('Name can only contain letters and spaces'); } //spaces
+    }
+    if(!debtorInfo.debtamount && !validator.isLength(debtorInfo.debtamount, {min: 0})){ 
+        errors.push('Debt amount can not be empty'); 
+    }else{
+        if(!validator.isCurrency(debtorInfo.debtamount, {require_symbol: false})){ errors.push('Debt Amount can only be a valid currency format (###.##)'); }
+    }
+    if(!debtorInfo.fileid && !validator.isLength(debtorInfo.fileid, {min: 0})){ 
+        errors.push('File id cannot be empty'); 
+    }else{
+        if(!validator.isAlphanumeric(debtorInfo.fileid, 'es-ES', {'ignore': '-'})){ errors.push('File ID can only contain letters, dashes and numbers'); } //dashes
+    }
+    if(!req.body.minpayment && !validator.isLength(debtorInfo.minpayment, {min: 0})){ 
+        errors.push('Minumun payment cannot be empty'); 
+    }else{
+        if(!validator.isCurrency(debtorInfo.minpayment, {require_symbol: false})){ errors.push( 'Minimum Payment can only be a valid currency format (###.##))'); }
+    }
+    if(!req.body.startdate && !validator.isLength(debtorInfo.startdate, {min: 0})){ 
+        errors.push('Start date cannot be empty'); 
+    }else{
+        if(!validator.isDate(debtorInfo.startdate)){ errors.push('Start Date can only be a valid date format, dd/mm/yyyy.'); } 
+    }
+
+    return errors
+}
 
 // export async function getAdminCreator(req,res){  
 // //if no admin account exists then show message saying this, if not show the create administration account page.

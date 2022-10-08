@@ -8,7 +8,8 @@ const router = express.Router()
 
 router.get('/', mainController.index) 
 router.get('/dashboard', mainController.getDashboard)
-router.get('/registerdebt', mainController.getRegdebt) 
+router.get('/registerdebt', mainController.getRegdebt)
+router.post('/registerdebt', mainController.regdebt)
 
 
 
