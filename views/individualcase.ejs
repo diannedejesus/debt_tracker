@@ -56,16 +56,28 @@
                         <th>Payment</th>
                         <th>Debt</th>
                     </tr>
-                    <% if (typeof debtors !== 'undefined'){ %>
-                        <% for(let debts of debtors){ %>
                     <tr>
-                        <td><%= debts.name %></td>
-                        <td><a href="cases/<%= debts.fileId %>"><%= debts.fileId %></a></td>
-                        <% let formatDate = new Date(debts.startDate) %>
+                        <% if (typeof debtorInfo !== 'undefined'){ %>
+                        <td><%= debtorInfo.debtorName %></td>
+                        <td><a href="#"><%= debtorInfo.debtorFileId %></a></td>
+                        <% let formatDate = new Date(debtorInfo.debtorStartDate) %>
                         <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
                         <td><%= formatDate %></td>
-                        <td><%= debts.minPayment %></td>
-                        <td><%= debts.debtAmount %></td>
+                        <td><%= debtorInfo.debtorMinPayment %></td>
+                        <td><%= debtorInfo.debtorDebt %></td>
+                        <% } %>
+                    </tr>
+                    <tr>
+                        <th colspan="2">Payment Date</th>
+                        <th colspan="3">Payment</th>
+                    </tr>
+                    <% if (typeof debtorInfo.debtorPayments !== 'undefined'){ %>
+                        <% for(let payment of debtorInfo.debtorPayments){ %>
+                    <tr>
+                        <% let formatDate = new Date(payment.paymentDate) %>
+                        <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
+                        <td colspan="2"><%= formatDate %></td>
+                        <td colspan="3"><%= payment.paymentAmount %></td>
                     </tr>
                         <% } %>
                     <% } %>

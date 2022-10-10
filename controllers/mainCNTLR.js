@@ -1,25 +1,108 @@
 import validator from 'validator';
 import Debt from '../models/Debts.js';
 import Debtors from '../models/Debtors.js';
-import { nanoid } from 'nanoid';
+import PaymentDB from '../models/PaymentLog.js';
 
-export async function index(req,res){ //defining a method with the name index, it with be an asychronous function as defined by the async keyword and the arrow function expression. 
-    try{ //when working with async we are working with outside requests which can fail for various reasons. The try/catch pair with run the code and if a request fails it will defaults to catch.
-        res.render('index.ejs', { //res as in respond, so we are responding by invoking the render method and telling it to render the page (interprete the code and show the resulting html) index.ejs. We can also pass it an object with key/value pairs for the page to use.
+export async function index(req,res){  
+    try{ 
+        res.render('index.ejs', { 
             user: req.user,
             messages: req.flash('errors'),
         })
     }catch(err){
-        console.log(err) //display the error in the console
+        console.log(err)
     }
+}
+
+export async function getRegPayment(req,res){
+    res.render('newpayment', {
+        user: req.user,
+        messages: req.flash('errors'),
+    })
+}
+
+export async function getCaseInfo(req,res){
+    let currentLink = ""
+    let debtorInfo
+
+    if(req.params.id){
+        currentLink = {fileId: req.params.id}
+    }
+
+    const debtor = await Debtors.find(currentLink)
+    const debt = await Debt.find({_id: debtor[0]._id})
+    const payments = await PaymentDB.find({caseID: debtor[0]._id})
+
+    debtorInfo = {
+        debtorName: debtor[0].name,
+        debtorFileId: debtor[0].fileId,
+        debtorStartDate: debt[0].startDate,
+        debtorMinPayment: debt[0].minPayment,
+        debtorDebt: debt[0].debtAmount,
+        debtorPayments: [],
+    }
+
+    for(let items of payments){
+        debtorInfo.debtorPayments.push({paymentDate: items.date, paymentAmount: items.payment})
+    }
+
+
+    res.render('individualcase', {
+        user: req.user,
+        debtorInfo,
+        messages: req.flash('errors'),
+    })
+}
+
+export async function regPayment(req,res){
+    const errors = [];
+    const caseID = await Debtors.find({fileId: req.body.fileid})
+    // const debtorsInfo = await Debtors.find({})
+    // const debtorList = buildList(debtorsInfo, debtsInfo)
+
+    if(!req.body.payment && !validator.isLength(req.body.payment, {min: 0})){ 
+        errors.push('Payment cannot be empty'); 
+    }else{
+        if(!validator.isCurrency(req.body.payment, {require_symbol: false, allow_negatives: false})){ errors.push( 'Payment can only be a valid positive currency format (###.##))'); }
+    }
+    if(!req.body.date && !validator.isLength(req.body.date, {min: 0})){ 
+        errors.push('Date cannot be empty'); 
+    }else{
+        if(!validator.isDate(req.body.date)){ errors.push('Date can only be a valid date format, dd/mm/yyyy.'); } 
+    }
+
+    if(errors.length) {
+        req.flash('errors', errors);
+        return res.render('newpayment', { user: req.user, messages: req.flash('errors') });
+    }
+
+    const newPayment = new PaymentDB({
+        caseID: caseID[0]._id,
+        payment: parseFloat(req.body.payment),
+        date: req.body.date,
+    })
+
+    newPayment.save((err) => {
+        if(err){
+            console.error(err)
+            req.flash('errors', 'There was an error submitting the data to the database.3');
+            return res.render('newpayment', { user: req.user, messages: req.flash('errors') });
+        }
+
+        req.flash('errors', 'Successfully saved.');
+    })
+    
+    res.render('newpayment', {
+        user: req.user,
+        //debtors: debtorList,
+        messages: req.flash('errors'),
+    })
 }
 
 export async function getDashboard(req,res){
     const debtsInfo = await Debt.find({})
     const debtorsInfo = await Debtors.find({})
     const debtorList = buildList(debtorsInfo, debtsInfo)
-
-    
 
     res.render('dashboard', {
         user: req.user,
@@ -28,21 +111,26 @@ export async function getDashboard(req,res){
     })
 }
 
-function buildList(list1, list2){
-    const newList = {}
+function buildList(debtorInfo, debtInfo){
+    const tempList = {}
+    const newList = []
 
-    for(let items of list1){
-        newList[items.debtorID] = {}
-        newList[items.debtorID]['name'] = items.name
-        newList[items.debtorID]['fileid'] = items.fileId
+    for(let items of debtorInfo){
+        tempList[items._id] = {}
+        tempList[items._id]['name'] = items.name
+        tempList[items._id]['fileid'] = items.fileId
     }
 
-    for(let items of list2){
-        newList[items.debtorID]['debtamount'] = items.debtAmount
-        newList[items.debtorID]['minpayment'] = items.minPayment
-        newList[items.debtorID]['startdate'] = items.startDate
+    for(let items of debtInfo){
+        newList.push({ 
+            name: newList[items._id]['name'],
+            fileId: newList[items._id]['fileid'],
+            debtAmount: items.debtAmount,
+            minPayment: items.minPayment,
+            startDate: items.startDate,
+        })
     }
-    
+
     return newList;
 }
 
@@ -54,7 +142,6 @@ export async function getRegdebt(req,res){
 }
 
 export async function regdebt(req,res){
-    const debtorID = nanoid();
     const errors = validateDebtorInfo({
         name: req.body.name,
         debtamount: req.body.debtamount,
@@ -70,19 +157,17 @@ export async function regdebt(req,res){
 
     //submit data to db
     const newDebt = new Debt({
-        debtorID: debtorID,
         debtAmount: parseFloat(req.body.debtamount),
         minPayment: parseFloat(req.body.minpayment),
         startDate: req.body.startdate,
     })
 
     const newDebtor = new Debtors({
-        debtorID: debtorID,
         name: req.body.name, 
         fileId: req.body.fileid,
     })
 
-    newDebtor.save((err) => {
+    newDebtor.save((err, doc) => {
         if(err && err.code === 11000){
             console.error(err)
             req.flash('errors', 'The file id already exist in the database.');
@@ -92,6 +177,9 @@ export async function regdebt(req,res){
             req.flash('errors', 'There was an error submitting the data to the database.');
             return res.render('newdebt', { user: req.user, messages: req.flash('errors') });
         }
+
+        newDebt._id = doc._id
+
         newDebt.save((err) => {
             if(err){
                 console.error(err)
@@ -136,27 +224,3 @@ function validateDebtorInfo(debtorInfo){
 
     return errors
 }
-
-// export async function getAdminCreator(req,res){  
-// //if no admin account exists then show message saying this, if not show the create administration account page.
-//     res.render('administrator.ejs', { 
-//         user: req.user,
-//         messages: req.flash('errors'),
-//     })
-// }
-
-// export async function createAdmin(req,res){
-//     //validate email
-//     //create authorization code
-//     //save information in db as email=email, code=password, admin=true
-//     //
-//     //send user to verification page
-//     //req.body.email
-
-
-
-//     res.render('administrator.ejs', { 
-//         user: req.user,
-//         messages: req.flash('errors'),
-//     })
-// }   

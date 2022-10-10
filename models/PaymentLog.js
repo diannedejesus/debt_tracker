@@ -1,21 +1,19 @@
 import mongoose from 'mongoose'
 
-const DebtSchema = new mongoose.Schema({
-  debtAmount: {
+const PaymentLogSchema = new mongoose.Schema({
+  caseID: {
+    type: mongoose.ObjectId,
+    required: true,
+  },
+
+  payment: {
     type: Number,
     required: true,
     set: convertFromCurrency,
     get: convertToCurrency,
   },
 
-  minPayment: {
-    type: Number,
-    required: true,
-    set: convertFromCurrency,
-    get: convertToCurrency,
-  },
-
-  startDate: {
+  date: {
     type: Date,
     required: true,
   },
@@ -32,4 +30,4 @@ function convertFromCurrency(num){
 }
 
 
-export default mongoose.model('Debt', DebtSchema)
+export default mongoose.model('PaymentLog', PaymentLogSchema)

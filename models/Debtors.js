@@ -8,11 +8,6 @@ const initVector = process.env.initVector//16 bytes of random data
 const Securitykey = process.env.SKEY //32 bytes of random data
 
 const DebtorSchema = new mongoose.Schema({
-  debtorID: {
-    type: String,
-    required: true,
-  },
-
   name: {
     type: String,
     required: true,
