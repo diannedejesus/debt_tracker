@@ -1,0 +1,120 @@
+/* Box Model Hack */
+* {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+/* Clear fix hack */
+.clearfix:after {
+     content: ".";
+     display: block;
+     clear: both;
+     visibility: hidden;
+     line-height: 0;
+     height: 0;
+}
+
+.clear {
+	clear: both;
+}
+
+/******************************************
+/* BASE STYLES
+/*******************************************/
+
+body {
+     font-size: 1.5rem;
+}
+
+
+/******************************************
+/* LAYOUT
+/*******************************************/
+
+/*---------------- Header ----------------*/
+header {
+     padding: 1em;
+     padding-top: 2em;
+     display: flex;
+     font-size: 1rem;
+}
+.logo, .account{
+     flex-grow: 1;
+     line-height: 100%;
+}
+
+
+.logo span{
+     font-size: 3rem;
+}
+.under{
+     margin-left: -5rem;
+}
+
+nav li{
+     display: inline-block;
+     padding-left: 1em;
+     list-style: none;
+}
+nav ul{
+     margin: 0;
+     padding: 0;
+}
+nav a{
+     text-decoration: none;
+}
+nav{
+     flex-grow: 2;
+     text-align: center;
+}
+
+.account{
+     text-align: right;
+     line-height: 100%;
+}
+
+
+/*---------------- Footer ----------------*/
+footer {
+
+}
+
+/******************************************
+/* ADDITIONAL STYLES
+/*******************************************/
+h1{
+     text-align: center;
+}
+form, table{
+     width: fit-content;
+     margin: 0 auto;
+}
+form{
+     display: flex;
+     flex-direction: column;
+}
+input{
+     margin-bottom: .5rem;
+}
+.submitbutton{
+     margin-top: 1rem;
+}
+
+
+table{
+     border: 5px solid black;
+     padding: 1em;
+     border-collapse: collapse;
+}
+
+td, th{
+     border: 1px solid lightgray;
+     text-align: center;
+     padding: .5rem 1rem;
+}
+
+label{
+     display: inline-block;
+     width: fit-content;
+}

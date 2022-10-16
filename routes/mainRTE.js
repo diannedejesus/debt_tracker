@@ -8,6 +8,7 @@ const router = express.Router()
 
 router.get('/', mainController.index) 
 router.get('/dashboard', mainController.getDashboard)
+router.get('/debtors', mainController.getDebtorList)
 
 router.get('/registerdebt', mainController.getRegdebt)
 router.post('/registerdebt', mainController.regdebt)

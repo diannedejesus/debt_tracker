@@ -132,7 +132,8 @@ export async function regPayment(req,res){
     })
 }
 
-export async function getDashboard(req,res){
+
+export async function getDebtorList(req,res){
     try {
         const debtsInfo = await Debt.find({})
         const debtorsInfo = await Debtors.find({})
@@ -140,6 +141,39 @@ export async function getDashboard(req,res){
 
         if(debtsInfo && debtorsInfo){ 
             debtorList = buildList(debtorsInfo, debtsInfo) 
+        }
+        
+        res.render('debtors', {
+            user: req.user,
+            debtors: debtorList,
+            messages: req.flash('errors'),
+        })
+    } catch (error) {
+        console.error(error.message);
+        req.flash('errors', 'There was an error submitting the data to the database. #006'); 
+    }
+}
+
+export async function getDashboard(req,res){
+    try {
+        const debtsInfo = await Debt.find({})
+
+        let debtorList = {
+            'latePayments': 0,
+            'currentPayments': 0,
+            'debtsCount': debtsInfo ? debtsInfo.length : 0,
+        }
+
+        for(let items of debtsInfo){
+            const currentDate = new Date(Date.now())
+            const elapsed = monthElapsed(new Date(items.startDate), currentDate)
+            const payments = await PaymentDB.find({caseID: items._id}).count() //can slow things if dealing with bad connection or lots of items
+
+            if( elapsed-payments > 0){
+                debtorList['latePayments']++
+            }else{
+                debtorList['currentPayments']++
+            }
         }
         
         res.render('dashboard', {
@@ -151,6 +185,14 @@ export async function getDashboard(req,res){
         console.error(error.message);
         req.flash('errors', 'There was an error submitting the data to the database. #006'); 
     }
+}
+
+function monthElapsed(d1, d2) {
+    var months;
+    months = (d2.getFullYear() - d1.getFullYear()) * 12;
+    months -= d1.getMonth();
+    months += d2.getMonth();
+    return months <= 0 ? 0 : months;
 }
 
 function buildList(debtorInfo, debtInfo){

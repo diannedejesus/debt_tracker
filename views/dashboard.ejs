@@ -1,73 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Application Template</title>
-    <link rel="stylesheet" href="../css/normalize.css">
-    <link rel="stylesheet" href="../css/style.css">
-</head>
-<body>
-    <header>
-        <section><h1>&#128507; &#9889;</h1></section>
-        <nav>
-            <ul>
-                <li><a href="/auth/user">User Administration</a></li>
-                <li><a href="/registerdebt">register debt</a></li>
-                <li><a href="/registerpayment">register payment</a></li>
-            </ul>
-        </nav>
-        <section>
-            <% if (typeof user !== 'undefined'){ %> 
-                <% if (user.admin){ %> 
-                    <%= user.email %> (Administrator)
-                <% }else{ %>
-                    <%= user.email %>
-                <% } %>
-                <a href="/auth/logout">Logout</a>
-            <% }else{ %>
-                <a href="/auth/login">Login</a>
-            <% } %>
-        </section>
-     </header>
-
-     <% if (typeof messages !== 'undefined'){ %> 
-        <% messages.forEach( (error)=> { %>
-            <p class='message'><%= error %></p>
-        <% }) %>
-    <% } %>
-
+    <%- include('header.ejs') %>
     <main class='signin clearfix'>
-            <h1>Dashboard.</h1>
-            <p>Welcome to this initial template, creation starts here.</p>
+            <h1>Dashboard</h1>
 
             <table>
-                <thead>
-                    <tr>
-                        <th colspan="5">Debtor table</th>
-                    </tr>
-                </thead>
                 <tbody>
                     <tr>
-                        <th>Name</th>
-                        <th>File Id</th>
-                        <th>Started</th>
-                        <th>Payment</th>
-                        <th>Debt</th>
+                        <th>Debts</th>
+                        <th>Current</th>
+                        <th>Late</th>
                     </tr>
                     <% if (typeof debtors !== 'undefined'){ %>
-                        <% for(let debts of debtors){ %>
                     <tr>
-                        <td><%= debts.name %></td>
-                        <td><a href="cases/<%= debts.fileId %>"><%= debts.fileId %></a></td>
-                        <% let formatDate = new Date(debts.startDate) %>
-                        <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
-                        <td><%= formatDate %></td>
-                        <td><%= debts.minPayment %></td>
-                        <td><%= debts.debtAmount %></td>
+                        <td><%= debtors.debtsCount %></td>
+                        <td><%= debtors.currentPayments %></td>
+                        <td><%= debtors.latePayments %></td>
                     </tr>
-                        <% } %>
                     <% } %>
                 </tbody>
             </table>

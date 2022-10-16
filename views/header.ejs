@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Template</title>
+    <link rel="stylesheet" href="../css/normalize.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header class="clearfix">
+        <section class="logo"><span>&#128507;</span><span class="under">&#9889;</span></section>
+        <nav>
+            <ul>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/debtors">Debts</a></li>
+                <li><a href="/registerdebt">Register Debt</a></li>
+                <li><a href="/registerpayment">Register Payment</a></li>
+                <% if (typeof user !== 'undefined' && user.admin){ %> 
+                    <li><a href="/auth/user">User Administration</a></li>
+                <% } %>
+                
+            </ul>
+        </nav>
+        <section class="account">
+            <% if (typeof user !== 'undefined'){ %> 
+                <% if (user.admin){ %> 
+                    <%= user.email %> (Administrator)
+                <% }else{ %>
+                    <%= user.email %>
+                <% } %>
+                <a href="/auth/logout">Logout</a>
+            <% }else{ %>
+                <a href="/auth/login">Login</a>
+            <% } %>
+        </section>
+     </header>
+
+     <% if (typeof messages !== 'undefined'){ %> 
+        <% messages.forEach( (error)=> { %>
+            <p class='message'><%= error %></p>
+        <% }) %>
+    <% } %>
