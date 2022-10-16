@@ -225,7 +225,7 @@ export async function getRegdebt(req,res){
     })
 }
 
-export async function regdebt(req,res){
+export async function insertNewDebt(req,res){
     //validate submitted info
     const errors = validateDebtorInfo({
         name: req.body.name,
@@ -237,7 +237,10 @@ export async function regdebt(req,res){
 
     if(errors.length) {
         req.flash('errors', errors);
-        return res.render('newdebt', { user: req.user, messages: req.flash('errors') });
+        return res.render('newdebt', { 
+            user: req.user, 
+            messages: req.flash('errors') 
+        });
     }
 
     //contruct data objects
@@ -256,26 +259,52 @@ export async function regdebt(req,res){
     newDebtor.save((err, doc) => {
         if(err && err.code === 11000){
             console.error(err)
-            req.flash('errors', 'The file id already exist in the database.');
-            return res.render('newdebt', { user: req.user, messages: req.flash('errors') });
+            req.flash('errors', 'The file id already exist, a person can not have two debts.');
+            return res.render('newdebt', { 
+                user: req.user, 
+                messages: req.flash('errors') 
+            });
         }else if(err){
             console.error(err)
-            req.flash('errors', 'There was an error submitting the data to the database.');
-            return res.render('newdebt', { user: req.user, messages: req.flash('errors') });
+            req.flash('errors', 'Error submitting data to database. #001');
+            return res.render('newdebt', { 
+                user: req.user, 
+                messages: req.flash('errors') 
+            });
         }
 
-        newDebt._id = doc._id
+        if(doc){
+            newDebt._id = doc._id
 
-        newDebt.save((err) => {
-            if(err){
-                console.error(err)
-                req.flash('errors', 'There was an error submitting the data to the database.2');
-                return res.render('newdebt', { user: req.user, messages: req.flash('errors') });
-            }
+            newDebt.save((err) => {
+                if(err){
+                    newDebtor.findOneAndDelete(
+                        { _id: doc._id },
+                        function(err, res){
+                            if (err) {
+                              console.log("Error removing data. #001" + err);
+                            }
+                            else {
+                                console.log(res + " deleted!");
+                            }
+                        }
+                    );
 
-            req.flash('errors', 'Data saved successfully.');
-            return res.render('newdebt', { user: req.user, messages: req.flash('errors') });
-        })
+                    console.error(err)
+                    req.flash('errors', 'Error submitting data to database. #002');
+                    return res.render('newdebt', { 
+                        user: req.user, 
+                        messages: req.flash('errors') 
+                    });
+                }
+
+                req.flash('errors', 'Data saved successfully.');
+                return res.render('newdebt', { 
+                    user: req.user, 
+                    messages: req.flash('errors') 
+                });
+            })
+        }
     })
 
 }//

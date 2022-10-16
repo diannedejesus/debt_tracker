@@ -11,7 +11,7 @@ router.get('/dashboard', mainController.getDashboard)
 router.get('/debtors', mainController.getDebtorList)
 
 router.get('/registerdebt', mainController.getRegdebt)
-router.post('/registerdebt', mainController.regdebt)
+router.post('/registerdebt', mainController.insertNewDebt)
 
 router.get('/registerpayment', mainController.getRegPayment)
 router.post('/registerpayment', mainController.regPayment)

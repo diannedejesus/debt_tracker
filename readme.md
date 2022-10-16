@@ -98,8 +98,7 @@ Registration Page:
 On this page, a user will enter a new debt with all the accompanying information. As a safety measure, we will have a database for the debt information and another for the name and Id. The debtor's name will be the only identifiable information saved about the person who owes the debt.
 
 The new debt page will accept the following information:
-- name [string
-]
+- name [string]
 - debt amount [number]
 - file id [string]
 - minimum payment [number]
@@ -112,10 +111,10 @@ The new debt page will accept the following information:
 #### **Pages Breakdown**
 
 Register Debt:
-- A page with a form for the user to add a new account/debtor. 
-- The name and case id of the debtor belongs in a separate database and will be encrypted.
-- The debt information will be stored in the database with an identifier to relate it to the name.
-- identifier is the case number (encrypted) which will be unique to ensure that we don't register a person with two debt accounts.
+* A page with a form for the user to add a new account/debtor. 
+* The name and case id of the debtor belongs in a separate database and will be encrypted.
+* The debt information will be stored in the database with an identifier to relate it to the name.
+* identifier is the case number (encrypted) which will be unique to ensure that we don't register a person with two debt accounts.
 
 ### View debt status
 On the page, a user can see people who have debts and the information for each one. It will have a menu to scroll thru each person's case. This page will use the information already in the database to calculate additional information for each case and display it. This information will be:
@@ -190,22 +189,21 @@ Payment History
 
 ### Databases
 * Names
-    - First Name [string]
-    - Initial [char]
-    - Last Name [string]
-    - Maternal Name [string]
+    - ID [string]
+    - Name [string]
+    - File id [string]
 
 * Debt Information
-    - name [string]
-    - debt amount [number]
-    - file id [string]
-    - minimun payment [number]
-    - start date [date] 
+    - ID [string]
+    - Debt amount [number]
+    - Minimun payment [number]
+    - Start date [date] 
 
 * Payment History
-    - date [date]
-    - amount paid [number]
-    - comments [string]
+    - ID [string]
+    - Date [date]
+    - Amount paid [number]
+    - Comments [string]
 
 * Accounts
     - email [string]
@@ -311,6 +309,8 @@ Once these wireframes are approved by the client, include them in the user inter
 
 
 ## Issues
+
+- can we use req.flash to store other messages besides errors?
 <!-- Things that should be looked into but an alternative solution was/can be implemented  -->
 - 
 

@@ -38,7 +38,7 @@
      </header>
 
      <% if (typeof messages !== 'undefined'){ %> 
-        <% messages.forEach( (error)=> { %>
-            <p class='message'><%= error %></p>
+        <% messages.forEach( (msg)=> { %>
+            <p class='message'><%= msg %></p>
         <% }) %>
     <% } %>
