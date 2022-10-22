@@ -94,15 +94,15 @@ Registration Page:
 - On this list, the admin can revoke access through a button.
 
 
-### Register debt
+### Register debt/ Insert New Debt
 On this page, a user will enter a new debt with all the accompanying information. As a safety measure, we will have a database for the debt information and another for the name and Id. The debtor's name will be the only identifiable information saved about the person who owes the debt.
 
 The new debt page will accept the following information:
-- name [string]
-- debt amount [number]
-- file id [string]
-- minimum payment [number]
-- start date [date]
+- [X] name [string]
+- [X] debt amount [number]
+- [X] file id [string]
+- [X] minimum payment [number]
+- [X] start date [date]
 
 #### **Pages Outline**
 - Enter debt page
@@ -111,10 +111,10 @@ The new debt page will accept the following information:
 #### **Pages Breakdown**
 
 Register Debt:
-* A page with a form for the user to add a new account/debtor. 
-* The name and case id of the debtor belongs in a separate database and will be encrypted.
-* The debt information will be stored in the database with an identifier to relate it to the name.
-* identifier is the case number (encrypted) which will be unique to ensure that we don't register a person with two debt accounts.
+- [X] A page with a form for the user to add a new account/debtor. 
+- [X] The name and case id of the debtor belongs in a separate database and will be encrypted.
+- [X] The debt information will be stored in the database with an identifier to relate it to the name.
+- [X] identifier is the case number (encrypted) which will be unique to ensure that we don't register a person with two debt accounts.
 
 ### View debt status
 On the page, a user can see people who have debts and the information for each one. It will have a link for each person's case. 
@@ -138,10 +138,10 @@ It will also display all the information entered from the registration page and 
     - displays late payments
     - displays paid-off
 
-### Register payment
+### Register payment / Insert New Payment
 This page is for entering payment information. This information will be:
-- date [date]
-- the amount paid [number]
+- [X] date [date]
+- [X] the amount paid [number]
 - comments [string]
 
 #### **Pages Outline**
@@ -149,7 +149,8 @@ This page is for entering payment information. This information will be:
     - form
 
 #### **Pages Breakdown**
-- Contains a form that lets the user select a debtor and add the information for payment.
+- [X] Contains a form that lets the user add the information for payment.
+- Form that lets the user select a debtor.
 
 
 ### Create summary
