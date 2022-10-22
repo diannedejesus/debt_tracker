@@ -117,7 +117,9 @@ Register Debt:
 * identifier is the case number (encrypted) which will be unique to ensure that we don't register a person with two debt accounts.
 
 ### View debt status
-On the page, a user can see people who have debts and the information for each one. It will have a menu to scroll thru each person's case. This page will use the information already in the database to calculate additional information for each case and display it. This information will be:
+On the page, a user can see people who have debts and the information for each one. It will have a link for each person's case. 
+
+The case page will use the information already in the database to calculate additional information for each case and display it. This information will be:
 - current debt [number]
 - debt payoff date [date]
 - payments left [int]

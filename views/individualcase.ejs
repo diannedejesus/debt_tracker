@@ -19,21 +19,21 @@
                     </tr>
                     <tr>
                         <% if (typeof debtorInfo !== 'undefined'){ %>
-                        <td><%= debtorInfo.debtorName %></td>
-                        <td><a href="#"><%= debtorInfo.debtorFileId %></a></td>
-                        <% let formatDate = new Date(debtorInfo.debtorStartDate) %>
+                        <td><%= debtorInfo.name %></td>
+                        <td><a href="#"><%= debtorInfo.fileId %></a></td>
+                        <% let formatDate = new Date(debtorInfo.startDate) %>
                         <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
                         <td><%= formatDate %></td>
-                        <td><%= debtorInfo.debtorMinPayment %></td>
-                        <td><%= debtorInfo.debtorDebt %></td>
+                        <td><%= debtorInfo.minPayment %></td>
+                        <td><%= debtorInfo.debt %></td>
                         <% } %>
                     </tr>
                     <tr>
                         <th colspan="3">Payment Date</th>
                         <th colspan="2">Payment</th>
                     </tr>
-                    <% if (typeof debtorInfo.debtorPayments !== 'undefined'){ %>
-                        <% for(let payment of debtorInfo.debtorPayments){ %>
+                    <% if (typeof debtorInfo.payments !== 'undefined'){ %>
+                        <% for(let payment of debtorInfo.payments){ %>
                     <tr>
                         <% let formatDate = new Date(payment.paymentDate) %>
                         <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
