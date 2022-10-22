@@ -116,6 +116,27 @@ Register Debt:
 - [X] The debt information will be stored in the database with an identifier to relate it to the name.
 - [X] identifier is the case number (encrypted) which will be unique to ensure that we don't register a person with two debt accounts.
 
+### View debt List
+On the page, a user can see people who have debts and the basic information for each one. It will have a link for each person's case. 
+
+The page will use the information already in the database to calculate and/or display. This information will be:
+- [X] name [string]
+- [X] current debt [number]
+<!-- - debt payoff date [date] -->
+- [X] payments left [int]
+<!-- - payments made [int] -->
+- [X] late payment [boolean]
+
+#### **Pages Outline**
+- information display/dashboard
+- menu
+
+#### **Pages Breakdown**
+- [X] a basic page that displays the information
+    - [X] list of debtors
+    - [X] displays late payments
+    - displays paid-off
+
 ### View debt status
 On the page, a user can see people who have debts and the information for each one. It will have a link for each person's case. 
 

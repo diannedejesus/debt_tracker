@@ -12,21 +12,17 @@
                 <tbody>
                     <tr>
                         <th>Name</th>
-                        <th>File Id</th>
-                        <th>Started</th>
-                        <th>Payment</th>
-                        <th>Debt</th>
+                        <th>Current Debt</th>
+                        <th>Payments Left</th>
+                        <th>Late</th>
                     </tr>
                     <% if (typeof debtors !== 'undefined'){ %>
                         <% for(let debts of debtors){ %>
                     <tr>
-                        <td><%= debts.name %></td>
-                        <td><a href="cases/<%= debts.fileId %>"><%= debts.fileId %></a></td>
-                        <% let formatDate = new Date(debts.startDate) %>
-                        <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
-                        <td><%= formatDate %></td>
-                        <td><%= debts.minPayment %></td>
-                        <td><%= debts.debtAmount %></td>
+                        <td><a href="cases/<%= debts.fileId %>"><%= debts.name %></a></td>
+                        <td><%= debts.currentDebt %></td>
+                        <td><%= Math.ceil(debts.currentDebt / debts.minPayment) %></td>
+                        <td><%= debts.paymentLate ? 'Yes' : 'No' %></td>
                     </tr>
                         <% } %>
                     <% } %>

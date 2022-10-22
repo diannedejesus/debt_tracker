@@ -136,10 +136,11 @@ export async function getDebtorList(req, res){
     try {
         const debtsInfo = await DebtDB.find({})
         const debtorsInfo = await DebtorsDB.find({})
+        const paymentInfo = await PaymentDB.find({})
         let debtorList = []
 
         if(debtsInfo && debtorsInfo){ 
-            debtorList = buildList(debtorsInfo, debtsInfo) 
+            debtorList = buildList(debtorsInfo, debtsInfo, paymentInfo)
         }
         
         res.render('debtors', {
@@ -148,7 +149,7 @@ export async function getDebtorList(req, res){
             messages: req.flash('errors'),
         })
     } catch (error) {
-        console.error(error.message);
+        console.error(error);
         req.flash('errors', 'Error submitting data to database. #006'); 
     }
 }
@@ -194,23 +195,32 @@ function monthElapsed(d1, d2) {
     return months <= 0 ? 0 : months;
 }
 
-function buildList(debtorInfo, debtInfo){
+function buildList(debtorInfo, debtInfo, paymentInfo){
     const tempList = {}
     const newList = []
+    const currentDate = new Date(Date.now())
+    // const elapsed = monthElapsed(new Date(items.startDate), currentDate)
 
     for(let items of debtorInfo){
         tempList[items._id] = {}
         tempList[items._id]['name'] = items.name
         tempList[items._id]['fileid'] = items.fileId
+        tempList[items._id]['payments'] = 0
+    }
+
+    for(let items of paymentInfo){
+        tempList[items.caseID]['payments'] += Number(items.payment)
     }
 
     for(let items of debtInfo){
+        const owed = monthElapsed(new Date(items.startDate), currentDate) * items.minPayment
+
         newList.push({ 
             name: tempList[items._id]['name'],
             fileId: tempList[items._id]['fileid'],
-            debtAmount: items.debtAmount,
+            currentDebt: items.debtAmount - tempList[items._id]['payments'],
             minPayment: items.minPayment,
-            startDate: items.startDate,
+            paymentLate: owed >= tempList[items._id]['payments'],
         })
     }
 
