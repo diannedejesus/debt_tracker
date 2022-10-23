@@ -9,25 +9,16 @@
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-    <header>
-       <section><h1>&#128507; &#9889;</h1></section>
+    <header class="clearfix">
+        <section class="logo"><span>&#128507;</span><span class="under">&#9889;</span></section>
        <nav>
-            <ul>
+            <!-- <ul>
                 <li><a href="/auth/admin">Admin Creation</a></li>
-            </ul>
+            </ul> -->
         </nav>
-        <section>
-            <% if (typeof user !== 'undefined'){ %> 
-                <% if (user.admin){ %> 
-                    <%= user.email %> (Administrator) 
-                <% }else{ %>
-                    <%= user.email %>
-                <% } %>
-                <a href="/auth/logout">Logout</a>
-            <% }else{ %>
-                <a href="/auth/login">Login</a>
-            <% } %>
-           </section>
+        <section class="account">
+            <!-- <a href="/">Authenticate</a> -->
+        </section>
     </header>
     
     <% if (typeof messages !== 'undefined'){ %>
@@ -41,7 +32,6 @@
             <form class="login-form" action="/auth/login" method="POST">
                 <input type="text" name='email' placeholder="email">
                 <input type="password" name='password' placeholder="password">
-                <!-- <input type="password" name='confirmPassword' placeholder="password"> -->
                 <input type="submit" value='Submit'>
                 <a href="auth/forgot/">Forgot Password</a>
             </form>

@@ -7,11 +7,11 @@ const router = express.Router()
 
 router.get('/', ensureGuest, authController.getLogin);
 
-router.post('/user', ensureAuth, authController.addUser);
 router.get('/user', ensureAuth, authController.getUserAdmin);
+router.post('/user', ensureAuth, authController.addUser);
 
-router.post('/admin', authController.addAdmin);
 router.get('/admin', authController.getCreateAdmin);
+router.post('/admin', authController.addAdmin);
 
 router.get('/login', ensureGuest, authController.getLogin);
 router.post('/login', ensureGuest, authController.loginUser);
@@ -19,14 +19,10 @@ router.post('/login', ensureGuest, authController.loginUser);
 router.get('/reset', authController.getReset);
 router.post('/reset', authController.resetPassword);
 
-//router.get('/sendcode', authController.createCode)
-
-
-// router.get('/verifyAccount', ensureGuest, authController.getVerifyAccount);
-// router.post('/verifyAccount', ensureGuest, authController.VerifyAccount);
+router.get('/verifyaccount', authController.getVerifyAccount);
+router.post('/verifyaccount', authController.authenticateUser);
 
 router.get('/logout', authController.logout);
-
 
 
 export default router

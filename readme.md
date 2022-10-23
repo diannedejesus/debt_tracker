@@ -204,7 +204,7 @@ Payment History
 * Access log: Keep track of case workers' logins, edits, and views.
 * Letters: This is a wish list item. A page that produces a letter for different situations when working with debt accounts.
 * Have the individual case page have an option to switch to another case with out going to list page.
-
+* log changes made to users and debts
 
 ### Databases
 * Names
