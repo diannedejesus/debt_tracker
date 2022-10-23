@@ -137,27 +137,22 @@ The page will use the information already in the database to calculate and/or di
     - [X] displays late payments
     - displays paid-off
 
-### View debt status
-On the page, a user can see people who have debts and the information for each one. It will have a link for each person's case. 
+### View debt status / case info
+The case page will use the information already in the database to calculate additional information for each case and then display all the information. This includes all the information entered from the registration page and any payments made. This additional information will be:
 
-The case page will use the information already in the database to calculate additional information for each case and display it. This information will be:
-- current debt [number]
-- debt payoff date [date]
-- payments left [int]
-- payments made [int]
-- late payments [int]
-
-It will also display all the information entered from the registration page and any payments made. Payment information will be the information entered on the registration payment page.
+- [X] current debt [number]
+- [X] debt payoff date [date]
+- [X] payments left [int]
+- [X] payments made [int]
+- [X] late payments [boolean]
 
 #### **Pages Outline**
 - information display/dashboard
-- menu
 
 #### **Pages Breakdown**
-- a basic page that displays the information
-    - list of debtors
-    - displays late payments
-    - displays paid-off
+- [X] a basic page that displays the information
+    - [X] displays whether payments is late
+    - [X] displays paid-off
 
 ### Register payment / Insert New Payment
 This page is for entering payment information. This information will be:
@@ -208,7 +203,7 @@ Payment History
 ### Additional Ideas
 * Access log: Keep track of case workers' logins, edits, and views.
 * Letters: This is a wish list item. A page that produces a letter for different situations when working with debt accounts.
-* 
+* Have the individual case page have an option to switch to another case with out going to list page.
 
 
 ### Databases
@@ -335,6 +330,8 @@ Once these wireframes are approved by the client, include them in the user inter
 ## Issues
 
 - can we use req.flash to store other messages besides errors?
+- how should payments that are greaterthan the minimun payment be processed?
+- how to handle late/missed payments?s
 <!-- Things that should be looked into but an alternative solution was/can be implemented  -->
 - 
 

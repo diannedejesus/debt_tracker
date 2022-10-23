@@ -20,12 +20,31 @@
                     <tr>
                         <% if (typeof debtorInfo !== 'undefined'){ %>
                         <td><%= debtorInfo.name %></td>
-                        <td><a href="#"><%= debtorInfo.fileId %></a></td>
+                        <td><%= debtorInfo.fileId %></td>
                         <% let formatDate = new Date(debtorInfo.startDate) %>
                         <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
                         <td><%= formatDate %></td>
                         <td><%= debtorInfo.minPayment %></td>
                         <td><%= debtorInfo.debt %></td>
+                        <% } %>
+                    </tr>
+                    <tr>
+                        <th>Current Debt</th>
+                        <th>End Date</th>
+                        <th>Payments Left</th>
+                        <th>Payment Made</th>
+                        <th>Payments Late</th>
+                    </tr>
+                    <tr>
+                        <% if (typeof debtorInfo !== 'undefined'){ %>
+                        <td><%= debtorInfo.debt - debtorInfo.totalPaid %></td>
+                        <% let currentDate = new Date() %>
+                        <!-- <%= currentDate.setMonth(currentDate.getMonth()+(Math.trunc((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) + 1)) %> -->
+                        <!-- <%= currentDate = currentDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
+                        <td><%= currentDate %></td>
+                        <td><%= Math.trunc((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) + 1 %></td>
+                        <td><%= debtorInfo.payments.length %></td>
+                        <td><%= (debtorInfo.totalPaid < (debtorInfo.elapsed * debtorInfo.minPayment)) ? 'Yes' : 'No' %></td>
                         <% } %>
                     </tr>
                     <tr>

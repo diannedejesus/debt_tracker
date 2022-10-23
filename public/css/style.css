@@ -113,6 +113,12 @@ td, th{
      text-align: center;
      padding: .5rem 1rem;
 }
+th{
+     background-color: lightgray;
+}
+thead th{
+     background-color:azure;
+}
 
 label{
      display: inline-block;

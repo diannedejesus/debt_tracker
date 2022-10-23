@@ -59,18 +59,27 @@ export async function getCaseInfo(req, res){
             startDate: debtForSelected.startDate,
             minPayment: debtForSelected.minPayment,
             debt: debtForSelected.debtAmount,
+            elapsed: monthElapsed(new Date(debtForSelected.startDate)),
+            totalPaid: 0,
             payments: [],
         }
 
         //add payment information
         if(payments){
+            let sum = 0
+
             for(let items of payments){
+                sum += Number(items.payment)
+
                 debtorInfo.payments.push({
                     paymentDate: items.date, 
                     paymentAmount: items.payment
                 })
             }
+
+            debtorInfo['totalPaid'] = sum
         }
+
     } catch (error) {
         console.error(error);
         req.flash('errors', 'An error occured with the database. #004');
@@ -187,19 +196,17 @@ export async function getDashboard(req, res){
     }
 }
 
-function monthElapsed(d1, d2) {
-    var months;
-    months = (d2.getFullYear() - d1.getFullYear()) * 12;
-    months -= d1.getMonth();
-    months += d2.getMonth();
+function monthElapsed(endDate, starterDater = new Date()) {
+    let months;
+    months = (starterDater.getFullYear() - endDate.getFullYear()) * 12;
+    months -= endDate.getMonth();
+    months += starterDater.getMonth();
     return months <= 0 ? 0 : months;
 }
 
 function buildList(debtorInfo, debtInfo, paymentInfo){
     const tempList = {}
     const newList = []
-    const currentDate = new Date(Date.now())
-    // const elapsed = monthElapsed(new Date(items.startDate), currentDate)
 
     for(let items of debtorInfo){
         tempList[items._id] = {}
@@ -213,7 +220,7 @@ function buildList(debtorInfo, debtInfo, paymentInfo){
     }
 
     for(let items of debtInfo){
-        const owed = monthElapsed(new Date(items.startDate), currentDate) * items.minPayment
+        const owed = monthElapsed(new Date(items.startDate)) * items.minPayment
 
         newList.push({ 
             name: tempList[items._id]['name'],
