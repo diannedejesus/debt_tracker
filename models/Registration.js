@@ -9,6 +9,11 @@ const VerificationSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    expires: 3600,// this is the expiry time
+  },
 })
 
 export default mongoose.model('Verification', VerificationSchema)

@@ -13,8 +13,7 @@
        <section><h1>&#128507; &#9889;</h1></section>
        <nav>
             <ul>
-                <li><a href="/asyncFunc">Async Function</a></li>
-                <li><a href="/func">Function</a></li>
+                <li><a href="/login">Login</a></li>
             </ul>
         </nav>
         <section>
@@ -38,13 +37,23 @@
     <% } %>
     
     <main class='signin clearfix'>
-        <h1>Verify Account</h1>
+        <h1>Reset Password</h1>
         <form class="login-form" action="/auth/verifyAccount" method="POST">
-            <input type="text" name='email' placeholder="email">
-            <input type="text" name='password' placeholder="Code">
-            <!-- <input type="password" name='confirmPassword' placeholder="password"> -->
+            <% if (typeof token !== 'undefined'){ %>
+                <input type="hidden" name='token' value="<%= token %>">
+            <% }else { %>
+                <input type="text" name='token' placeholder="Reset Code">
+            <% } %>
+
+            <% if (typeof userid !== 'undefined'){ %>
+                <input type="hidden" name='email' value="<%= userid %>"> 
+            <% }else { %>
+                <input type="text" name='email' placeholder="User Name">
+            <% } %>
+
+            <input type="text" name='password' placeholder="new password">
+            <input type="text" name='confirmPassword' placeholder="confirm new password">
             <input type="submit" value='Submit'>
-            <a href="auth/sendCode/">Resend Code</a>
         </form>
     </main>
 </body>

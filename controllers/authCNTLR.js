@@ -4,7 +4,8 @@ import User from '../models/User.js';
 import validator from 'validator';
 import bcrypt from 'bcrypt';
 import { nanoid } from 'nanoid';
-
+import Registration from '../models/Registration.js';
+import crypto from 'node:crypto';
 
 
 
@@ -23,11 +24,18 @@ export async function getCreateAdmin(req, res){
 };
 
 export async function getReset(req, res){
-  res.render('reset', { user: req.user, messages: req.flash('errors') });
+  res.render('reset', { 
+    user: req.user,
+    messages: req.flash('errors') 
+  });
 };
 
 export async function getVerifyAccount(req, res){
-  res.render('verifyaccount', { user: req.user, messages: req.flash('errors') });
+  res.render('verifyaccount', { 
+    user: req.user, 
+    token: req.param.token,
+    userid: req.param.userid,
+    messages: req.flash('errors') });
 };
 
 export async function getLogin(req, res){
@@ -124,7 +132,12 @@ export async function addUser(req, res, next){
   
   const createdUser = new User({
       email: validator.normalizeEmail(req.body.email.trim(), {gmail_remove_dots: false}),
-      password: await bcrypt.hash(authenticateCode, 10),
+      password: crypto.randomBytes(32).toString("hex"), //NOTE: change to gibberish
+  })
+
+  const authenticationCode = new Registration({
+    email: validator.normalizeEmail(req.body.email.trim(), {gmail_remove_dots: false}),
+    code: await bcrypt.hash(authenticateCode, 10),
   })
 
   User.findOne({ email: createdUser.email }, (err, foundDoc) => {
@@ -140,6 +153,10 @@ export async function addUser(req, res, next){
 
       if(SavedDoc){
         //send code by email or redirect
+        authenticationCode.save((err) => {
+          if (err) return next(err)
+          //NOTE: remove user if error and return to page giving error
+        })
         req.flash('errors', `Account created successfully, verification code for account is ${authenticateCode}`);
         return res.render('createUser', { user: req.user, messages: req.flash('errors') });
       }
@@ -214,31 +231,58 @@ export async function authenticateUser(req, res, next){
   
   //validate info
   if(!validator.isEmail(req.body.email.trim())) errors.push('email is invalid');
-  if(validator.isEmpty(req.body.password)) errors.push('code field cant be blank');
+  if(validator.isEmpty(req.body.token)) errors.push('invalid token');
+  if(!validator.isLength(req.body.password, {min: 0})) errors.push('password must be at least 8 chars long');
+  if(req.body.password !== req.body.confirmPassword) errors.push('passwords do not match');
 
   if(errors.length) {
     req.flash('errors', errors);
     return res.render('verifyaccount', { user: req.user, messages: req.flash('errors') });
   }
 
-  req.body.email = validator.normalizeEmail(req.body.email.trim(), { gmail_remove_dots: false });
+  //validate with database
+  let token = await Registration.findOne({ email: req.body.email })
+  if (!token) {
+    throw new Error("Invalid or expired password reset token");
+  }
+  const isValid = await bcrypt.compare(req.body.token, token.code);
+  if (!isValid) {
+    throw new Error("Invalid or expired password reset token");
+  }
 
-  //process authentication
-  passport.authenticate('local', (err, user, info) => {
+  //save new password
+  //create user objet
+  const createdUser = new User({
+    email: validator.normalizeEmail(req.body.email.trim(), {gmail_remove_dots: false}),
+    password: await bcrypt.hash(req.body.password, 10),
+  })
+
+  //verify if already exists
+  User.findOneAndUpdate({email: createdUser.email}, {password: await bcrypt.hash(req.body.password, 10)}, (err) => {
     if(err) return next(err);
+  })
 
-    if(!user) {
-      req.flash('errors', 'Code is incorrect, check spelling or contact administrator');
-      console.log('errors2', info)
-      return res.render('verifyaccount', { user: req.user, messages: req.flash('errors') });
-    }
+  //delete token
+  Registration.deleteOne({email: createdUser.email}, (err) => {
+    if(err) return next(err);
+  })
 
-    if(user) {
-      //req.flash('errors', 'user is not registered');
-      return res.render(`reset/${req.body.password}`, { user: req.user, messages: req.flash('errors') });
-    }
 
-  })(req, res, next)
+  // passport.authenticate('local', (err, user, info) => {
+  //   if(err) return next(err);
+
+  //   if(!user) {
+  //     req.flash('errors', 'Code is incorrect, check spelling or contact administrator');
+  //     console.log('errors2', info)
+  //     return res.render('verifyaccount', { user: req.user, messages: req.flash('errors') });
+  //   }
+
+  //   if(user) {
+  //     //req.flash('errors', 'user is not registered');
+  //     return res.render(`reset/${req.body.password}`, { user: req.user, messages: req.flash('errors') });
+  //   }
+
+  // })(req, res, next)
 }
 
 export async function resetPassword(req, res){

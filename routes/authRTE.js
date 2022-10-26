@@ -19,6 +19,7 @@ router.post('/login', ensureGuest, authController.loginUser);
 router.get('/reset', authController.getReset);
 router.post('/reset', authController.resetPassword);
 
+router.get('/verifyaccount/:token/:userid', authController.getVerifyAccount);
 router.get('/verifyaccount', authController.getVerifyAccount);
 router.post('/verifyaccount', authController.authenticateUser);
 
