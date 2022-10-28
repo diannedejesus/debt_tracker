@@ -6,15 +6,24 @@
             <table>
                 <tr>
                     <th>User</th>
+                    <th>Password Change Status</th>
                     <th>Password Change</th>
-                    <th>Revoked</th>
+                    <th>Revoked Status</th>
                 </tr>
                 <% if (typeof userList !== 'undefined'){ %> 
                     <% userList.forEach( (user)=> { %>
                 <tr>
+                    
                     <td><%= user.email %></td>
-                    <td><button>Approve</button></td>
-                    <td><%= user.revoked ? "Yes" : "No"  %></td>
+                    <td><%= user.registered ? "Completed" : "Pending" %></td>
+                    <td>
+                        <form class="login-form" action="/auth/reset" method="POST">
+                            <input type="hidden" name="email" value="<%= user.email %>">
+                            <input type="submit" value='Reset'>
+                        </form>
+                    </td>
+                    <td><%= user.revoked ? "Yes" : "No" %></td>
+                    
                 </tr>
                     <% }) %>
                 <% } %>

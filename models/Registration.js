@@ -12,7 +12,7 @@ const VerificationSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-    expires: 3600,// this is the expiry time
+    expires: 3600,// this is the expiry time | 86400000 =1day
   },
 })
 

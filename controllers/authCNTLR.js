@@ -115,12 +115,6 @@ export async function addUser(req, res, next){
   if(!validator.isEmail(req.body.email.trim())) {
     errors.push('not a valid email');
   }
-  // if(!validator.isLength(req.body.password, {min: 0})) {
-  //   errors.push({msg: 'password must be at least 8 chars long'});
-  // }
-  // if(req.body.password !== req.body.confirmPassword) {
-  //   errors.push({msg: 'passwords do not match'});
-  // }
   if(!req.user.admin) {
     errors.push('not an administrator account');
   }
@@ -228,8 +222,9 @@ export async function addAdmin(req, res, next){
 
 export async function authenticateUser(req, res, next){
   const errors = [];
-  
+
   //validate info
+  //NOTE: Create error catching for when variables do not exists [is this needed?]
   if(!validator.isEmail(req.body.email.trim())) errors.push('email is invalid');
   if(validator.isEmpty(req.body.token)) errors.push('invalid token');
   if(!validator.isLength(req.body.password, {min: 0})) errors.push('password must be at least 8 chars long');
@@ -242,78 +237,65 @@ export async function authenticateUser(req, res, next){
 
   //validate with database
   let token = await Registration.findOne({ email: req.body.email })
-  if (!token) {
-    throw new Error("Invalid or expired password reset token");
-  }
   const isValid = await bcrypt.compare(req.body.token, token.code);
-  if (!isValid) {
-    throw new Error("Invalid or expired password reset token");
+
+  if (!token) req.flash('errors', "Invalid or expired password reset token");
+  if (!isValid) req.flash('errors', "Invalid or expired password reset token");
+
+  if(errors.length) {
+    req.flash('errors', errors);
+    return res.render('verifyaccount', { user: req.user, messages: req.flash('errors') });
   }
 
-  //save new password
-  //create user objet
-  const createdUser = new User({
-    email: validator.normalizeEmail(req.body.email.trim(), {gmail_remove_dots: false}),
-    password: await bcrypt.hash(req.body.password, 10),
-  })
-
-  //verify if already exists
-  User.findOneAndUpdate({email: createdUser.email}, {password: await bcrypt.hash(req.body.password, 10)}, (err) => {
+  //set values
+  const userEmail = validator.normalizeEmail(req.body.email.trim(), {gmail_remove_dots: false})
+  const hashedPassword = await bcrypt.hash(req.body.password, 10)
+ 
+  //update
+  User.findOneAndUpdate({ email: userEmail }, { password: hashedPassword, registered: true }, (err) => {
     if(err) return next(err);
+
+    //delete token
+    Registration.deleteOne({email: userEmail}, (err) => {
+      if(err) return next(err);
+    })
   })
 
-  //delete token
-  Registration.deleteOne({email: createdUser.email}, (err) => {
-    if(err) return next(err);
-  })
-
-
-  // passport.authenticate('local', (err, user, info) => {
-  //   if(err) return next(err);
-
-  //   if(!user) {
-  //     req.flash('errors', 'Code is incorrect, check spelling or contact administrator');
-  //     console.log('errors2', info)
-  //     return res.render('verifyaccount', { user: req.user, messages: req.flash('errors') });
-  //   }
-
-  //   if(user) {
-  //     //req.flash('errors', 'user is not registered');
-  //     return res.render(`reset/${req.body.password}`, { user: req.user, messages: req.flash('errors') });
-  //   }
-
-  // })(req, res, next)
+  req.flash('errors', "Account verified, new passord created");
+  return res.render('login', { user: req.user, messages: req.flash('errors') });
 }
 
 export async function resetPassword(req, res){
   const errors = [];
+  const authenticateCode = nanoid(10);
 
   if(!validator.isEmail(req.body.email.trim())) errors.push('email is invalid');
-  if(validator.isEmpty(req.body.password)) errors.push('password field cant be blank');
-  if(!validator.isLength(req.body.password, {min: 0})) {
-    errors.push({msg: 'password must be at least 8 chars long'});
-  }
-  if(req.body.password !== req.body.confirmPassword) {
-    errors.push({msg: 'passwords do not match'});
-  }
+  if(!req.user.admin) errors.push('not an administrator account');
 
   if(errors.length) {
     req.flash('errors', errors);
-    return res.render('reset', { user: req.user, messages: req.flash('errors') });
+    return res.redirect(req.headers.referer);
   }
 
   req.body.email = validator.normalizeEmail(req.body.email.trim(), { gmail_remove_dots: false });
 
-  //check email
-  const userList = await User.find({email: req.body.email})
-  const hashPass = await bcrypt.hash(req.body.password, 10);
+  const authenticationCode = new Registration({
+    email: validator.normalizeEmail(req.body.email.trim(), {gmail_remove_dots: false}),
+    code: await bcrypt.hash(authenticateCode, 10),
+  })
 
-  //change password
-  if(userList){
-    User.findOneAndUpdate({email: req.body.email}, {tempPassword: hashPass})
-  }
+  User.findOneAndUpdate({ email: authenticationCode.email }, { registered: false }, (err) => {
+    if(err) return next(err);
 
-  res.render('reset', { user: req.user, messages: req.flash('errors') });
+    authenticationCode.save((err) => {
+      if (err) return next(err)
+      //NOTE: edit user if error and return to page giving error
+    })
+  })
+
+  
+  req.flash('errors', `Account created successfully, verification code for account is ${authenticateCode}`);
+  return res.redirect(req.headers.referer);
 };
 
 export function logout(req, res){
