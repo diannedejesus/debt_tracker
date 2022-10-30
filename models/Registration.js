@@ -5,7 +5,7 @@ const VerificationSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  code: {
+  token: {
     type: String,
     required: true,
   },
