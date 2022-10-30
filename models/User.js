@@ -14,11 +14,6 @@ const UserSchema = new mongoose.Schema({
     required: false,
     default: false,
   },
-  registered: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
   revoked: {
     type: Boolean,
     required: false,

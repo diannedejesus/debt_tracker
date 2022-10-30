@@ -48,49 +48,57 @@ This software is for authorized case workers who will: enter payments, new debts
 ### Login
 A login is necessary to keep the information confidential and assure that only authorized personnel has access. Due to this, it will not have a traditional registration page. Instead, there will be a page where an administrator can create new accounts.
 
-The login should include a message for unregistered people, telling them that the admin must make them an account. Only the administrator will have access to the registration page. There they will be able to create accounts for authorized case workers. The created account will have a temporary password created for them. Then upon initial login, the user will be asked to change it. The page can also revoke access.
+The login should include a message for unregistered people, telling them that the admin must make them an account. Only the administrator will have access to the registration page. There they will be able to create accounts for authorized case workers. The user will need to validate their account and create a password. The page can also revoke access.
 
 #### **Additional Details**
 * In the current scope, there is no need to implement access levels for the case worker accounts. 
-*Setting a time limit for passwords needs to be evaluated.
+* Setting a time limit for passwords needs to be evaluated.
 
 #### **Pages Outline**
-- Login page
-    - verify account existance, grant access or deny
-    <!-- - change password with initial login -->
-- change password page
-    - verify user
-    <!-- - send secure reset link -->
-    - change password
-- registration page
-    - admin restricted
-    - create new accounts
-        <!-- - creates temporary password -->
-        <!-- - sends initial login link -->
+* Login page
+    - [X] verify account existance, grant access or deny
+    
+* user administration page
     - can revoke account access
+
+    * registrates/adds user account
+        - [X] admin restricted
+        - [X] create new accounts
+        - [X] create activation code and link
+        <!-- - sends initial login link -->
+
+    * reset password
+        - [X] verify user
+        - [X] create activation code and link
+        <!-- - send secure reset link -->
+
+* reset password page
+    - [X] verify user
+    - [X] verify reset code
+    - [X] change password
 
 #### **Pages Breakdown**
 
 Login: 
-- It will use a local login since emails to be used are not compatible with any third-party authenticator
-- The process for login is: 
-	- to verify if the user exists, 
-	- if so, then verify the password
-	- If not, a message saying "only an admin can create an account" is displayed.
+- [X] It will use a local login since emails to be used are not compatible with any third-party authenticator
+* The process for login is: 
+	- [X] to verify if the user exists, 
+	- [X] if so, then verify then password
+	- [X] If not, a message saying "only an admin can create an account" is displayed.
 
 
 Password Reset:
-- When the user request a password reset, the write the email for the account
-- A form appears that lets the enter a new password
+    - [X] user request a password reset, admin reset password on user admin page
+    - [X] admin sends created reset code and link or reset link to user
  <!-- - When a user request a password reset, verify the email then a link is sent to their email. -->
-<!-- - The link leads to a page that has a form that lets them change their password. -->
+    - [X] The link leads to a page that has a form that lets them change their password.
 
 Registration Page:
-- It will verify if it is the admin account,
-	- If it is not, block the page. 
-	- If so, show the registration form and list of users.
-- When the admin creates the account they also create a password for the account and manually gives it to the user.
-<!-- - when a user is registered, a temporary password is created and sent to the user with a login link. This link has a form for them to log in. Logging in confirms the account and asks them to create a password.  -->
+- [X] It will verify if it is the admin account,
+	- [X] If it is not, block the page. 
+	- [X] If so, show the registration form and list of users.
+- [X] When the admin creates the account a verification code and link is returned to be given to the user.
+<!-- - sends code and link to user through email -->
 - On this list, the admin can revoke access through a button.
 
 
@@ -347,6 +355,9 @@ Only one administration account should exist, if that account is created you sho
 
 Only an admin account can create user account. The user creation process will verify if the current user session is an administor before creating an account.
 
+
+
+If the web app requiered the creation of accounts without an administrator then an authentication process should be implemented. Most likely by adding additional databases to handle authentication of users to avoid abandoned signups.
  -->
 
 <!-- Break it down

@@ -6,17 +6,17 @@ const router = express.Router()
 
 
 
-router.get('/', mainController.index) 
-router.get('/dashboard', mainController.getDashboard)
-router.get('/debtors', mainController.getDebtorList)
+router.get('/', mainController.index)
+router.get('/dashboard', ensureAuth, mainController.getDashboard)
+router.get('/debtors', ensureAuth, mainController.getDebtorList)
 
-router.get('/registerdebt', mainController.getRegdebt)
-router.post('/registerdebt', mainController.insertNewDebt)
+router.get('/registerdebt', ensureAuth, mainController.getRegdebt)
+router.post('/registerdebt', ensureAuth, mainController.insertNewDebt)
 
-router.get('/registerpayment', mainController.getRegPayment)
-router.post('/registerpayment', mainController.insertNewPayment)
+router.get('/registerpayment', ensureAuth, mainController.getRegPayment)
+router.post('/registerpayment', ensureAuth, mainController.insertNewPayment)
 
-router.get('/cases/:id', mainController.getCaseInfo)
+router.get('/cases/:id',  ensureAuth, mainController.getCaseInfo)
 
 
 

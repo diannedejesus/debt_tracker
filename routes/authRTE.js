@@ -16,14 +16,14 @@ router.post('/admin', authController.addAdmin);
 router.get('/login', ensureGuest, authController.getLogin);
 router.post('/login', ensureGuest, authController.loginUser);
 
-router.get('/reset', authController.getReset);
-router.post('/reset', authController.resetPassword);
+router.get('/reset', ensureAuth, authController.getReset);
+router.post('/reset', ensureAuth, authController.resetPassword);
 
 router.get('/verifyaccount/:token/:userid', authController.getVerifyAccount);
 router.get('/verifyaccount', authController.getVerifyAccount);
 router.post('/verifyaccount', authController.authenticateUser);
 
-router.get('/logout', authController.logout);
+router.get('/logout', ensureAuth, authController.logout);
 
 
 export default router
