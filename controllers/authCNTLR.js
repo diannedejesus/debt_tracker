@@ -1,6 +1,5 @@
 import passport from 'passport';
 import User from '../models/User.js';
-// import RegisterCode from '../models/Registration.js';
 import validator from 'validator';
 import bcrypt from 'bcrypt';
 import { nanoid } from 'nanoid';
@@ -31,10 +30,10 @@ export async function getReset(req, res){
 };
 
 export async function getVerifyAccount(req, res){
-  res.render('verifyaccount', { 
+  res.render('verifyaccount', {
     user: req.user, 
-    token: req.param.token,
-    userid: req.param.userid,
+    token: req.params.token,
+    userid: req.params.userid,
     messages: req.flash('errors') });
 };
 
@@ -44,7 +43,7 @@ export async function getLogin(req, res){
 
 export async function getUserAdmin(req, res){
   const errors = [];
-
+  
   if(req.user.admin){
     const userList = await User.find({}).select("email registered revoked");
 
@@ -151,7 +150,7 @@ export async function addUser(req, res, next){
           if (err) return next(err)
           //NOTE: remove user if error and return to page giving error
         })
-        req.flash('errors', `Account created successfully, verification code for account is ${authenticateCode}`);
+        req.flash('errors', `Account created successfully, verification code for account is ${authenticateCode}, or send the link: /verifyaccount/${authenticateCode}/${authenticationCode.email}`);
         return res.render('createUser', { user: req.user, messages: req.flash('errors') });
       }
 
@@ -239,8 +238,8 @@ export async function authenticateUser(req, res, next){
   let token = await Registration.findOne({ email: req.body.email })
   const isValid = await bcrypt.compare(req.body.token, token.code);
 
-  if (!token) req.flash('errors', "Invalid or expired password reset token");
-  if (!isValid) req.flash('errors', "Invalid or expired password reset token");
+  if (!token) errors.push("Invalid or expired password reset token.");
+  if (!isValid) errors.push("Invalid password reset token.");
 
   if(errors.length) {
     req.flash('errors', errors);
@@ -255,7 +254,7 @@ export async function authenticateUser(req, res, next){
   User.findOneAndUpdate({ email: userEmail }, { password: hashedPassword, registered: true }, (err) => {
     if(err) return next(err);
 
-    //delete token
+    //delete token/s
     Registration.deleteOne({email: userEmail}, (err) => {
       if(err) return next(err);
     })
@@ -265,7 +264,7 @@ export async function authenticateUser(req, res, next){
   return res.render('login', { user: req.user, messages: req.flash('errors') });
 }
 
-export async function resetPassword(req, res){
+export async function resetPassword(req, res, next){
   const errors = [];
   const authenticateCode = nanoid(10);
 
@@ -279,22 +278,27 @@ export async function resetPassword(req, res){
 
   req.body.email = validator.normalizeEmail(req.body.email.trim(), { gmail_remove_dots: false });
 
-  const authenticationCode = new Registration({
+  const AuthenticationCode = new Registration({
     email: validator.normalizeEmail(req.body.email.trim(), {gmail_remove_dots: false}),
     code: await bcrypt.hash(authenticateCode, 10),
   })
 
-  User.findOneAndUpdate({ email: authenticationCode.email }, { registered: false }, (err) => {
+  User.findOneAndUpdate({ email: AuthenticationCode.email }, { registered: false }, (err) => {
     if(err) return next(err);
 
-    authenticationCode.save((err) => {
+    Registration.deleteMany({email: AuthenticationCode.email}, (err) => {
+      if(err) return next(err);
+      //reset registered change
+    })
+
+    AuthenticationCode.save((err) => {
       if (err) return next(err)
-      //NOTE: edit user if error and return to page giving error
+      //reset registered change
     })
   })
 
   
-  req.flash('errors', `Account created successfully, verification code for account is ${authenticateCode}`);
+  req.flash('errors', `Account created successfully, verification code for account is ${authenticateCode} or send the link: /verifyaccount/${authenticateCode}/${authenticationCode.email}`);
   return res.redirect(req.headers.referer);
 };
 
