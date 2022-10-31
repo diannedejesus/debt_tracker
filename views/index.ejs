@@ -10,13 +10,13 @@
 </head>
 <body>
     <header>
-        <section><h1>&#128507; &#9889;</h1></section>
+        <section class="logo"><span>&#128507;</span><span class="under">&#9889;</span></section>
         <nav>
              <ul>
                  <li><a href="/dashboard">Dashboard</a></li>
              </ul>
          </nav>
-         <section>
+         <section class="account">
             <% if (typeof user !== 'undefined'){ %> 
                 <% if (user.admin){ %> 
                     <%= user.email %> (Administrator)
@@ -24,6 +24,8 @@
                     <%= user.email %>
                 <% } %>
                 <a href="/auth/logout">Logout</a>
+            <% }else{ %>
+                <a href="/auth/login">Login</a>
             <% } %>
            </section>
      </header>
@@ -35,11 +37,9 @@
     <% } %>
     
     <main>
-        <h1>Hello World.</h1>
-        <p>Welcome to this initial template, creation starts here.</p>
-        <% if (typeof user == 'undefined'){ %> 
-            <a href="/auth/login">Login</a>
-        <% } %>
+        <h1>Welcome</h1>
+        <p>This application was designed to manage debts accumalated by participates of subsidized fundings. These debts don't accrue interest but need to be paid in full in order to continue benefiting from the program or similiar programs.</p>
+        <p>Access is limited to users created by the page administrator.</p>
     </main>
    
 </body>

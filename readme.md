@@ -125,9 +125,10 @@ Register Debt:
 - [X] identifier is the case number (encrypted) which will be unique to ensure that we don't register a person with two debt accounts.
 
 ### View debt List
-On the page, a user can see people who have debts and the basic information for each one. It will have a link for each person's case. 
+On this page, a user can see people who have debts and the basic information for each one. It will have a link for each person's case. 
 
-The page will use the information already in the database to calculate and/or display. This information will be:
+This page displays a summary of each debtors using the information in the database.This information will be:
+
 - [X] name [string]
 - [X] current debt [number]
 <!-- - debt payoff date [date] -->
@@ -143,6 +144,8 @@ The page will use the information already in the database to calculate and/or di
 - [X] a basic page that displays the information
     - [X] list of debtors
     - [X] displays late payments
+    - [X] current amount owed
+    - [X] payments left
     - displays paid-off
 
 ### View debt status / case info
@@ -160,12 +163,14 @@ The case page will use the information already in the database to calculate addi
 #### **Pages Breakdown**
 - [X] a basic page that displays the information
     - [X] displays whether payments is late
-    - [X] displays paid-off
+    - [X] displays paid-off date
+    - [X] displays payments made
 
 ### Register payment / Insert New Payment
 This page is for entering payment information. This information will be:
 - [X] date [date]
 - [X] the amount paid [number]
+- [X] reference to the debtor information [string]
 - comments [string]
 
 #### **Pages Outline**
@@ -177,7 +182,7 @@ This page is for entering payment information. This information will be:
 - Form that lets the user select a debtor.
 
 
-### Create summary
+### Print View
 The page will function as a printout for clients, indicating the current status of an account. It will include all the pertinent information about the debt and payments in an easy-to-understand format.
 
 The information contained on this page will be:
@@ -228,16 +233,22 @@ Payment History
 
 * Payment History
     - ID [string]
+    - Reference [string]
     - Date [date]
     - Amount paid [number]
     - Comments [string]
 
+* Registration
+    - ID [string]
+    - Email [string]
+    - Token [string]
+    - createdAt [date]
+
 * Accounts
-    - email [string]
-    - password [string]
-    - admin [boolean]
-    - registered [boolean]
-    - revoked [boolean]
+    - Email [string]
+    - Password [string]
+    - Admin [boolean]
+    - Revoked [boolean]
 
 ## User/Client Interface
 <!-- ### Login Page
@@ -256,69 +267,69 @@ Once these wireframes are approved by the client, include them in the user inter
 -->
 
 ## Goals and milestones
-- [ ] database connection *
-- [ ] configure passport local login *
-- [ ] local session variable handler *
+- [X] database connection *
+- [X] configure passport local login *
+- [X] local session variable handler *
 - [ ] email sender *
-- [ ] encryption *
+- [X] encryption *
 
 - [ ] Login Page
-    - [ ] basic layout
+    - [X] basic layout
         - [ ] admin only registration message
-    - [ ] data verification
-        - [ ] assure that format is correct
-        - [ ] user is present in database
-        - [ ] password matches
-    - [ ] verify if account/email exists and is registered
-        - [ ] message if account does not exist or is not registered
-        - [ ] match password if exists
-        - [ ] create session if password matches with account
+    - [X] data verification
+        - [X] assure that format is correct
+        - [X] user is present in database
+        - [X] password matches
+    - [X] verify if account/email exists and is registered
+        - [X] message if account does not exist or is not registered
+        - [X] match password if exists
+        - [X] create session if password matches with account
 - [ ] Reset Password
     - [ ] verify email validity
           - [ ] basic page
     - [ ] send email with link
-    - [ ] basic reset password form page
-    - [ ] change password
+    - [X] basic reset password form page
+    - [X] change password
 - [ ] Registration Page
-    - [ ] basic page layout
+    - [X] basic page layout
     - [ ] add temporary user
         - [ ] temporary password
         - [ ] basic initial login/user registration page
             - [ ] reset initial password
-    - [ ] user list page
+    - [X] user list page
     - [ ] revoke user access
 
 
 - [ ] Register Debt Page
-    - [ ] basic form page
-    - [ ] verify data
+    - [X] basic form page
+    - [X] verify data
         - [ ] identifier is not already present in database
             - [ ] if so then debt case is already present and should be added to that case
         - [ ] data is in correct format and sanitized
-    - [ ] save data to database
-        - [ ] Name and case id is encrypted and saved to seperate database
-        - [ ] debt information save to seperate database with account identifier
+    - [X] save data to database
+        - [X] Name and case id is encrypted and saved to seperate database
+        - [X] debt information save to seperate database with account identifier
 
 
 - [ ] Debtor Page
-    - [ ] basic page that shows debtors
-        - [ ] show debt payoff info and late payments
-    - [ ] page for debtors info, debt and payments
+    - [X] basic page that shows debtors
+        - [X] show debt payoff info and late payments
+    - [X] page for debtors info, debt and payments
     - [ ] edit payment
     - [ ] edit info
-    - [ ] verify
-    - [ ] submit
+    - [X] verify
+    - [X] submit
 
 - [ ] Register payment page
-    - [ ] basic layout
-    - [ ] verify data
-        - [ ] correct formats
+    - [X] basic layout
+    - [X] verify data
+        - [X] correct formats
         - [ ] duplicate payments
-    - [ ] save to database
+    - [X] save to database
     
-- [ ] Account summary
-    - [ ] basic page layout
-    - [ ] pull info from database
+- [X] Account summary
+    - [X] basic page layout
+    - [X] pull info from database
 
 <!-- ### Secondary Goals
 
@@ -338,8 +349,9 @@ Once these wireframes are approved by the client, include them in the user inter
 ## Issues
 
 - can we use req.flash to store other messages besides errors?
-- how should payments that are greaterthan the minimun payment be processed?
+- how should payments that are greater than the minimun payment be processed?
 - how to handle late/missed payments?s
+- how to handle the reset of an admin password
 <!-- Things that should be looked into but an alternative solution was/can be implemented  -->
 - 
 
@@ -350,15 +362,19 @@ There is a seperate module function that verifies if an admin account exists, it
 Originally the value was passed as an argument/paramenter but this may lead to an issue of someone passing the value and gaining an admin account erroneously. 
 
 Account Creation & Login
-
 Only one administration account should exist, if that account is created you should not be able to access the admin creation page. If bypassed the user creation function will not be able to create an admin account if one is found in the database.
 
 Only an admin account can create user account. The user creation process will verify if the current user session is an administor before creating an account.
 
 
-
 If the web app requiered the creation of accounts without an administrator then an authentication process should be implemented. Most likely by adding additional databases to handle authentication of users to avoid abandoned signups.
  -->
+
+
+
+
+
+
 
 <!-- Break it down
  Instead of approaching your project as a single drawn-out process, you might find it helpful to break it down into more manageable pieces. (This is true for the project’s timeline and the code itself.) At the most macro level, you have an overarching goal: What problem is your software addressing? Who will be using it?
