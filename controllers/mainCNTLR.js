@@ -26,6 +26,7 @@ export async function getRegPayment(req, res){
 }
 
 export async function getCaseInfo(req, res){
+    const debtorsList =  await DebtorsDB.find().select("name fileId")
     let caseFileId = ""
     let debtorInfo = {}
 
@@ -73,7 +74,8 @@ export async function getCaseInfo(req, res){
 
                 debtorInfo.payments.push({
                     paymentDate: items.date, 
-                    paymentAmount: items.payment
+                    paymentAmount: items.payment,
+                    paymentComment: items.comment
                 })
             }
 
@@ -89,6 +91,78 @@ export async function getCaseInfo(req, res){
     res.render('individualcase', {
         user: req.user,
         debtorInfo,
+        debtorsList,
+        messages: req.flash('errors'),
+    })
+}
+
+export async function getPrintView(req, res){
+    const debtorsList =  await DebtorsDB.find().select("name fileId")
+    let caseFileId = ""
+    let debtorInfo = {}
+
+    if(req.params.id){
+        caseFileId = {fileId: req.params.id}
+    }else{
+        req.flash('errors', 'No file id sent');
+        return res.redirect(req.headers.referer);
+    }
+
+    try {
+        const selectedDebtor = await DebtorsDB.findOne(caseFileId) //await Debtors.findOne(caseFileId)
+        if(!selectedDebtor){
+            req.flash('errors', req.params.id + ' is not a valid file id');
+            return res.redirect(req.headers.referer);
+        }
+        
+        
+        const debtForSelected = await DebtDB.findOne({_id: selectedDebtor._id})
+        if(!debtForSelected){
+            req.flash('errors', 'Error debt information not found: ' + req.params.id);
+            return res.redirect(req.headers.referer);
+        }
+
+        const payments = await PaymentDB.find({caseID: selectedDebtor._id})
+
+        //create information object
+        debtorInfo = {
+            name: selectedDebtor.name,
+            fileId: selectedDebtor.fileId,
+            startDate: debtForSelected.startDate,
+            minPayment: debtForSelected.minPayment,
+            debt: debtForSelected.debtAmount,
+            elapsed: monthElapsed(new Date(debtForSelected.startDate)),
+            totalPaid: 0,
+            payments: [],
+        }
+
+        //add payment information
+        if(payments){
+            let sum = 0
+
+            for(let items of payments){
+                sum += Number(items.payment)
+
+                debtorInfo.payments.push({
+                    paymentDate: items.date, 
+                    paymentAmount: items.payment,
+                    paymentComment: items.comment
+                })
+            }
+
+            debtorInfo['totalPaid'] = sum
+        }
+
+    } catch (error) {
+        console.error(error);
+        req.flash('errors', 'An error occured with the database. #004');
+        return res.redirect(req.headers.referer);
+    }
+
+    res.render('printview', {
+        user: req.user,
+        debtorInfo,
+        debtorsList,
         messages: req.flash('errors'),
     })
 }
@@ -121,6 +195,7 @@ export async function insertNewPayment(req, res){
         caseID: caseID._id,
         payment: parseFloat(req.body.payment),
         date: req.body.date,
+        comment: req.body.comment //any reason to validate?
     })
 
     //save to database

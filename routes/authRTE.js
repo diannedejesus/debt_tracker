@@ -18,6 +18,7 @@ router.post('/login', ensureGuest, authController.loginUser);
 
 router.get('/reset', ensureAuth, authController.getReset);
 router.post('/reset', ensureAuth, authController.resetPassword);
+router.post('/revoke', ensureAuth, authController.revokeToggle);
 
 router.get('/verifyaccount/:token/:userid', authController.getVerifyAccount);
 router.get('/verifyaccount', authController.getVerifyAccount);

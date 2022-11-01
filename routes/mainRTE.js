@@ -17,6 +17,7 @@ router.get('/registerpayment', ensureAuth, mainController.getRegPayment)
 router.post('/registerpayment', ensureAuth, mainController.insertNewPayment)
 
 router.get('/cases/:id',  ensureAuth, mainController.getCaseInfo)
+router.get('/printview/:id',  ensureAuth, mainController.getPrintView)
 
 
 

@@ -103,9 +103,18 @@ input{
 
 
 table{
-     border: 5px solid black;
+     border-bottom: 5px solid black;
      padding: 1em;
      border-collapse: collapse;
+}
+thead th{
+     border-top: 5px solid black;
+     border-left: 5px solid black;
+     border-right: 5px solid black;
+}
+tbody tr{
+     border-left: 5px solid black;
+     border-right: 5px solid black;
 }
 
 td, th{
@@ -123,4 +132,53 @@ thead th{
 label{
      display: inline-block;
      width: fit-content;
+}
+
+.printview, .printview tr, .printview th, .printview td{
+     border: none;
+}
+
+.printview th{
+     color: white;
+     background-color: rgb(78, 78, 78);
+}
+.printview td{
+     text-align: left;
+}
+
+.printview .highlight{
+     background-color: lightgrey;
+     text-align: right;
+}
+
+.printview .thickline{
+     border-bottom: 5px solid black;
+}
+
+.printview .thinline{
+     border-bottom: 1px solid black;
+}
+
+.printview .left{
+     text-align: left;
+}
+.printview .right{
+     text-align: right;
+}
+
+
+@media print {
+     .message, header{
+          display: none;
+     }
+     select{
+          border: none;
+          appearance: none;
+     }
+     body{
+          font-size: 1rem;
+     }
+     .printview .highlight{
+          background-color: lightgrey;
+     }
 }

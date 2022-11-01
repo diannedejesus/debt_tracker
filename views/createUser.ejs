@@ -9,6 +9,7 @@
                     <th>Password Reset Status</th>
                     <th>Password Reset</th>
                     <th>Revoked Status</th>
+                    <th>Revoke</th>
                 </tr>
                 <% if (typeof userList !== 'undefined'){ %> 
                     <% userList.forEach( (user)=> { %>
@@ -23,7 +24,12 @@
                         </form>
                     </td>
                     <td><%= user.revoked ? "Yes" : "No" %></td>
-                    
+                    <td>
+                        <form class="login-form" action="/auth/revoke" method="POST">
+                            <input type="hidden" name="email" value="<%= user.email %>">
+                            <input type="submit" value='<%= user.revoked ? "Reinstate" : "Revoke" %>'>
+                        </form>
+                    </td>
                 </tr>
                     <% }) %>
                 <% } %>

@@ -282,6 +282,26 @@ export async function resetPassword(req, res, next){
   return res.redirect(req.headers.referer);
 };
 
+export async function revokeToggle(req, res, next){
+  const errors = [];
+
+  if(!validator.isEmail(req.body.email.trim())) errors.push('email is invalid');
+  if(!req.user.admin) errors.push('not an administrator account');
+  if(req.user.email === req.body.email) errors.push('can not revoke access');
+
+  if(errors.length) {
+    req.flash('errors', errors);
+    return res.redirect(req.headers.referer);
+  }
+
+  req.body.email = validator.normalizeEmail(req.body.email.trim(), { gmail_remove_dots: false });
+
+  const toggleAccess = await User.findOne({email: req.body.email})
+  await User.updateOne({email: req.body.email}, {revoked: !toggleAccess.revoked})
+ 
+  return res.redirect(req.headers.referer);
+};
+
 export function logout(req, res){
   req.logout(function(err){
     req.session.destroy((err) => {

@@ -17,6 +17,11 @@ const PaymentLogSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+
+  comment: {
+    type: String,
+    required: false,
+  },
 })
 
 // Getter

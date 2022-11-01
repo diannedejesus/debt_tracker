@@ -1,68 +1,85 @@
 <%- include('header.ejs') %>
 
     <main class='signin clearfix'>
-            <h1>Case Review</h1>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th colspan="5">Debtor table</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th>Name</th>
-                        <th>File Id</th>
-                        <th>Started</th>
-                        <th>Payment</th>
-                        <th>Debt</th>
-                    </tr>
-                    <tr>
-                        <% if (typeof debtorInfo !== 'undefined'){ %>
-                        <td><%= debtorInfo.name %></td>
-                        <td><%= debtorInfo.fileId %></td>
-                        <% let formatDate = new Date(debtorInfo.startDate) %>
-                        <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
-                        <td><%= formatDate %></td>
-                        <td><%= debtorInfo.minPayment %></td>
-                        <td><%= debtorInfo.debt %></td>
+        <h1>Case Review</h1>
+        <% if (typeof debtorInfo !== 'undefined'){ %>
+        
+        <table>
+            <thead>
+                <tr>
+                    <td colspan="4"></td>
+                    <td colspan="1"><a href="/printview/<%= debtorInfo.fileId %>">Print View</a></td>
+                </tr>
+                <tr>
+                    <th colspan="5">Debtor table</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>Name</th>
+                    <th>File Id</th>
+                    <th>Started</th>
+                    <th>Payment</th>
+                    <th>Debt</th>
+                </tr>
+                <tr>
+                    
+                    <td><select onchange="changeDebtor(event)">
+                        <option selected value="debtorInfo.fileId"><%= debtorInfo.name %></option>
+                        <% if (typeof debtorsList !== 'undefined'){ %>
+                            <% for(let debtor of debtorsList){ %>
+                                <% if (debtorInfo.name !== debtor.name){ %>
+                        <option value="<%= debtor.fileId %>"><%= debtor.name %></option>
+                                <% } %>
+                            <% } %>
                         <% } %>
-                    </tr>
-                    <tr>
-                        <th>Current Debt</th>
-                        <th>End Date</th>
-                        <th>Payments Left</th>
-                        <th>Payment Made</th>
-                        <th>Payments Late</th>
-                    </tr>
-                    <tr>
-                        <% if (typeof debtorInfo !== 'undefined'){ %>
-                        <td><%= debtorInfo.debt - debtorInfo.totalPaid %></td>
-                        <% let currentDate = new Date() %>
-                        <!-- <%= currentDate.setMonth(currentDate.getMonth()+(Math.trunc((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) + 1)) %> -->
-                        <!-- <%= currentDate = currentDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
-                        <td><%= currentDate %></td>
-                        <td><%= Math.trunc((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) + 1 %></td>
-                        <td><%= debtorInfo.payments.length %></td>
-                        <td><%= (debtorInfo.totalPaid < (debtorInfo.elapsed * debtorInfo.minPayment)) ? 'Yes' : 'No' %></td>
-                        <% } %>
-                    </tr>
-                    <tr>
-                        <th colspan="3">Payment Date</th>
-                        <th colspan="2">Payment</th>
-                    </tr>
-                    <% if (typeof debtorInfo.payments !== 'undefined'){ %>
-                        <% for(let payment of debtorInfo.payments){ %>
-                    <tr>
-                        <% let formatDate = new Date(payment.paymentDate) %>
-                        <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
-                        <td colspan="3"><%= formatDate %></td>
-                        <td colspan="2"><%= payment.paymentAmount %></td>
-                    </tr>
-                        <% } %>
+                    </select></td>
+                    <td><%= debtorInfo.fileId %></td>
+                    <% let formatDate = new Date(debtorInfo.startDate) %>
+                    <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
+                    <td><%= formatDate %></td>
+                    <td><%= debtorInfo.minPayment %></td>
+                    <td><%= debtorInfo.debt %></td>
                     <% } %>
-                </tbody>
-            </table>
+                </tr>
+                <tr>
+                    <th>Current Debt</th>
+                    <th>End Date</th>
+                    <th>Payments Left</th>
+                    <th>Payment Made</th>
+                    <th>Payments Late</th>
+                </tr>
+                <tr>
+                    <% if (typeof debtorInfo !== 'undefined'){ %>
+                    <td><%= debtorInfo.debt - debtorInfo.totalPaid %></td>
+                    <% let currentDate = new Date() %>
+                    <!-- <%= currentDate.setMonth(currentDate.getMonth()+(Math.trunc((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) + 1)) %> -->
+                    <!-- <%= currentDate = currentDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
+                    <td><%= currentDate %></td>
+                    <td><%= Math.trunc((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) + 1 %></td>
+                    <td><%= debtorInfo.payments.length %></td>
+                    <td><%= (debtorInfo.totalPaid < (debtorInfo.elapsed * debtorInfo.minPayment)) ? 'Yes' : 'No' %></td>
+                    <% } %>
+                </tr>
+                <tr>
+                    <th colspan="1">Payment Date</th>
+                    <th colspan="1">Payment</th>
+                    <th colspan="3">Comments</th>
+                </tr>
+                <% if (typeof debtorInfo.payments !== 'undefined'){ %>
+                    <% for(let payment of debtorInfo.payments){ %>
+                <tr>
+                    <% let formatDate = new Date(payment.paymentDate) %>
+                    <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
+                    <td colspan="1"><%= formatDate %></td>
+                    <td colspan="1"><%= payment.paymentAmount %></td>
+                    <td colspan="3"><%= payment.paymentComment ? payment.paymentComment : "" %></td>
+                </tr>
+                    <% } %>
+                <% } %>
+            </tbody>
+        </table>
     </main>
+    <script type="text/javascript" src="../js/main.js"></script>
 </body>
 </html>

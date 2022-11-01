@@ -59,7 +59,7 @@ The login should include a message for unregistered people, telling them that th
     - [X] verify account existance, grant access or deny
     
 * user administration page
-    - can revoke account access
+    - [X] can revoke account access
 
     * registrates/adds user account
         - [X] admin restricted
@@ -99,7 +99,7 @@ Registration Page:
 	- [X] If so, show the registration form and list of users.
 - [X] When the admin creates the account a verification code and link is returned to be given to the user.
 <!-- - sends code and link to user through email -->
-- On this list, the admin can revoke access through a button.
+- [X] On this list, the admin can revoke access through a button.
 
 
 ### Register debt/ Insert New Debt
@@ -133,7 +133,6 @@ This page displays a summary of each debtors using the information in the databa
 - [X] current debt [number]
 <!-- - debt payoff date [date] -->
 - [X] payments left [int]
-<!-- - payments made [int] -->
 - [X] late payment [boolean]
 
 #### **Pages Outline**
@@ -146,7 +145,7 @@ This page displays a summary of each debtors using the information in the databa
     - [X] displays late payments
     - [X] current amount owed
     - [X] payments left
-    - displays paid-off
+    - ? displays paid-off
 
 ### View debt status / case info
 The case page will use the information already in the database to calculate additional information for each case and then display all the information. This includes all the information entered from the registration page and any payments made. This additional information will be:
@@ -171,7 +170,7 @@ This page is for entering payment information. This information will be:
 - [X] date [date]
 - [X] the amount paid [number]
 - [X] reference to the debtor information [string]
-- comments [string]
+- [X] comments [string]
 
 #### **Pages Outline**
 - enter payment page
@@ -179,7 +178,7 @@ This page is for entering payment information. This information will be:
 
 #### **Pages Breakdown**
 - [X] Contains a form that lets the user add the information for payment.
-- Form that lets the user select a debtor.
+- [X] Form that lets the user select a debtor.
 
 
 ### Print View
@@ -188,36 +187,36 @@ The page will function as a printout for clients, indicating the current status 
 The information contained on this page will be:
 
 Basic Information
-- current date
-- name
-- start date
-- initial balance
-- amount payed
-- estimated end
-- payments made
-- payments left
-- amount left
+- [X] current date
+- [X] name
+- [X] start date
+- [X] initial balance
+- [X] amount payed
+- [X] estimated end
+- [X] payments made
+- [X] payments left
+- [X] amount left
 
 Payment History
-- number
-- date
-- balance
-- paid
-- comments
-- final
+- [X] number
+- [X] date
+- [X] balance
+- [X] paid
+- [X] comments
+- [X] final
 
 #### **Pages Outline**
 - View summary
     - display account summary
 
 #### **Pages Breakdown**
-- lays out the information in an easy-to-understand format with just the information necessary for the debtor to know how much they owe, how long it will take to pay off and to verify payments.
+- [X] lays out the information in an easy-to-understand format with just the information necessary for the debtor to know how much they owe, how long it will take to pay off and to verify payments.
 
 ### Additional Ideas
-* Access log: Keep track of case workers' logins, edits, and views.
+* [X] Modify so currency is displayed as such
+* Access log: Keep track of case workers' logins, edits, and views. Plus changes made to users and debts
 * Letters: This is a wish list item. A page that produces a letter for different situations when working with debt accounts.
-* Have the individual case page have an option to switch to another case with out going to list page.
-* log changes made to users and debts
+* [X] Have the individual case page have an option to switch to another case with out going to list page.
 
 ### Databases
 * Names
@@ -273,9 +272,9 @@ Once these wireframes are approved by the client, include them in the user inter
 - [ ] email sender *
 - [X] encryption *
 
-- [ ] Login Page
+- [X] Login Page
     - [X] basic layout
-        - [ ] admin only registration message
+        - [X] admin only registration message
     - [X] data verification
         - [X] assure that format is correct
         - [X] user is present in database
@@ -285,27 +284,26 @@ Once these wireframes are approved by the client, include them in the user inter
         - [X] match password if exists
         - [X] create session if password matches with account
 - [ ] Reset Password
-    - [ ] verify email validity
-          - [ ] basic page
+    - [-] verify email validity
     - [ ] send email with link
     - [X] basic reset password form page
     - [X] change password
 - [ ] Registration Page
     - [X] basic page layout
-    - [ ] add temporary user
-        - [ ] temporary password
-        - [ ] basic initial login/user registration page
-            - [ ] reset initial password
+    - [-] add temporary user
+        - [-] temporary password
+        - [-] basic initial login/user registration page
+            - [-] reset initial password
     - [X] user list page
     - [ ] revoke user access
 
 
-- [ ] Register Debt Page
+- [X] Register Debt Page
     - [X] basic form page
     - [X] verify data
-        - [ ] identifier is not already present in database
-            - [ ] if so then debt case is already present and should be added to that case
-        - [ ] data is in correct format and sanitized
+        - [X] identifier is not already present in database
+            - [X] if so then debt case is already present and should be added to that case
+        - [X] data is in correct format and sanitized
     - [X] save data to database
         - [X] Name and case id is encrypted and saved to seperate database
         - [X] debt information save to seperate database with account identifier
@@ -347,13 +345,17 @@ Once these wireframes are approved by the client, include them in the user inter
 
 
 ## Issues
-
+<!-- Things that should be looked into but an alternative solution was/can be implemented  -->
 - can we use req.flash to store other messages besides errors?
 - how should payments that are greater than the minimun payment be processed?
-- how to handle late/missed payments?s
+- how to handle late/missed payments?
 - how to handle the reset of an admin password
-<!-- Things that should be looked into but an alternative solution was/can be implemented  -->
-- 
+- verify how other routes need to handle revoked access
+- sepearate data handlers for printview and cases
+- verify error handling, throw errors
+
+
+
 
 
 <!-- NOTES
