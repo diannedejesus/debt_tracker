@@ -86,11 +86,11 @@ Login:
 	- [X] if so, then verify then password
 	- [X] If not, a message saying "only an admin can create an account" is displayed.
 
-
 Password Reset:
     - [X] user request a password reset, admin reset password on user admin page
     - [X] admin sends created reset code and link or reset link to user
  <!-- - When a user request a password reset, verify the email then a link is sent to their email. -->
+ 
     - [X] The link leads to a page that has a form that lets them change their password.
 
 Registration Page:
@@ -346,11 +346,11 @@ Once these wireframes are approved by the client, include them in the user inter
 
 ## Issues
 <!-- Things that should be looked into but an alternative solution was/can be implemented  -->
-- can we use req.flash to store other messages besides errors?
+- can we use req.flash to store other messages besides errors? [test using other name and merging to messages]
 - how should payments that are greater than the minimun payment be processed?
 - how to handle late/missed payments?
-- how to handle the reset of an admin password
-- verify how other routes need to handle revoked access
+- how to handle the reset of an admin password [implement owner/appAdmin account who can create admins but admins can't manage]
+- verify how other routes need to handle revoked access [delete session]
 - sepearate data handlers for printview and cases
 - verify error handling, throw errors
 
