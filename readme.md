@@ -217,6 +217,7 @@ Payment History
 * Access log: Keep track of case workers' logins, edits, and views. Plus changes made to users and debts
 * Letters: This is a wish list item. A page that produces a letter for different situations when working with debt accounts.
 * [X] Have the individual case page have an option to switch to another case with out going to list page.
+* Review code
 
 ### Databases
 * Names
@@ -350,9 +351,10 @@ Once these wireframes are approved by the client, include them in the user inter
 - how should payments that are greater than the minimun payment be processed?
 - how to handle late/missed payments?
 - how to handle the reset of an admin password [implement owner/appAdmin account who can create admins but admins can't manage]
-- verify how other routes need to handle revoked access [delete session]
-- sepearate data handlers for printview and cases
-- verify error handling, throw errors
+- verify how other routes need to handle revoked access
+- [X] sepearate data handlers for printview and cases
+- verify error handling, throw errors [research]
+- Fix the style sheet of pages
 
 
 

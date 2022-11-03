@@ -18,14 +18,14 @@ export async function getCreateAdmin(req, res){
     req.flash('errors', errors);
     res.redirect('/');
   }else {
-    res.render('administrator', { user: req.user, messages: req.flash('errors') });
+    res.render('administrator', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
   }
 };
 
 export async function getReset(req, res){
   res.render('reset', { 
     user: req.user,
-    messages: req.flash('errors') 
+    messages: [...req.flash('errors'), ...req.flash('msg')] 
   });
 };
 
@@ -34,11 +34,11 @@ export async function getVerifyAccount(req, res){
     user: req.user, 
     token: req.params.token,
     userid: req.params.userid,
-    messages: req.flash('errors') });
+    messages: [...req.flash('errors'), ...req.flash('msg')] });
 };
 
 export async function getLogin(req, res){
-  res.render('login', { user: req.user, messages: req.flash('errors') });
+  res.render('login', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
 };
 
 export async function getUserAdmin(req, res){
@@ -64,13 +64,13 @@ export async function getUserAdmin(req, res){
     res.render('createUser', { 
       user: req.user,
       userList,
-      messages: req.flash('errors') 
+      messages: [...req.flash('errors'), ...req.flash('msg')]
     });
   } else {
     errors.push('Not an administrator account');
     req.flash('errors', errors);
 
-    res.render('dashboard', { user: req.user, messages: req.flash('errors') });
+    res.render('dashboard', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
   }
 };
 
@@ -87,7 +87,7 @@ export async function loginUser(req, res, next){
 
   if(errors.length) {
     req.flash('errors', errors);
-    return res.render('login', { user: req.user, messages: req.flash('errors') });
+    return res.render('login', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
   }
 
   req.body.email = validator.normalizeEmail(req.body.email.trim(), { gmail_remove_dots: false });
@@ -99,12 +99,12 @@ export async function loginUser(req, res, next){
     if(!user) {
       req.flash('errors', 'User does not exist, check spelling or contact administrator');
       console.log('errors2', info)
-      return res.render('login', { user: req.user, messages: req.flash('errors') });
+      return res.render('login', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
     }
 
     if(user.revoked) {
       req.flash('errors', 'user access was revoked, contact administrator');
-      return res.render('login', { user: req.user, messages: req.flash('errors') });
+      return res.render('login', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
     }
 
     req.logIn(user, (err) => {
@@ -123,7 +123,7 @@ export async function addUser(req, res, next){
 
   if(errors.length) {
     req.flash('errors', errors);
-    return res.render('createUser', { user: req.user, messages: req.flash('errors') });
+    return res.render('createUser', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
   }
   
   const CreatedUser = new User({
@@ -136,7 +136,7 @@ export async function addUser(req, res, next){
 
     if(foundDoc) {
       req.flash('errors', 'an account with that email/username already exists');
-      return res.render('createUser', { user: req.user, messages: req.flash('errors') });
+      return res.render('createUser', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
     }
   })
 
@@ -145,7 +145,7 @@ export async function addUser(req, res, next){
 
     if(!SavedDoc){
       req.flash('errors', 'Account could not be created.');
-      return res.render('createUser', { user: req.user, messages: req.flash('errors') });
+      return res.render('createUser', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
     }
   })
 
@@ -153,7 +153,7 @@ export async function addUser(req, res, next){
         
   if(authToken){
      //send code by email or redirect
-    req.flash('errors', `Account created successfully, verification code for account is ${authToken} or send the link: CLIENT_URL/verifyaccount/${authToken}/${CreatedUser.email}`);
+    req.flash('msg', `Account created successfully, verification code for account is ${authToken} or send the link: CLIENT_URL/verifyaccount/${authToken}/${CreatedUser.email}`);
   }else{
     //NOTE::if code is not created the user can just reset password to get new code
     console.log(authToken)
@@ -172,7 +172,7 @@ export async function addAdmin(req, res, next){
 
     if(foundDoc) {
       req.flash('errors', 'an admin account already exists');
-      return res.render('administrator', { user: req.user, messages: req.flash('errors') });
+      return res.render('administrator', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
     }
   })
 
@@ -183,7 +183,7 @@ export async function addAdmin(req, res, next){
 
   if(errors.length) {
     req.flash('errors', errors);
-    return res.render('administrator', { user: req.user, messages: req.flash('errors') });
+    return res.render('administrator', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
   }
 
   //create user objet
@@ -198,7 +198,7 @@ export async function addAdmin(req, res, next){
 
     if(foundDoc) {
       req.flash('errors', 'an account with that email/username already exists');
-      return res.render('administrator', { user: req.user, messages: req.flash('errors') });
+      return res.render('administrator', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
     }
     //save new user
     createdUser.save((err, SavedDoc) => {
@@ -207,7 +207,7 @@ export async function addAdmin(req, res, next){
       if(SavedDoc){
         //send verification email
         req.flash('errors', 'Account created');
-        return res.render('administrator', { user: req.user, messages: req.flash('errors') });
+        return res.render('administrator', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
       }
     })
   })
@@ -224,7 +224,7 @@ export async function authenticateUser(req, res, next){
 
   if(errors.length) {
     req.flash('errors', errors);
-    return res.render('verifyaccount', { user: req.user, messages: req.flash('errors') });
+    return res.render('verifyaccount', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
   }
 
   //validate with database
@@ -236,7 +236,7 @@ export async function authenticateUser(req, res, next){
 
   if(errors.length) {
     req.flash('errors', errors);
-    return res.render('verifyaccount', { user: req.user, messages: req.flash('errors') });
+    return res.render('verifyaccount', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
   }
 
   //set values
@@ -253,8 +253,8 @@ export async function authenticateUser(req, res, next){
     })
   })
 
-  req.flash('errors', "Account verified, new passord created");
-  return res.render('login', { user: req.user, messages: req.flash('errors') });
+  req.flash('msg', "Account verified, new passord created");
+  return res.render('login', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
 }
 
 export async function resetPassword(req, res, next){
@@ -273,7 +273,7 @@ export async function resetPassword(req, res, next){
   const authToken = await createAuthenticationCode(req.body.email);
 
   if(authToken){
-    req.flash('errors', `Account created successfully, verification code for account is ${authToken} or send the link: CLIENT_URL/verifyaccount/${authToken}/${req.body.email}`);
+    req.flash('msg', `Account created successfully, verification code for account is ${authToken} or send the link: CLIENT_URL/verifyaccount/${authToken}/${req.body.email}`);
   }else{
     console.log(authToken)
     req.flash('errors', authToken.message)

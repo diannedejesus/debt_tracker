@@ -21,6 +21,4 @@ router.get('/printview/:id',  ensureAuth, mainController.getPrintView)
 
 
 
-
-
 export default router

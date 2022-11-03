@@ -4,117 +4,67 @@ import DebtorsDB from '../models/Debtors.js';
 import PaymentDB from '../models/PaymentLog.js';
 
 export async function index(req, res){  
-    try{ 
-        res.render('index.ejs', { 
-            user: req.user,
-            messages: req.flash('errors'),
-        })
-    }catch(err){
-        console.log(err)
-    }
+    res.render('index.ejs', { 
+        user: req.user,
+        messages: [...req.flash('errors'), ...req.flash('msg')],
+    })
 }
 
 export async function getRegPayment(req, res){
-    try{ 
-        res.render('newpayment', {
-            user: req.user,
-            messages: req.flash('errors'),
-        })
-    }catch(err){
-        console.log(err)
-    }
+    res.render('newpayment', {
+        user: req.user,
+        messages: [...req.flash('errors'), ...req.flash('msg')]
+    })
 }
 
 export async function getCaseInfo(req, res){
     const debtorsList =  await DebtorsDB.find().select("name fileId")
-    let caseFileId = ""
-    let debtorInfo = {}
+    let caseFileId = {fileId: req.params.id}
 
-    if(req.params.id){
-        caseFileId = {fileId: req.params.id}
-    }else{
+    if(!caseFileId.fileID){
         req.flash('errors', 'No file id sent');
         return res.redirect(req.headers.referer);
     }
 
-    try {
-        const selectedDebtor = await DebtorsDB.findOne(caseFileId) //await Debtors.findOne(caseFileId)
-        if(!selectedDebtor){
-            req.flash('errors', req.params.id + ' is not a valid file id');
-            return res.redirect(req.headers.referer);
-        }
-        
-        
-        const debtForSelected = await DebtDB.findOne({_id: selectedDebtor._id})
-        if(!debtForSelected){
-            req.flash('errors', 'Error debt information not found: ' + req.params.id);
-            return res.redirect(req.headers.referer);
-        }
-
-        const payments = await PaymentDB.find({caseID: selectedDebtor._id})
-
-        //create information object
-        debtorInfo = {
-            name: selectedDebtor.name,
-            fileId: selectedDebtor.fileId,
-            startDate: debtForSelected.startDate,
-            minPayment: debtForSelected.minPayment,
-            debt: debtForSelected.debtAmount,
-            elapsed: monthElapsed(new Date(debtForSelected.startDate)),
-            totalPaid: 0,
-            payments: [],
-        }
-
-        //add payment information
-        if(payments){
-            let sum = 0
-
-            for(let items of payments){
-                sum += Number(items.payment)
-
-                debtorInfo.payments.push({
-                    paymentDate: items.date, 
-                    paymentAmount: items.payment,
-                    paymentComment: items.comment
-                })
-            }
-
-            debtorInfo['totalPaid'] = sum
-        }
-
-    } catch (error) {
-        console.error(error);
-        req.flash('errors', 'An error occured with the database. #004');
-        return res.redirect(req.headers.referer);
-    }
+    const debtorInfo = await buildDebtorInfo(caseFileId)
 
     res.render('individualcase', {
         user: req.user,
         debtorInfo,
         debtorsList,
-        messages: req.flash('errors'),
+        messages: [...req.flash('errors'), ...req.flash('msg')]
     })
 }
 
 export async function getPrintView(req, res){
     const debtorsList =  await DebtorsDB.find().select("name fileId")
-    let caseFileId = ""
-    let debtorInfo = {}
-
-    if(req.params.id){
-        caseFileId = {fileId: req.params.id}
-    }else{
+    let caseFileId = {fileId: req.params.id}
+    
+    if(!caseFileId.fileId){
         req.flash('errors', 'No file id sent');
         return res.redirect(req.headers.referer);
     }
 
+    const debtorInfo = await buildDebtorInfo(caseFileId)
+
+    res.render('printview', {
+        user: req.user,
+        debtorInfo,
+        debtorsList,
+        messages: [...req.flash('errors'), ...req.flash('msg')]
+    })
+}
+
+async function buildDebtorInfo(caseFileId){
     try {
+
+        //throw new Error("Great error explanation comes here")
+
         const selectedDebtor = await DebtorsDB.findOne(caseFileId) //await Debtors.findOne(caseFileId)
         if(!selectedDebtor){
             req.flash('errors', req.params.id + ' is not a valid file id');
             return res.redirect(req.headers.referer);
         }
-        
         
         const debtForSelected = await DebtDB.findOne({_id: selectedDebtor._id})
         if(!debtForSelected){
@@ -125,7 +75,7 @@ export async function getPrintView(req, res){
         const payments = await PaymentDB.find({caseID: selectedDebtor._id})
 
         //create information object
-        debtorInfo = {
+        const debtorInfo = {
             name: selectedDebtor.name,
             fileId: selectedDebtor.fileId,
             startDate: debtForSelected.startDate,
@@ -137,43 +87,48 @@ export async function getPrintView(req, res){
         }
 
         //add payment information
-        if(payments){
-            let sum = 0
+        if(!payments){ return debtorInfo }
 
-            for(let items of payments){
-                sum += Number(items.payment)
+        for(let items of payments){
+            debtorInfo['totalPaid'] += Number(items.payment)
 
-                debtorInfo.payments.push({
-                    paymentDate: items.date, 
-                    paymentAmount: items.payment,
-                    paymentComment: items.comment
-                })
-            }
-
-            debtorInfo['totalPaid'] = sum
+            debtorInfo.payments.push({
+                paymentDate: items.date, 
+                paymentAmount: items.payment,
+                paymentComment: items.comment
+            })
         }
+
+        return debtorInfo
 
     } catch (error) {
         console.error(error);
-        req.flash('errors', 'An error occured with the database. #004');
-        return res.redirect(req.headers.referer);
+        //req.flash('errors', 'An error occured with the database. #004');
+        //return res.redirect(req.headers.referer);
     }
+}
 
-    res.render('printview', {
+export async function getRegdebt(req, res){
+    res.render('newdebt', {
         user: req.user,
-        debtorInfo,
-        debtorsList,
-        messages: req.flash('errors'),
+        messages: [...req.flash('errors'), ...req.flash('msg')]
     })
 }
 
+
+
 export async function insertNewPayment(req, res){
     let caseID = "" 
-    const errors = validatePaymentInfo({ //validate user submitted info
+    const errors = dataVerifier({ //validate user submitted info
         payment: req.body.payment,
         date: req.body.date,
         fileid: req.body.fileid,
     })
+
+    if(errors.length) {
+        req.flash('errors', errors);
+        return res.render('newpayment', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+    }
 
     //find id
     try {
@@ -187,7 +142,7 @@ export async function insertNewPayment(req, res){
     //return errors
     if(errors.length) {
         req.flash('errors', errors);
-        return res.render('newpayment', { user: req.user, messages: req.flash('errors') });
+        return res.render('newpayment', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
     }
 
     //construct data object
@@ -195,7 +150,7 @@ export async function insertNewPayment(req, res){
         caseID: caseID._id,
         payment: parseFloat(req.body.payment),
         date: req.body.date,
-        comment: req.body.comment //any reason to validate?
+        comment: req.body.comment //NOTE:: any reason to validate?
     })
 
     //save to database
@@ -203,18 +158,17 @@ export async function insertNewPayment(req, res){
         if(err){
             console.error(err)
             req.flash('errors', 'There was an error submitting the data to the database. #003');
-            return res.render('newpayment', { user: req.user, messages: req.flash('errors') });
+            return res.render('newpayment', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
         }
 
-        req.flash('errors', 'Successfully saved.');
+        req.flash('msg', 'Successfully saved.');
     })
     
     res.render('newpayment', {
         user: req.user,
-        messages: req.flash('errors'),
+        messages: [...req.flash('errors'), ...req.flash('msg')],
     })
 }
-
 
 export async function getDebtorList(req, res){
     try {
@@ -230,11 +184,13 @@ export async function getDebtorList(req, res){
         res.render('debtors', {
             user: req.user,
             debtors: debtorList,
-            messages: req.flash('errors'),
+            messages: [...req.flash('errors'), ...req.flash('msg')],
         })
+
     } catch (error) {
         console.error(error);
-        req.flash('errors', 'Error submitting data to database. #006'); 
+        req.flash('errors', 'Error submitting data to database. #006');
+        res.render('debtors', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] })
     }
 }
 
@@ -263,8 +219,9 @@ export async function getDashboard(req, res){
         res.render('dashboard', {
             user: req.user,
             debtors: debtorList,
-            messages: req.flash('errors'),
+            messages: [...req.flash('errors'), ...req.flash('msg')],
         })
+
     } catch (error) {
         console.error(error.message);
         req.flash('errors', 'There was an error submitting the data to the database. #006'); 
@@ -309,16 +266,10 @@ function buildList(debtorInfo, debtInfo, paymentInfo){
     return newList;
 }
 
-export async function getRegdebt(req, res){
-    res.render('newdebt', {
-        user: req.user,
-        messages: req.flash('errors'),
-    })
-}
 
 export async function insertNewDebt(req, res){
     //validate submitted info
-    const errors = validateDebtorInfo({
+    const errors = dataVerifier({
         name: req.body.name,
         debtamount: req.body.debtamount,
         fileid: req.body.fileid,
@@ -330,7 +281,7 @@ export async function insertNewDebt(req, res){
         req.flash('errors', errors);
         return res.render('newdebt', { 
             user: req.user, 
-            messages: req.flash('errors') 
+            messages: [...req.flash('errors'), ...req.flash('msg')]
         });
     }
 
@@ -347,30 +298,30 @@ export async function insertNewDebt(req, res){
     })
 
     //submit data to db
-    newDebtor.save((err, doc) => {
+    newDebtor.save((err, savedDoc) => {
         if(err && err.code === 11000){
             console.error(err)
             req.flash('errors', 'The file id already exist, a person can not have two debts.');
             return res.render('newdebt', { 
                 user: req.user, 
-                messages: req.flash('errors') 
+                messages: [...req.flash('errors'), ...req.flash('msg')]
             });
         }else if(err){
             console.error(err)
             req.flash('errors', 'Error submitting data to database. #001');
             return res.render('newdebt', { 
                 user: req.user, 
-                messages: req.flash('errors') 
+                messages: [...req.flash('errors'), ...req.flash('msg')] 
             });
         }
 
-        if(doc){
-            newDebt._id = doc._id
+        if(savedDoc){
+            newDebt._id = savedDoc._id
 
             newDebt.save((err) => {
                 if(err){
                     newDebtor.findOneAndDelete(
-                        { _id: doc._id },
+                        { _id: savedDoc._id },
                         function(err, res){
                             if (err) {
                               console.log("Error removing data. #001" + err);
@@ -385,14 +336,14 @@ export async function insertNewDebt(req, res){
                     req.flash('errors', 'Error submitting data to database. #002');
                     return res.render('newdebt', { 
                         user: req.user, 
-                        messages: req.flash('errors') 
+                        messages: [...req.flash('errors'), ...req.flash('msg')] 
                     });
                 }
 
-                req.flash('errors', 'Data saved successfully.');
+                req.flash('msg', 'Data saved successfully.');
                 return res.render('newdebt', { 
                     user: req.user, 
-                    messages: req.flash('errors') 
+                    messages: [...req.flash('errors'), ...req.flash('msg')]
                 });
             })
         }
@@ -400,62 +351,64 @@ export async function insertNewDebt(req, res){
 
 }
 
-function validateDebtorInfo(debtorInfo){
+function dataVerifier(data){
     const errors = [];
 
-    if(!debtorInfo.name && !validator.isLength(debtorInfo.name, {min: 0})){ 
-        errors.push('name cannot be empty'); 
-    }else{
-        if(!validator.isAlpha(debtorInfo.name, 'es-ES', {'ignore': ' '})){ errors.push('Name can only contain letters and spaces'); }
-    }
-    
-    if(!debtorInfo.debtamount && !validator.isLength(debtorInfo.debtamount, {min: 0})){ 
-        errors.push('Debt amount can not be empty'); 
-    }else{
-        if(!validator.isCurrency(debtorInfo.debtamount, {require_symbol: false, allow_negatives: false})){ errors.push('Debt Amount can only be a valid positive currency format (###.##)'); }
-    }
-    
-    if(!debtorInfo.fileid && !validator.isLength(debtorInfo.fileid, {min: 0})){ 
-        errors.push('File id cannot be empty'); 
-    }else{
-        if(!validator.isAlphanumeric(debtorInfo.fileid, 'es-ES', {'ignore': '-'})){ errors.push('File ID can only contain letters, dashes and numbers'); }
-    }
-    
-    if(!debtorInfo.minpayment && !validator.isLength(debtorInfo.minpayment, {min: 0})){ 
-        errors.push('Minumun payment cannot be empty'); 
-    }else{
-        if(!validator.isCurrency(debtorInfo.minpayment, {require_symbol: false, allow_negatives: false})){ errors.push( 'Minimum Payment can only be a valid positive currency format (###.##))'); }
-    }
-    
-    if(!debtorInfo.startdate && !validator.isLength(debtorInfo.startdate, {min: 0})){ 
-        errors.push('Start date cannot be empty'); 
-    }else{
-        if(!validator.isDate(debtorInfo.startdate)){ errors.push('Start Date can only be a valid date format, dd/mm/yyyy.'); } 
+    if(data.name !== undefined){
+        if(!validator.isLength(data.name, {min: 1})){ 
+            errors.push('name cannot be empty');
+        }else if(!validator.isAlpha(data.name, 'es-ES', {'ignore': ' '})){
+            errors.push('Name can only contain letters and spaces');
+        }
     }
 
-    return errors
-}
+    if(data.debtamount !== undefined){
+        if(!validator.isLength(data.debtamount, {min: 1})){ 
+            errors.push('Debt amount can not be empty');
+        }else if(!validator.isCurrency(data.debtamount, {require_symbol: false, allow_negatives: false})){ 
+            errors.push('Debt Amount can only be a valid positive currency format (###.##)');
+        }
+    }
+    
+    if(data.fileid !== undefined){
+        if(!validator.isLength(data.fileid, {min: 1})){ 
+            errors.push('File id cannot be empty');
+        }else if(!validator.isAlphanumeric(data.fileid, 'es-ES', {'ignore': '-'})){
+            errors.push('File ID can only contain letters, dashes and numbers');
+        }
+    }
+    
+    if(data.minpayment !== undefined){
+        if(!validator.isLength(data.minpayment, {min: 1})){
+            errors.push('Minumun payment cannot be empty');
+        }else if(!validator.isCurrency(data.minpayment, {require_symbol: false, allow_negatives: false})){
+            errors.push( 'Minimum Payment can only be a valid positive currency format (###.##))');
+        }
+    }
+    
+    if(data.startdate !== undefined){
+        if(!validator.isLength(data.startdate, {min: 1})){
+            errors.push('Start date cannot be empty');
+        } else if(!validator.isDate(data.startdate)){
+            errors.push('Start Date can only be a valid date format, dd/mm/yyyy.');
+        }
+    }
 
-function validatePaymentInfo(paymentInfo){
-    const errors = [];
-    
-    if(!paymentInfo.payment && !validator.isLength(paymentInfo.payment, {min: 0})){ 
-        errors.push('Payment cannot be empty'); 
-    }else{
-        if(!validator.isCurrency(paymentInfo.payment, {require_symbol: false, allow_negatives: false})){ errors.push( 'Payment can only be a valid positive currency format (###.##))'); }
-    }
-    
-    if(!paymentInfo.date && !validator.isLength(paymentInfo.date, {min: 0})){ 
-        errors.push('Date cannot be empty'); 
-    }else{
-        if(!validator.isDate(paymentInfo.date)){ errors.push('Date can only be a valid date format, dd/mm/yyyy.'); } 
-    }
-    
-    if(!paymentInfo.fileid && !validator.isLength(paymentInfo.fileid, {min: 0})){ 
-        errors.push('File id cannot be empty'); 
-    }else{
-        if(!validator.isAlphanumeric(paymentInfo.fileid, 'es-ES', {'ignore': '-'})){ errors.push('File ID can only contain letters, dashes and numbers'); }
+    if(data.payment !== undefined){
+        if(!validator.isLength(data.payment, {min: 1})){
+            errors.push('Payment cannot be empty');
+        }else if(!validator.isCurrency(data.payment, {require_symbol: false, allow_negatives: false})){
+            errors.push( 'Payment can only be a valid positive currency format (###.##))');
+        }
     }
 
+    if(data.date !== undefined){
+        if(!validator.isLength(data.date, {min: 1})){
+            errors.push('Date cannot be empty');
+        }else if(!validator.isDate(data.date)){
+            errors.push('Date can only be a valid date format, dd/mm/yyyy.');
+        }
+    }
+    
     return errors
 }
