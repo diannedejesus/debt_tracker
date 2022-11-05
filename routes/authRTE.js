@@ -16,7 +16,7 @@ router.post('/admin', ensureGuest, authController.addAdmin);
 router.get('/login', ensureGuest, authController.getLogin);
 router.post('/login', ensureGuest, authController.loginUser);
 
-router.get('/reset', ensureAuth, authController.getReset);
+// router.get('/reset', ensureAuth, authController.getReset);
 router.post('/reset', ensureAuth, authController.resetPassword);
 router.post('/revoke', ensureAuth, authController.revokeToggle);
 

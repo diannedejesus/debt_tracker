@@ -6,25 +6,29 @@ import { nanoid } from 'nanoid';
 import Registration from '../models/Registration.js';
 import crypto from 'node:crypto';
 
-
+// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 
 export async function getCreateAdmin(req, res){
-  const adminAccount = await User.findOne({owner:true}); //verify if an admin account exists
+  const adminAccount = await User.find({accountType: "Owner"}); 
 
-  if(adminAccount && !adminAccount.revoked){
-    req.flash('errors', 'Owner account already exists');
-    res.redirect('/');
-  }else {
-    res.render('administrator', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+  //verify if an admin account exists
+  for(let accounts of adminAccount){
+    if(accounts.accountType === "Owner" && !accounts.revoked){
+      req.flash('errors', 'Owner account already exists');
+      return res.redirect('/');
+    }
   }
+
+  res.render('administrator', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
 };
 
-export async function getReset(req, res){
-  res.render('reset', { 
-    user: req.user,
-    messages: [...req.flash('errors'), ...req.flash('msg')] 
-  });
-};
+// export async function getReset(req, res){
+//   res.render('reset', { 
+//     user: req.user,
+//     messages: [...req.flash('errors'), ...req.flash('msg')] 
+//   });
+// };
 
 export async function getVerifyAccount(req, res){
   res.render('verifyaccount', {
@@ -35,14 +39,15 @@ export async function getVerifyAccount(req, res){
 };
 
 export async function getLogin(req, res){
-  res.render('login', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+  res.render('login', { 
+    user: req.user, 
+    messages: [...req.flash('errors'), ...req.flash('msg')] 
+  });
 };
 
 export async function getUserAdmin(req, res){
-  //const errors = [];
-  
-  if(req.user.owner || req.user.appManager){
-    const userList = await User.find({}).select("email revoked appManager owner");
+  if(req.user.accountType === "Owner" || req.user.accountType === "App Manager"){
+    const userList = await User.find({}).select("email revoked accountType");
     const verificationList = await Registration.find({}).select("email");
     const pendingReset = {}
 
@@ -100,7 +105,7 @@ export async function loginUser(req, res, next){
         req.flash('errors', 'An error occur with you authentication.');
       }
       
-      console.log('errors2', info)
+      console.error('Login Error:', info)
       return res.render('login', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
     }
 
@@ -116,34 +121,28 @@ export async function loginUser(req, res, next){
   })(req, res, next)
 }
 
-export async function addUser(req, res, next){
+export async function addUser(req, res){
   const errors = [];
+  const validAccountNames = ["App Manager", "Owner", "Case Worker"]
 
   //validate submitted info
   if(!validator.isEmail(req.body.email.trim())) errors.push('not a valid email');
-  if(!req.user.appManager && !req.user.owner) errors.push('not an administrative account');
-  if(req.body.accountType === 'appManager' || req.body.accountType === 'owner'){
-    if(!req.user.owner) errors.push('only an owner account can create this type of account');
+  if(!req.user.accountType === "App Manager" && !req.user.accountType === "Owner") errors.push('not an administrative account');
+  if(req.body.accountType === "App Manager" || req.body.accountType === "Owner"){
+    if(!req.user.accountType === "Owner") errors.push('only an owner account can create this type of account');
   }
-  if(req.body.accountType !== "appManager" && req.body.accountType !== "owner"){
-    req.body.accountType = ''
-  }
+  if(!validAccountNames.includes(req.body.accountType)) errors.push('no such account type.')
 
   if(errors.length) {
     req.flash('errors', errors);
-    return res.render('createUser', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+    return res.redirect("/auth/user")
   }
   
   const CreatedUser = new User({
       email: validator.normalizeEmail(req.body.email.trim(), {gmail_remove_dots: false}),
       password: crypto.randomBytes(32).toString("hex"),
+      accountType: req.body.accountType,
   })
-
-  if(req.body.accountType === "appManager"){
-    CreatedUser["appManager"] = true
-  }else if(req.body.accountType === "owner"){
-    CreatedUser["owner"] = true
-  }
 
   try {
     const checkEmail = await User.findOne({ email: CreatedUser.email })
@@ -160,40 +159,34 @@ export async function addUser(req, res, next){
 
   } catch (error) {
     console.error(err)
-    req.flash('errors', 'An error occured');
+    req.flash('errors', 'An error occured saving user account');
     return res.redirect("/auth/user");
   }
-
-  
 
   const authToken = await createAuthenticationCode(CreatedUser.email);
         
   if(authToken){
      //send code by email or redirect
-     //NOTE:: create full link
-    req.flash('msg', `Account created successfully, verification code for account is ${authToken} or send the link: CLIENT_URL/verifyaccount/${authToken}/${CreatedUser.email}`);
+    req.flash('msg', `Account created successfully, verification code for account is ${authToken} or send the link: ${process.env.CLIENT_URL}/auth/verifyaccount/${authToken}/${CreatedUser.email}`);
   }else{
-    //NOTE::if code is not created the user can just reset password to get new code
     console.log(authToken)
     req.flash('errors', 'Error reseting password')
   }
 
-  //return res.render(req.headers.referer);
   return res.redirect("/auth/user");
 }
 
 export async function addAdmin(req, res, next){
   const errors = [];
+  const adminAccount = await User.find({accountType: "Owner"}); 
 
-  //does an admin exist
-  User.findOne({ owner: true }, (err, foundDoc) => {
-    if(err) return next(err);
-
-    if(foundDoc) {
-      req.flash('errors', 'an owner account already exists');
-      return res.render('administrator', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+  //verify if an admin account exists
+  for(let accounts of adminAccount){
+    if(accounts.accountType === "Owner" && !accounts.revoked){
+      req.flash('errors', 'Owner account already exists');
+      return res.redirect('/');
     }
-  })
+  }
 
   //validate submitted info
   if(!validator.isEmail(req.body.email.trim())) errors.push('not a valid email');
@@ -209,7 +202,7 @@ export async function addAdmin(req, res, next){
   const createdUser = new User({
     email: validator.normalizeEmail(req.body.email.trim(), {gmail_remove_dots: false}),
     password: await bcrypt.hash(req.body.password, 10),
-    owner: true
+    accountType: "Owner",
   })
 
   //verify if already exists
@@ -277,11 +270,11 @@ export async function authenticateUser(req, res, next){
   return res.render('login', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
 }
 
-export async function resetPassword(req, res, next){
+export async function resetPassword(req, res){
   const errors = [];
 
   if(!validator.isEmail(req.body.email.trim())) errors.push('email is invalid');
-  if(!req.user.appManager && !req.user.owner) errors.push('not an administrator account');
+  if(!req.user.accountType === "App Manager" && !req.user.accountType === "Owner") errors.push('not an administrator account');
 
   if(errors.length) {
     req.flash('errors', errors);
@@ -292,11 +285,10 @@ export async function resetPassword(req, res, next){
 
   const authToken = await createAuthenticationCode(req.body.email);
 
-  if(authToken){
-    //NOTE:: create full link
-    req.flash('msg', `Account created successfully, verification code for account is ${authToken} or send the link: CLIENT_URL/verifyaccount/${authToken}/${req.body.email}`);
+  if(!authToken.message){
+    req.flash('msg', `Account created successfully, verification code for account is ${authToken} or send the link: ${process.env.CLIENT_URL}/auth/verifyaccount/${authToken}/${req.body.email}`);
   }else{
-    console.log(authToken)
+    console.error(authToken)
     req.flash('errors', authToken.message)
   }
  
@@ -307,7 +299,7 @@ export async function revokeToggle(req, res, next){
   const errors = [];
 
   if(!validator.isEmail(req.body.email.trim())) errors.push('email is invalid');
-  if(!req.user.appManager && !req.user.owner) errors.push('not an administrator account');
+  if(!req.user.accountType === "App Manager" && !req.user.accountType === "Owner") errors.push('not an administrator account');
   if(req.user.email === req.body.email) errors.push('can not revoke access');
 
   if(errors.length) {
@@ -318,7 +310,7 @@ export async function revokeToggle(req, res, next){
   req.body.email = validator.normalizeEmail(req.body.email.trim(), { gmail_remove_dots: false });
 
   const toggleAccess = await User.findOne({email: req.body.email})
-  if(!req.user.owner && toggleAccess.owner){
+  if(!req.user.accountType === "Owner" && toggleAccess.accountType === "Owner"){
     req.flash('errors', 'only an owner can revoke access');
     return res.redirect(req.headers.referer);
   } 
@@ -341,8 +333,8 @@ export function logout(req, res){
 
 //functions
 async function createAuthenticationCode(userIdentity){
+  //NOTE:: rework
   const resetToken = nanoid(10);
-
   const AuthenticationCode = new Registration({
     email: userIdentity,
     token: await bcrypt.hash(resetToken, 10),
@@ -360,6 +352,7 @@ async function createAuthenticationCode(userIdentity){
 
     if(!savedDoc){
       resetToken = null
+      resetToken.message = "Could not save token"
     }
   })
 

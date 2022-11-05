@@ -9,15 +9,9 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  appManager: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
-  owner: {
-    type: Boolean,
-    required: false,
-    default: false,
+  accountType: {
+    type: String, 
+    enum: ["Case Worker", "Owner", "App Manager"]
   },
   revoked: {
     type: Boolean,

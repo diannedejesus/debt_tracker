@@ -21,7 +21,7 @@ export async function getCaseInfo(req, res){
     const debtorsList =  await DebtorsDB.find().select("name fileId")
     let caseFileId = {fileId: req.params.id}
 
-    if(!caseFileId.fileID){
+    if(!caseFileId.fileId){
         req.flash('errors', 'No file id sent');
         return res.redirect(req.headers.referer);
     }
@@ -57,10 +57,7 @@ export async function getPrintView(req, res){
 
 async function buildDebtorInfo(caseFileId){
     try {
-
-        //throw new Error("Great error explanation comes here")
-
-        const selectedDebtor = await DebtorsDB.findOne(caseFileId) //await Debtors.findOne(caseFileId)
+        const selectedDebtor = await DebtorsDB.findOne(caseFileId)
         if(!selectedDebtor){
             req.flash('errors', req.params.id + ' is not a valid file id');
             return res.redirect(req.headers.referer);
@@ -103,8 +100,8 @@ async function buildDebtorInfo(caseFileId){
 
     } catch (error) {
         console.error(error);
-        //req.flash('errors', 'An error occured with the database. #004');
-        //return res.redirect(req.headers.referer);
+        req.flash('errors', 'An error occured with the database. #004');
+        return res.redirect(req.headers.referer);
     }
 }
 
@@ -118,6 +115,7 @@ export async function getRegdebt(req, res){
 
 
 export async function insertNewPayment(req, res){
+    //NOTE:: think about renaming caseid
     let caseID = "" 
     const errors = dataVerifier({ //validate user submitted info
         payment: req.body.payment,
@@ -197,7 +195,7 @@ export async function getDebtorList(req, res){
 export async function getDashboard(req, res){
     try {
         const debtsInfo = await DebtDB.find({})
-console.log(req.user)
+
         let debtorList = {
             'latePayments': 0,
             'currentPayments': 0,
@@ -207,7 +205,7 @@ console.log(req.user)
         for(let items of debtsInfo){
             const currentDate = new Date(Date.now())
             const elapsed = monthElapsed(new Date(items.startDate), currentDate)
-            const payments = await PaymentDB.find({caseID: items._id}).count() //can slow things if dealing with bad connection or lots of items
+            const payments = await PaymentDB.find({caseID: items._id}).count() //NOTE:: can slow things if dealing with bad connection or lots of items
 
             if( elapsed-payments > 0){
                 debtorList['latePayments']++

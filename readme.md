@@ -217,6 +217,9 @@ Payment History
 * Access log: Keep track of case workers' logins, edits, and views. Plus changes made to users and debts
 * Letters: This is a wish list item. A page that produces a letter for different situations when working with debt accounts.
 * [X] Have the individual case page have an option to switch to another case with out going to list page.
+* Have revoke and reset accounts ask for user password for extra security
+* implement an email sender for verification codes
+* Edit an account to change type
 * Review code
 
 ### Databases
@@ -268,49 +271,6 @@ Once these wireframes are approved by the client, include them in the user inter
 -->
 
 ## Goals and milestones
-- [X] database connection *
-- [X] configure passport local login *
-- [X] local session variable handler *
-- [ ] email sender *
-- [X] encryption *
-
-- [X] Login Page
-    - [X] basic layout
-        - [X] admin only registration message
-    - [X] data verification
-        - [X] assure that format is correct
-        - [X] user is present in database
-        - [X] password matches
-    - [X] verify if account/email exists and is registered
-        - [X] message if account does not exist or is not registered
-        - [X] match password if exists
-        - [X] create session if password matches with account
-- [ ] Reset Password
-    - [-] verify email validity
-    - [ ] send email with link
-    - [X] basic reset password form page
-    - [X] change password
-- [ ] Registration Page
-    - [X] basic page layout
-    - [-] add temporary user
-        - [-] temporary password
-        - [-] basic initial login/user registration page
-            - [-] reset initial password
-    - [X] user list page
-    - [X] revoke user access
-
-
-- [X] Register Debt Page
-    - [X] basic form page
-    - [X] verify data
-        - [X] identifier is not already present in database
-            - [X] if so then debt case is already present and should be added to that case
-        - [X] data is in correct format and sanitized
-    - [X] save data to database
-        - [X] Name and case id is encrypted and saved to seperate database
-        - [X] debt information save to seperate database with account identifier
-
-
 - [ ] Debtor Page
     - [X] basic page that shows debtors
         - [X] show debt payoff info and late payments
@@ -327,9 +287,7 @@ Once these wireframes are approved by the client, include them in the user inter
         - [ ] duplicate payments
     - [X] save to database
     
-- [X] Account summary
-    - [X] basic page layout
-    - [X] pull info from database
+
 
 <!-- ### Secondary Goals
 
@@ -342,43 +300,95 @@ Once these wireframes are approved by the client, include them in the user inter
 
 
 ### Completed
--
+- [X] database connection *
+- [X] configure passport local login *
+- [X] local session variable handler *
+- [X] encryption *
 
+- [X] Account summary
+    - [X] basic page layout
+    - [X] pull info from database
 
+- [X] Register Debt Page
+    - [X] basic form page
+    - [X] verify data
+        - [X] identifier is not already present in database
+            - [X] if so then debt case is already present and should be added to that case
+        - [X] data is in correct format and sanitized
+    - [X] save data to database
+        - [X] Name and case id is encrypted and saved to seperate database
+        - [X] debt information save to seperate database with account identifier
 
-## Issues
-<!-- Things that should be looked into but an alternative solution was/can be implemented  -->
+- [X] Login Page
+    - [X] basic layout
+        - [X] admin only registration message
+    - [X] data verification
+        - [X] assure that format is correct
+        - [X] user is present in database
+        - [X] password matches
+    - [X] verify if account/email exists and is registered
+        - [X] message if account does not exist or is not registered
+        - [X] match password if exists
+        - [X] create session if password matches with account
+
+- [X] Reset Password
+    - [-] verify email validity
+    - [extra] send email with link *
+    - [X] basic reset password form page
+    - [X] change password
+
+- [X] Registration Page
+    - [X] basic page layout
+    - [-] add temporary user
+        - [-] temporary password
+        - [-] basic initial login/user registration page
+            - [-] reset initial password
+    - [X] user list page
+    - [X] revoke user access
+    - [extra] send email with link *
+
+* Issues Resolved
 - [X] can we use req.flash to store other messages besides errors? [test using other name and merging to messages]
-- how should payments that are greater than the minimun payment be processed?
-- how to handle late/missed payments?
 - [X] how to handle the reset of an admin password [implement owner/appAdmin account who can create admins but admins can't manage]
     - [X] revoked owner still prevents new admin creation
-- make sure an account can't be both owner and manager
+- [X] make sure an account can't be both owner and manager
 - [X] sepearate data handlers for printview and cases
-- Fix the style sheet of pages
-
 - [X] login page should not appear if user is already login
 - [X] loggedin user should not have access to verify account page
-
 - [X] error when user create is submitted can't find page redirect.
 - [X] getting header error when submitting user that is already created and it is giving me the verification code and it is creating the invalid account
 
+## Issues
+<!-- Things that should be looked into but an alternative solution was/can be implemented  -->
+- how should payments that are greater than the minimun payment be processed?
+- how to handle late/missed payments?
+- verify variable naming schema for password reset and account verification since both use the same code.
+- Fix the style sheet of pages
+    - create header for pages that are guest / not signed in users
+    - Change page titles
+
+
 - verify how other routes need to handle revoked access [research]
+    - how to remove the current session of a user?
 - verify error handling, throw errors [research]
 
 
 <!-- NOTES
-Admin Account Creation
-There is a seperate module function that verifies if an admin account exists, it it doesnt then it creates a variable in the session to indicate that we are creating an admin account. It then calls the module function that creates a new user. 
-Originally the value was passed as an argument/paramenter but this may lead to an issue of someone passing the value and gaining an admin account erroneously. 
-
 Account Creation & Login
-Only one administration account should exist, if that account is created you should not be able to access the admin creation page. If bypassed the user creation function will not be able to create an admin account if one is found in the database.
+To setup the page you need to go to the route "pageurl/auth/admin" to create the intial owner account. After the owner account is created this page won't let you create anymore accounts. The newly created owner account can create any kind of new accounts. If all owner accounts are remove or revoked then this page can be used to create a new owner account.
+This can be done manually in the database. NOTE:: But it might be posible for two owner accounts to revoke each others access while both are login in at the same time.
 
 Only an admin account can create user account. The user creation process will verify if the current user session is an administor before creating an account.
 
+if the authentication code is not created and/or displayed the administrator can just reset the password to get a new code
 
-If the web app requiered the creation of accounts without an administrator then an authentication process should be implemented. Most likely by adding additional databases to handle authentication of users to avoid abandoned signups.
+*If the web app requiered the creation of accounts without an administrator then an authentication process should be implemented. Most likely by adding additional databases to handle authentication of users to avoid abandoned signups.
+
+*This application is ment for small databases. If used with and extensive database then the way data is worked with should be reevaluated to avoid long loading times. You could cache the data locally to avoid calling to the database frequently and setting an interval for verifying for changes. Also modify calls the entire database for only a select amount of data to be displayed. Setting the display data to pages.
+
+NOTE:: Check testing routes with postmen or similar app to ensure restrintion work.
+NOTE:: Verify callback and awaits in same application. Is it ok??
+NOTE:: Verify render vs redirect??
  -->
 
 
