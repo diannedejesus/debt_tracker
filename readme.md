@@ -297,7 +297,7 @@ Once these wireframes are approved by the client, include them in the user inter
         - [-] basic initial login/user registration page
             - [-] reset initial password
     - [X] user list page
-    - [ ] revoke user access
+    - [X] revoke user access
 
 
 - [X] Register Debt Page
@@ -351,19 +351,20 @@ Once these wireframes are approved by the client, include them in the user inter
 - [X] can we use req.flash to store other messages besides errors? [test using other name and merging to messages]
 - how should payments that are greater than the minimun payment be processed?
 - how to handle late/missed payments?
-- how to handle the reset of an admin password [implement owner/appAdmin account who can create admins but admins can't manage]
-    - only one can be true
-    - revoked owner still prevents new admin creation
+- [X] how to handle the reset of an admin password [implement owner/appAdmin account who can create admins but admins can't manage]
+    - [X] revoked owner still prevents new admin creation
+- make sure an account can't be both owner and manager
 - [X] sepearate data handlers for printview and cases
 - Fix the style sheet of pages
 
+- [X] login page should not appear if user is already login
+- [X] loggedin user should not have access to verify account page
+
+- [X] error when user create is submitted can't find page redirect.
+- [X] getting header error when submitting user that is already created and it is giving me the verification code and it is creating the invalid account
+
 - verify how other routes need to handle revoked access [research]
 - verify error handling, throw errors [research]
-- login when user is login and login when admin is creating account should not appear\.
-- [X] error when user create is submitted can't find page redirect.
-- getting header error when submitting user that is already created and it is giving me the verification code and it is creating the invalid account
-
-
 
 
 <!-- NOTES

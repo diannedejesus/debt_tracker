@@ -10,8 +10,8 @@ router.get('/', ensureGuest, authController.getLogin);
 router.get('/user', ensureAuth, authController.getUserAdmin);
 router.post('/user', ensureAuth, authController.addUser);
 
-router.get('/admin', authController.getCreateAdmin);
-router.post('/admin', authController.addAdmin);
+router.get('/admin', ensureGuest, authController.getCreateAdmin);
+router.post('/admin', ensureGuest, authController.addAdmin);
 
 router.get('/login', ensureGuest, authController.getLogin);
 router.post('/login', ensureGuest, authController.loginUser);
@@ -20,9 +20,9 @@ router.get('/reset', ensureAuth, authController.getReset);
 router.post('/reset', ensureAuth, authController.resetPassword);
 router.post('/revoke', ensureAuth, authController.revokeToggle);
 
-router.get('/verifyaccount/:token/:userid', authController.getVerifyAccount);
-router.get('/verifyaccount', authController.getVerifyAccount);
-router.post('/verifyaccount', authController.authenticateUser);
+router.get('/verifyaccount/:token/:userid', ensureGuest, authController.getVerifyAccount);
+router.get('/verifyaccount', ensureGuest, authController.getVerifyAccount);
+router.post('/verifyaccount', ensureGuest, authController.authenticateUser);
 
 router.get('/logout', ensureAuth, authController.logout);
 

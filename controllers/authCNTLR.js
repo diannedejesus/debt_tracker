@@ -39,7 +39,7 @@ export async function getLogin(req, res){
 };
 
 export async function getUserAdmin(req, res){
-  const errors = [];
+  //const errors = [];
   
   if(req.user.owner || req.user.appManager){
     const userList = await User.find({}).select("email revoked appManager owner");
@@ -170,6 +170,7 @@ export async function addUser(req, res, next){
         
   if(authToken){
      //send code by email or redirect
+     //NOTE:: create full link
     req.flash('msg', `Account created successfully, verification code for account is ${authToken} or send the link: CLIENT_URL/verifyaccount/${authToken}/${CreatedUser.email}`);
   }else{
     //NOTE::if code is not created the user can just reset password to get new code
@@ -292,6 +293,7 @@ export async function resetPassword(req, res, next){
   const authToken = await createAuthenticationCode(req.body.email);
 
   if(authToken){
+    //NOTE:: create full link
     req.flash('msg', `Account created successfully, verification code for account is ${authToken} or send the link: CLIENT_URL/verifyaccount/${authToken}/${req.body.email}`);
   }else{
     console.log(authToken)
@@ -303,7 +305,6 @@ export async function resetPassword(req, res, next){
 
 export async function revokeToggle(req, res, next){
   const errors = [];
-//NOTE::only owner can revoke manager or owner accounts
 
   if(!validator.isEmail(req.body.email.trim())) errors.push('email is invalid');
   if(!req.user.appManager && !req.user.owner) errors.push('not an administrator account');
@@ -317,8 +318,13 @@ export async function revokeToggle(req, res, next){
   req.body.email = validator.normalizeEmail(req.body.email.trim(), { gmail_remove_dots: false });
 
   const toggleAccess = await User.findOne({email: req.body.email})
+  if(!req.user.owner && toggleAccess.owner){
+    req.flash('errors', 'only an owner can revoke access');
+    return res.redirect(req.headers.referer);
+  } 
+
   await User.updateOne({email: req.body.email}, {revoked: !toggleAccess.revoked})
- 
+
   return res.redirect(req.headers.referer);
 };
 
