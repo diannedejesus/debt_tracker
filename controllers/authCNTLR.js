@@ -9,13 +9,10 @@ import crypto from 'node:crypto';
 
 
 export async function getCreateAdmin(req, res){
-  const errors = [];
-  const adminAccount = await User.findOne({admin:true}); //verify if an admin account exists
+  const adminAccount = await User.findOne({owner:true}); //verify if an admin account exists
 
-  if(adminAccount){
-    errors.push('Administrator account already exists');
-
-    req.flash('errors', errors);
+  if(adminAccount && !adminAccount.revoked){
+    req.flash('errors', 'Owner account already exists');
     res.redirect('/');
   }else {
     res.render('administrator', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
@@ -44,8 +41,8 @@ export async function getLogin(req, res){
 export async function getUserAdmin(req, res){
   const errors = [];
   
-  if(req.user.admin){
-    const userList = await User.find({}).select("email revoked");
+  if(req.user.owner || req.user.appManager){
+    const userList = await User.find({}).select("email revoked appManager owner");
     const verificationList = await Registration.find({}).select("email");
     const pendingReset = {}
 
@@ -67,9 +64,7 @@ export async function getUserAdmin(req, res){
       messages: [...req.flash('errors'), ...req.flash('msg')]
     });
   } else {
-    errors.push('Not an administrator account');
-    req.flash('errors', errors);
-
+    req.flash('errors', 'Not an administrator account');
     res.render('dashboard', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
   }
 };
@@ -97,7 +92,14 @@ export async function loginUser(req, res, next){
     if(err) return next(err);
 
     if(!user) {
-      req.flash('errors', 'User does not exist, check spelling or contact administrator');
+      if(info.msg === 'user does not exist'){
+        req.flash('errors', 'User does not exist, check spelling or contact administrator');
+      }else if(info.msg === 'invalid password'){
+        req.flash('errors', 'Password was invalid, try again or ask an admin to reset.');
+      }else{
+        req.flash('errors', 'An error occur with you authentication.');
+      }
+      
       console.log('errors2', info)
       return res.render('login', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
     }
@@ -109,7 +111,7 @@ export async function loginUser(req, res, next){
 
     req.logIn(user, (err) => {
       if(err) return next(err);
-      res.redirect(req.session.returnTo || '/')
+      res.redirect(req.session.returnTo || '/dashboard')
     })
   })(req, res, next)
 }
@@ -119,7 +121,13 @@ export async function addUser(req, res, next){
 
   //validate submitted info
   if(!validator.isEmail(req.body.email.trim())) errors.push('not a valid email');
-  if(!req.user.admin) errors.push('not an administrator account');
+  if(!req.user.appManager && !req.user.owner) errors.push('not an administrative account');
+  if(req.body.accountType === 'appManager' || req.body.accountType === 'owner'){
+    if(!req.user.owner) errors.push('only an owner account can create this type of account');
+  }
+  if(req.body.accountType !== "appManager" && req.body.accountType !== "owner"){
+    req.body.accountType = ''
+  }
 
   if(errors.length) {
     req.flash('errors', errors);
@@ -131,23 +139,32 @@ export async function addUser(req, res, next){
       password: crypto.randomBytes(32).toString("hex"),
   })
 
-  User.findOne({ email: CreatedUser.email }, (err, foundDoc) => {
-    if(err) return next(err);
+  if(req.body.accountType === "appManager"){
+    CreatedUser["appManager"] = true
+  }else if(req.body.accountType === "owner"){
+    CreatedUser["owner"] = true
+  }
 
-    if(foundDoc) {
+  try {
+    const checkEmail = await User.findOne({ email: CreatedUser.email })
+    if(checkEmail) {
       req.flash('errors', 'an account with that email/username already exists');
-      return res.render('createUser', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+      return res.redirect("/auth/user");
     }
-  })
-
-  CreatedUser.save((err, SavedDoc) => {
-    if (err) return next(err) //NOTE::does this stop execution? will if(!SavedDoc) run? will code after save call run? 
-
-    if(!SavedDoc){
+  
+    const savedUser = await CreatedUser.save()
+    if(!savedUser){
       req.flash('errors', 'Account could not be created.');
-      return res.render('createUser', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+      return res.redirect("/auth/user");
     }
-  })
+
+  } catch (error) {
+    console.error(err)
+    req.flash('errors', 'An error occured');
+    return res.redirect("/auth/user");
+  }
+
+  
 
   const authToken = await createAuthenticationCode(CreatedUser.email);
         
@@ -160,18 +177,19 @@ export async function addUser(req, res, next){
     req.flash('errors', 'Error reseting password')
   }
 
-  return res.render(req.headers.referer);
+  //return res.render(req.headers.referer);
+  return res.redirect("/auth/user");
 }
 
 export async function addAdmin(req, res, next){
   const errors = [];
 
   //does an admin exist
-  User.findOne({ admin: true }, (err, foundDoc) => {
+  User.findOne({ owner: true }, (err, foundDoc) => {
     if(err) return next(err);
 
     if(foundDoc) {
-      req.flash('errors', 'an admin account already exists');
+      req.flash('errors', 'an owner account already exists');
       return res.render('administrator', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
     }
   })
@@ -190,6 +208,7 @@ export async function addAdmin(req, res, next){
   const createdUser = new User({
     email: validator.normalizeEmail(req.body.email.trim(), {gmail_remove_dots: false}),
     password: await bcrypt.hash(req.body.password, 10),
+    owner: true
   })
 
   //verify if already exists
@@ -206,8 +225,8 @@ export async function addAdmin(req, res, next){
 
       if(SavedDoc){
         //send verification email
-        req.flash('errors', 'Account created');
-        return res.render('administrator', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+        req.flash('msg', 'Account created');
+        return res.render('login', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
       }
     })
   })
@@ -229,7 +248,7 @@ export async function authenticateUser(req, res, next){
 
   //validate with database
   let resetInfo = await Registration.findOne({ email: req.body.email })
-  if (!token) errors.push("Invalid or expired password reset token.");
+  if (!resetInfo) errors.push("Invalid or expired password reset token.");
 
   const isValid = await bcrypt.compare(req.body.token, resetInfo.token);
   if (!isValid) errors.push("Invalid password reset token.");
@@ -244,7 +263,7 @@ export async function authenticateUser(req, res, next){
   const hashedPassword = await bcrypt.hash(req.body.password, 10)
  
   //update
-  User.findOneAndUpdate({ email: userEmail }, { password: hashedPassword }, (err) => {
+  User.updateOne({ email: userEmail }, { password: hashedPassword }, (err) => {
     if(err) return next(err);
 
     //delete token
@@ -261,7 +280,7 @@ export async function resetPassword(req, res, next){
   const errors = [];
 
   if(!validator.isEmail(req.body.email.trim())) errors.push('email is invalid');
-  if(!req.user.admin) errors.push('not an administrator account');
+  if(!req.user.appManager && !req.user.owner) errors.push('not an administrator account');
 
   if(errors.length) {
     req.flash('errors', errors);
@@ -284,9 +303,10 @@ export async function resetPassword(req, res, next){
 
 export async function revokeToggle(req, res, next){
   const errors = [];
+//NOTE::only owner can revoke manager or owner accounts
 
   if(!validator.isEmail(req.body.email.trim())) errors.push('email is invalid');
-  if(!req.user.admin) errors.push('not an administrator account');
+  if(!req.user.appManager && !req.user.owner) errors.push('not an administrator account');
   if(req.user.email === req.body.email) errors.push('can not revoke access');
 
   if(errors.length) {

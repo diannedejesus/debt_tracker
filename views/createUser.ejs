@@ -6,12 +6,13 @@
             <table>
                 <thead>
                     <tr>
-                        <th colspan="5">User Management table</th>
+                        <th colspan="6">User Management table</th>
                     </tr>
                 </thead>
                     <tr>
                         <th>User</th>
-                        <th>Password Reset Status</th>
+                        <th>User Type</th>
+                        <th>Password Status</th>
                         <th>Password Reset</th>
                         <th>Revoked Status</th>
                         <th>Revoke</th>
@@ -20,9 +21,9 @@
                 
                 <% if (typeof userList !== 'undefined'){ %> 
                     <% userList.forEach( (user)=> { %>
-                    <tr>
-                        
+                    <tr>        
                         <td><%= user.email %></td>
+                        <td><%= user.appManager ? "App Manager" : user.owner ? "Owner" : "Case Worker" %></td>
                         <td> <%= user.verifying ? "Pending" : "Completed" %></td>
                         <td>
                             <form class="login-form" action="/auth/reset" method="POST">
@@ -47,9 +48,16 @@
             <h2>Create User Account</h2>
             <p>To create an user account you need to fill out the form below, then complete the verification process.</p>
             <form class="login-form" action="/auth/user" method="POST">
+                <% if (typeof user !== 'undefined'){ %> 
+                    <% if (user.owner){ %> 
+                <select name="accountType">
+                    <option value="appManager">App Manager</option>
+                    <option value="owner">Owner</option>
+                    <option value="normal">Case Worker</option>
+                </select>
+                    <% } %>
+                <% } %>
                 <input type="text" name='email' placeholder="email">
-                <input type="password" name='password' placeholder="password">
-                <input type="password" name='confirmPassword' placeholder="password">
                 <input type="submit" value='Submit'>
             </form>
         </section>

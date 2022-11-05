@@ -10,17 +10,14 @@
 </head>
 <body>
     <header>
-        <section><h1>&#128507; &#9889;</h1></section>
-        <nav>
-             <ul>
-                 <li><a href="/asyncFunc">Async Function</a></li>
-                 <li><a href="/func">Function</a></li>
-             </ul>
-         </nav>
-         <section>
+        <section class="logo"><span>&#128507;</span><span class="under">&#9889;</span></section>
+        <nav></nav>
+        <section class="account">
             <% if (typeof user !== 'undefined'){ %> 
-                <% if (user.admin){ %> 
-                    <%= user.email %> (Administrator)
+                <% if (user.owner){ %> 
+                    <%= user.email %> (Owner)
+                <% }else if(user.appManager){ %>
+                    <%= user.email %> (App Manager)
                 <% }else{ %>
                     <%= user.email %>
                 <% } %>
@@ -28,7 +25,7 @@
             <% }else{ %>
                 <a href="/auth/login">Login</a>
             <% } %>
-           </section>
+        </section>
      </header>
 
     <% if (typeof messages !== 'undefined'){ %> 
@@ -38,8 +35,8 @@
     <% } %>
     
     <main class='signin clearfix'>
-            <h2>Create Administration Account</h2>
-            <p>To create the administrator account you need to fill out the form below, then complete the verification process.</p>
+            <h2>Create Owner Account</h2>
+            <p>To create the owner account you need to fill out the form below.</p>
             <form class="login-form" action="/auth/admin" method="POST">
                 <input type="text" name='email' placeholder="email">
                 <input type="password" name='password' placeholder="password">

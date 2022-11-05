@@ -17,15 +17,17 @@
                 <li><a href="/debtors">Debts</a></li>
                 <li><a href="/registerdebt">Register Debt</a></li>
                 <li><a href="/registerpayment">Register Payment</a></li>
-                <% if (typeof user !== 'undefined' && user.admin){ %> 
+                <% if (typeof user !== 'undefined' && (user.owner || user.appManager)){ %> 
                     <li><a href="/auth/user">User Administration</a></li>
                 <% } %>
             </ul>
         </nav>
         <section class="account">
             <% if (typeof user !== 'undefined'){ %> 
-                <% if (user.admin){ %> 
-                    <%= user.email %> (Administrator)
+                <% if (user.owner){ %> 
+                    <%= user.email %> (Owner)
+                <% }else if(user.appManager){ %>
+                    <%= user.email %> (App Manager)
                 <% }else{ %>
                     <%= user.email %>
                 <% } %>

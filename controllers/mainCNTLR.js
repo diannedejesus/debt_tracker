@@ -197,7 +197,7 @@ export async function getDebtorList(req, res){
 export async function getDashboard(req, res){
     try {
         const debtsInfo = await DebtDB.find({})
-
+console.log(req.user)
         let debtorList = {
             'latePayments': 0,
             'currentPayments': 0,

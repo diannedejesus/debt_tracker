@@ -9,7 +9,12 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  admin: {
+  appManager: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  owner: {
     type: Boolean,
     required: false,
     default: false,

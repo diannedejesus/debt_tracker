@@ -33,7 +33,7 @@ export default function (passport) {
    })
  
    passport.deserializeUser((id, done) => {
-     User.findById(id, (err, user) => done(err, user)).select("email registered revoked admin")
+     User.findById(id, (err, user) => done(err, user)).select("email revoked appManager owner")
    })
   }
 

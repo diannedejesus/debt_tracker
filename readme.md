@@ -247,7 +247,8 @@ Payment History
 * Accounts
     - Email [string]
     - Password [string]
-    - Admin [boolean]
+    - AppManager [boolean] <!-- formerly admin-->
+    - Owner [boolean]
     - Revoked [boolean]
 
 ## User/Client Interface
@@ -347,15 +348,20 @@ Once these wireframes are approved by the client, include them in the user inter
 
 ## Issues
 <!-- Things that should be looked into but an alternative solution was/can be implemented  -->
-- can we use req.flash to store other messages besides errors? [test using other name and merging to messages]
+- [X] can we use req.flash to store other messages besides errors? [test using other name and merging to messages]
 - how should payments that are greater than the minimun payment be processed?
 - how to handle late/missed payments?
 - how to handle the reset of an admin password [implement owner/appAdmin account who can create admins but admins can't manage]
-- verify how other routes need to handle revoked access
+    - only one can be true
+    - revoked owner still prevents new admin creation
 - [X] sepearate data handlers for printview and cases
-- verify error handling, throw errors [research]
 - Fix the style sheet of pages
 
+- verify how other routes need to handle revoked access [research]
+- verify error handling, throw errors [research]
+- login when user is login and login when admin is creating account should not appear\.
+- [X] error when user create is submitted can't find page redirect.
+- getting header error when submitting user that is already created and it is giving me the verification code and it is creating the invalid account
 
 
 
