@@ -220,7 +220,7 @@ Payment History
 * Have revoke and reset accounts ask for user password for extra security
 * implement an email sender for verification codes
 * Edit an account to change type
-* Review code
+* Review code / optimize
 
 ### Databases
 * Names
@@ -287,8 +287,6 @@ Once these wireframes are approved by the client, include them in the user inter
         - [ ] duplicate payments
     - [X] save to database
     
-
-
 <!-- ### Secondary Goals
 
 
@@ -366,7 +364,6 @@ Once these wireframes are approved by the client, include them in the user inter
 - Fix the style sheet of pages
     - create header for pages that are guest / not signed in users
     - Change page titles
-
 
 - verify how other routes need to handle revoked access [research]
     - how to remove the current session of a user?

@@ -166,6 +166,14 @@ label{
      text-align: right;
 }
 
+.highlight{
+     background-color: black;
+     color: yellow;
+     font-style: italic;
+     font-weight: bold;
+     font-size: 1.2rem;
+}
+
 
 @media print {
      .message, header{

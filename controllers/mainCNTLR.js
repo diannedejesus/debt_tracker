@@ -70,30 +70,59 @@ async function buildDebtorInfo(caseFileId){
         }
 
         const payments = await PaymentDB.find({caseID: selectedDebtor._id})
-
+        
         //create information object
         const debtorInfo = {
             name: selectedDebtor.name,
             fileId: selectedDebtor.fileId,
-            startDate: debtForSelected.startDate,
+            startDate: debtForSelected.startDate.setDate(debtForSelected.startDate.getDate()+1),
             minPayment: debtForSelected.minPayment,
             debt: debtForSelected.debtAmount,
             elapsed: monthElapsed(new Date(debtForSelected.startDate)),
             totalPaid: 0,
             payments: [],
+            billed: [],
         }
 
         //add payment information
+            
+        let owedPaymentsDate = new Date(debtorInfo.startDate)
+            owedPaymentsDate.setDate(1)
+
+        //adding due payments
+        for(let i = 0; i<debtorInfo.elapsed; i++){
+            debtorInfo.billed.push({
+                paymentDate: new Date(owedPaymentsDate.setMonth(owedPaymentsDate.getMonth()+1)),
+                paymentAmount: 0,
+            })
+        }
+
         if(!payments){ return debtorInfo }
 
         for(let items of payments){
             debtorInfo['totalPaid'] += Number(items.payment)
 
             debtorInfo.payments.push({
-                paymentDate: items.date, 
+                paymentDate: items.date.setDate(items.date.getDate()+1), 
                 paymentAmount: items.payment,
                 paymentComment: items.comment
             })
+        }
+
+        debtorInfo.payments.sort(function(a,b){
+            return a.paymentDate - b.paymentDate;
+          });
+
+        let totalPaid = debtorInfo.totalPaid
+        for(let items of debtorInfo.billed){
+            if(totalPaid > debtorInfo.minPayment){
+                items.paymentAmount = "paid"
+                totalPaid -= debtorInfo.minPayment
+            }else if(totalPaid > 0){
+                items.paymentAmount = totalPaid - 30
+                totalPaid = 0
+            }
+
         }
 
         return debtorInfo
@@ -104,6 +133,8 @@ async function buildDebtorInfo(caseFileId){
         return res.redirect(req.headers.referer);
     }
 }
+
+
 
 export async function getRegdebt(req, res){
     res.render('newdebt', {
