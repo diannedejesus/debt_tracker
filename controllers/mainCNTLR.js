@@ -115,22 +115,50 @@ async function buildDebtorInfo(caseFileId){
 
         let totalPaid = debtorInfo.totalPaid
         for(let items of debtorInfo.billed){
-            if(totalPaid > debtorInfo.minPayment){
+            if(totalPaid >= debtorInfo.minPayment){
                 items.paymentAmount = "paid"
                 totalPaid -= debtorInfo.minPayment
-            }else if(totalPaid > 0){
-                items.paymentAmount = totalPaid - 30
+            }else if(totalPaid >= 0){
+                items.paymentAmount = totalPaid - debtorInfo.minPayment
                 totalPaid = 0
             }
 
         }
 
+        //test
+        const counter = debtorInfo.totalPaid/debtForSelected.minPayment
+        console.log(debtorInfo.totalPaid/debtForSelected.minPayment)
+        let nextPay = 0
+        let runningPayments = debtorInfo.payments[nextPay].paymentAmount
+        debtorInfo.payments[nextPay]['space'] = 0
+
+        for(let i=0; i<counter; i++){
+
+            runningPayments -= debtForSelected.minPayment
+            debtorInfo.payments[nextPay]['space']++
+
+            if(runningPayments < 0 ){
+
+                nextPay++
+                
+                if(nextPay < debtorInfo.payments.length){
+                    runningPayments += +debtorInfo.payments[nextPay].paymentAmount
+                    debtorInfo.payments[nextPay]['space'] = 1
+                }
+                
+            }else {
+                debtorInfo.payments[nextPay]['space']++
+            }
+        }
+        
+console.log(debtorInfo)
+
         return debtorInfo
 
     } catch (error) {
         console.error(error);
-        req.flash('errors', 'An error occured with the database. #004');
-        return res.redirect(req.headers.referer);
+        //req.flash('errors', 'An error occured with the database. #004');
+        //return res.redirect(req.headers.referer);
     }
 }
 
