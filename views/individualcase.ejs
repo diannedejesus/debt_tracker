@@ -66,7 +66,7 @@
                 </tr>
                 <tr>
                     <th colspan="5">
-                        <a href="#">Button</a>
+                        <a href="/testcase/<%= debtorInfo.fileId %>">Test Case</a>
                         <a href="#">Button</a>
                     </th>
                 </tr>
@@ -102,9 +102,9 @@
                     <% if(halfpay <= 0){ %>
                         <% let formatDate = new Date(debtorInfo.billed[bills].paymentDate) %>
                     <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
-                    <td rowspan="2" colspan="1"><%= formatDate %></td>
-                    <td rowspan="2" colspan="1"><%= debtorInfo.billed[bills].paymentAmount %></td>
-                        <% halfpay=2 %>
+                    <td rowspan="<%= debtorInfo.billed[bills].space + 2 %>" colspan="1"><%= formatDate %></td>
+                    <td rowspan="<%= debtorInfo.billed[bills].space + 2 %>" colspan="1"><%= debtorInfo.billed[bills].paymentAmount %></td>
+                        <% halfpay = 2 + debtorInfo.billed[bills].space %>
                         <% bills++ %>
                     <% } %> 
                     <td></td>

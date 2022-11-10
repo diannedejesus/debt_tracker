@@ -36,6 +36,25 @@ export async function getCaseInfo(req, res){
     })
 }
 
+export async function getTestCaseInfo(req, res){
+    const debtorsList =  await DebtorsDB.find().select("name fileId")
+    let caseFileId = {fileId: req.params.id}
+
+    if(!caseFileId.fileId){
+        req.flash('errors', 'No file id sent');
+        return res.redirect(req.headers.referer);
+    }
+
+    const debtorInfo = await buildTestInfo(caseFileId)
+
+    res.render('individualcase', {
+        user: req.user,
+        debtorInfo,
+        debtorsList,
+        messages: [...req.flash('errors'), ...req.flash('msg')]
+    })
+}
+
 export async function getPrintView(req, res){
     const debtorsList =  await DebtorsDB.find().select("name fileId")
     let caseFileId = {fileId: req.params.id}
@@ -94,6 +113,7 @@ async function buildDebtorInfo(caseFileId){
             debtorInfo.billed.push({
                 paymentDate: new Date(owedPaymentsDate.setMonth(owedPaymentsDate.getMonth()+1)),
                 paymentAmount: 0,
+                space: 0,
             })
         }
 
@@ -105,7 +125,8 @@ async function buildDebtorInfo(caseFileId){
             debtorInfo.payments.push({
                 paymentDate: items.date.setDate(items.date.getDate()+1), 
                 paymentAmount: items.payment,
-                paymentComment: items.comment
+                paymentComment: items.comment,
+                space: 0,
             })
         }
 
@@ -126,31 +147,27 @@ async function buildDebtorInfo(caseFileId){
         }
 
         //test
-        const counter = debtorInfo.totalPaid/debtForSelected.minPayment
-        console.log(debtorInfo.totalPaid/debtForSelected.minPayment)
-        let nextPay = 0
-        let runningPayments = debtorInfo.payments[nextPay].paymentAmount
-        debtorInfo.payments[nextPay]['space'] = 0
+        let payCounter = 0
+        let billCounter = -1
+        let runningBalance = +debtorInfo.payments[0].paymentAmount
 
-        for(let i=0; i<counter; i++){
-
-            runningPayments -= debtForSelected.minPayment
-            debtorInfo.payments[nextPay]['space']++
-
-            if(runningPayments < 0 ){
-
-                nextPay++
-                
-                if(nextPay < debtorInfo.payments.length){
-                    runningPayments += +debtorInfo.payments[nextPay].paymentAmount
-                    debtorInfo.payments[nextPay]['space'] = 1
-                }
-                
-            }else {
-                debtorInfo.payments[nextPay]['space']++
+        while(runningBalance > 0 || payCounter < debtorInfo.payments.length-1){
+            if(runningBalance > 0){
+                runningBalance -= debtForSelected.minPayment
+                debtorInfo.payments[payCounter]['space'] += runningBalance < 0 ? 1 : 2
+                billCounter++
+            }else if(payCounter < debtorInfo.payments.length-1){
+                payCounter++
+                runningBalance += +debtorInfo.payments[payCounter].paymentAmount
+                if(runningBalance >= 0){
+                    debtorInfo.payments[payCounter]['space']++
+                }else if(runningBalance < 0){
+                    debtorInfo.payments[payCounter]['space']++
+                    debtorInfo.billed[billCounter]['space']++
+                }  
             }
         }
-        
+
 console.log(debtorInfo)
 
         return debtorInfo
@@ -162,7 +179,115 @@ console.log(debtorInfo)
     }
 }
 
+async function buildTestInfo(caseFileId){
+    try {
+        const selectedDebtor = await DebtorsDB.findOne(caseFileId)
+        if(!selectedDebtor){
+            req.flash('errors', req.params.id + ' is not a valid file id');
+            return res.redirect(req.headers.referer);
+        }
+        
+        const debtForSelected = await DebtDB.findOne({_id: selectedDebtor._id})
+        if(!debtForSelected){
+            req.flash('errors', 'Error debt information not found: ' + req.params.id);
+            return res.redirect(req.headers.referer);
+        }
 
+        const payments = []
+        
+        //create information object
+        const debtorInfo = {
+            name: selectedDebtor.name,
+            fileId: selectedDebtor.fileId,
+            startDate: debtForSelected.startDate.setDate(debtForSelected.startDate.getDate()+1),
+            minPayment: debtForSelected.minPayment,
+            debt: debtForSelected.debtAmount,
+            elapsed: monthElapsed(new Date(debtForSelected.startDate)),
+            totalPaid: 0,
+            payments: [],
+            billed: [],
+        }
+
+        //add payment information
+            
+        let owedPaymentsDate = new Date(debtorInfo.startDate)
+            owedPaymentsDate.setDate(1)
+
+        //adding due payments
+        for(let i = 0; i<debtorInfo.elapsed; i++){
+            debtorInfo.billed.push({
+                paymentDate: new Date(owedPaymentsDate.setMonth(owedPaymentsDate.getMonth()+1)),
+                paymentAmount: 0,
+                space: 0,
+            })
+        }
+
+        const paymentAmounts = Math.floor(Math.random() * 10);
+
+        while(debtorInfo.payments.length < paymentAmounts && debtorInfo['totalPaid'] < debtorInfo.debt){
+            let currentPay = Math.floor(Math.random() * 100)
+            debtorInfo['totalPaid'] += currentPay
+
+            debtorInfo.payments.push({
+                paymentDate: randomDate(debtForSelected.startDate, new Date()), 
+                paymentAmount: currentPay,
+                paymentComment: '',
+                space: 0,
+            })
+        }
+
+        debtorInfo.payments.sort(function(a,b){
+            return a.paymentDate - b.paymentDate;
+          });
+
+        let totalPaid = debtorInfo.totalPaid
+        for(let items of debtorInfo.billed){
+            if(totalPaid >= debtorInfo.minPayment){
+                items.paymentAmount = "paid"
+                totalPaid -= debtorInfo.minPayment
+            }else if(totalPaid >= 0){
+                items.paymentAmount = totalPaid - debtorInfo.minPayment
+                totalPaid = 0
+            }
+
+        }
+
+        //test
+        let payCounter = 0
+        let billCounter = -1
+        let runningBalance = Number(debtorInfo.payments[0].paymentAmount)
+
+        while(runningBalance > 0 || payCounter < debtorInfo.payments.length-1){
+            if(runningBalance > 0){
+                runningBalance -= debtForSelected.minPayment
+                debtorInfo.payments[payCounter]['space'] += runningBalance < 0 ? 1 : 2
+                billCounter++
+            }else if(payCounter < debtorInfo.payments.length-1){
+                payCounter++
+                runningBalance += +debtorInfo.payments[payCounter].paymentAmount
+                if(runningBalance >= 0){
+                    debtorInfo.payments[payCounter]['space']++
+                }else if(runningBalance < 0){
+                    debtorInfo.payments[payCounter]['space']++
+                    debtorInfo.billed[billCounter]['space']++
+                }  
+            }
+        }
+
+console.log(debtorInfo)
+
+        return debtorInfo
+
+    } catch (error) {
+        console.error(error);
+        //req.flash('errors', 'An error occured with the database. #004');
+        //return res.redirect(req.headers.referer);
+    }
+}
+
+function randomDate(start, end){
+    return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()))
+}
 
 export async function getRegdebt(req, res){
     res.render('newdebt', {
