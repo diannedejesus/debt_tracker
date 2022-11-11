@@ -45,6 +45,7 @@ export async function getTestCaseInfo(req, res){
         return res.redirect(req.headers.referer);
     }
 
+    try {
         const debtorInfo = await buildTestInfo(caseFileId)
 
         res.render('individualcase', {
@@ -53,6 +54,12 @@ export async function getTestCaseInfo(req, res){
             debtorsList,
             messages: [...req.flash('errors'), ...req.flash('msg')]
         })
+
+    } catch (error) {
+        console.error(error);
+    }
+    
+    
 }
 
 export async function getPrintView(req, res){
@@ -146,6 +153,10 @@ async function buildDebtorInfo(caseFileId){
 
         }
 
+        if(debtorInfo.payments.length === 0){
+            console.log(debtorInfo)
+            return debtorInfo
+        }
         //test
         let payCounter = 0
         let billCounter = -1
@@ -192,8 +203,6 @@ async function buildTestInfo(caseFileId){
             req.flash('errors', 'Error debt information not found: ' + req.params.id);
             return res.redirect(req.headers.referer);
         }
-        
-        const payments = []
         
         //create information object
         const debtorInfo = {
@@ -294,6 +303,7 @@ async function buildTestInfo(caseFileId){
                 }
             }
         }
+
 
 console.log(debtorInfo)
 
