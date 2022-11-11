@@ -62,7 +62,8 @@
                 <tr>
                     <th colspan="1">Payment Date</th>
                     <th colspan="1">Payment</th>
-                    <th colspan="3">Comments</th>
+                    <th colspan="2">Comments</th>
+                    <th colspan="2">Balance</th>
                 </tr>
                 <tr>
                     <th colspan="5">
@@ -73,46 +74,50 @@
 
 
 <!-- Payments -->
-                <% if (typeof debtorInfo.billed !== 'undefined'){ %>
-                    <% let bills = 0 %>
-                    <% let payments = 0 %>
-                    <% let skips = 0 %>
-                    <% let halfpay = 1 %>
-                    
-                    <% for(let i=0; i<debtorInfo.billed.length*2; i++){ %>
-                <tr>
+            <% let billedCounter = 0 %>
+            <% let paymentCounter = 0 %>
+            <% let runningBalance = 0 %>
 
-                        <% if(i === skips && payments < debtorInfo.payments.length){ %>   
-                                     
-                          
-                            
-                    <td rowspan="<%= debtorInfo.payments[payments].space %>"><%= debtorInfo.payments[payments].paymentAmount %></td>
-
-                            <% skips = i + debtorInfo.payments[payments].space %>
-                            <% payments++ %>
-
-                        <% } else if(i === skips && debtorInfo.payments.length === payments){ %> 
-                    <td rowspan="0"></td>
-                            <% payments++ %>
-                        <% } %>
-                        
-                        <% halfpay-- %>
-                        
-             
-                    <% if(halfpay <= 0){ %>
-                        <% let formatDate = new Date(debtorInfo.billed[bills].paymentDate) %>
+            <% while(billedCounter < debtorInfo.billed.length || paymentCounter < debtorInfo.payments.length){ %>
+                <% if(paymentCounter < debtorInfo.payments.length && runningBalance <= 0){ %>
+                <tr class="highlight">
+                    <% let formatDate = new Date(debtorInfo.payments[paymentCounter].paymentDate) %>
                     <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
-                    <td rowspan="<%= debtorInfo.billed[bills].space + 2 %>" colspan="1"><%= formatDate %></td>
-                    <td rowspan="<%= debtorInfo.billed[bills].space + 2 %>" colspan="1"><%= debtorInfo.billed[bills].paymentAmount %></td>
-                        <% halfpay = 2 + debtorInfo.billed[bills].space %>
-                        <% bills++ %>
-                    <% } %> 
-                    <td></td>
-                    <td></td>
+                    <td rowspan="1" colspan="1"><%= formatDate %></td>
+                    <td rowspan="1"><%= debtorInfo.payments[paymentCounter].paymentAmount %></td>
+                    <% runningBalance += +debtorInfo.payments[paymentCounter].paymentAmount %>
+                    <td rowspan="1" colspan="2"><%= debtorInfo.payments[paymentCounter].comment %></td>
+                    <td><%= runningBalance %></td>
+                    <% paymentCounter++ %>
                 </tr>
-                      
-                    <% } %>
                 <% } %>
+                <% if(billedCounter < debtorInfo.billed.length && runningBalance > 0){ %>
+                    <tr>
+                        <% let formatDate = new Date(debtorInfo.billed[billedCounter].paymentDate) %>
+                        <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
+                        <td rowspan="1" colspan="1"><%= formatDate %></td>
+                        <td rowspan="1">-<%= debtorInfo.billed[billedCounter].paymentAmount %></td>
+                        <% runningBalance -= +debtorInfo.billed[billedCounter].paymentAmount %>
+                        <td rowspan="1" colspan="2"><%= debtorInfo.billed[billedCounter].comment %></td>
+                        <td><%= runningBalance %></td>
+                        <% billedCounter++ %>
+                    </tr>
+                <% }else if(billedCounter < debtorInfo.billed.length && paymentCounter >= debtorInfo.payments.length){ %>
+                    <tr>
+                        <% let formatDate = new Date(debtorInfo.billed[billedCounter].paymentDate) %>
+                        <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
+                        <td rowspan="1" colspan="1"><%= formatDate %></td>
+                        <td rowspan="1">-<%= debtorInfo.billed[billedCounter].paymentAmount %></td>
+                        <% runningBalance -= +debtorInfo.billed[billedCounter].paymentAmount %>
+                        <td rowspan="1" colspan="2"><%= debtorInfo.billed[billedCounter].comment %></td>
+                        <td><%= runningBalance %></td>
+                        <% billedCounter++ %>
+                    </tr>
+                <% } %>
+            <% } %>
+
+                
+                      
         <% } %>
             </tbody>
         </table>
