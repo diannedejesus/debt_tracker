@@ -76,41 +76,42 @@
                 <% if (typeof debtorInfo.billed !== 'undefined'){ %>
                     <% let bills = 0 %>
                     <% let payments = 0 %>
-                    <% let skips = 0 %>
-                    <% let halfpay = 1 %>
+                    <% let skipPays = 0 %>
+                    <% let skipDebts = 0 %>
+                    <% let i=0 %>
                     
-                    <% for(let i=0; i<debtorInfo.billed.length*2; i++){ %>
+                    <% while(bills<debtorInfo.billed.length){ %>
                 <tr>
 
-                        <% if(i === skips && payments < debtorInfo.payments.length){ %>   
+                        <% if(i === skipPays && payments < debtorInfo.payments.length){ %>   
                                      
                           
                             
                     <td rowspan="<%= debtorInfo.payments[payments].space %>"><%= debtorInfo.payments[payments].paymentAmount %></td>
 
-                            <% skips = i + debtorInfo.payments[payments].space %>
+                            <% skipPays = i + debtorInfo.payments[payments].space %>
                             <% payments++ %>
 
-                        <% } else if(i === skips && debtorInfo.payments.length === payments){ %> 
+                        <% } else if(i === skipPays && debtorInfo.payments.length === payments){ %> 
                     <td rowspan="0"></td>
                             <% payments++ %>
                         <% } %>
                         
-                        <% halfpay-- %>
-                        
              
-                    <% if(halfpay <= 0){ %>
+                    <% if(i === skipDebts || payments > debtorInfo.payments.length){ %>
                         <% let formatDate = new Date(debtorInfo.billed[bills].paymentDate) %>
                     <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
-                    <td rowspan="<%= debtorInfo.billed[bills].space + 2 %>" colspan="1"><%= formatDate %></td>
-                    <td rowspan="<%= debtorInfo.billed[bills].space + 2 %>" colspan="1"><%= debtorInfo.billed[bills].paymentAmount %></td>
-                        <% halfpay = 2 + debtorInfo.billed[bills].space %>
+                    <td rowspan="<%= debtorInfo.billed[bills].space == 0 ? 1 : debtorInfo.billed[bills].space %>" colspan="1"><%= formatDate %></td>
+                    <td rowspan="<%= debtorInfo.billed[bills].space == 0 ? 1 : debtorInfo.billed[bills].space %>" colspan="1"><%= debtorInfo.billed[bills].paymentAmount %></td>
+                    
+                        <% skipDebts = i + debtorInfo.billed[bills].space %>
+                        
                         <% bills++ %>
                     <% } %> 
                     <td></td>
                     <td></td>
                 </tr>
-                      
+                <% i++ %>  
                     <% } %>
                 <% } %>
         <% } %>
