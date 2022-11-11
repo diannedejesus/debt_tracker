@@ -303,8 +303,7 @@ async function buildTestInfo(caseFileId){
                 }
             }
         }
-
-        // if(currentPayment === 0){
+ // if(currentPayment === 0){
         //     billCounter++
         // }
 
