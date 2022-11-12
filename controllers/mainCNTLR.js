@@ -157,25 +157,31 @@ async function buildDebtorInfo(caseFileId){
             console.log(debtorInfo)
             return debtorInfo
         }
-        //test
-        let payCounter = 0
-        let billCounter = -1
-        let runningBalance = +debtorInfo.payments[0].paymentAmount
 
-        while(runningBalance > 0 || payCounter < debtorInfo.payments.length-1){
-            if(runningBalance > 0){
-                runningBalance -= debtForSelected.minPayment
-                debtorInfo.payments[payCounter]['space'] += runningBalance < 0 ? 1 : 2
+        console.log(debtorInfo)
+       //-----------------
+        let payCounter = -1
+        let billCounter = 0
+        let currentPayment = 0 - +debtForSelected.minPayment
+
+        while(currentPayment > 0 || payCounter < debtorInfo.payments.length-1){
+            if(currentPayment >= 0 && billCounter < debtorInfo.billed.length-1){
                 billCounter++
-            }else if(payCounter < debtorInfo.payments.length-1){
+                currentPayment -= +debtForSelected.minPayment //debtorInfo.billed[billCounter].paymentAmount
+                debtorInfo.payments[payCounter]['space']++
+                debtorInfo.billed[billCounter]['space'] = 1
+            }
+
+            if(currentPayment <= 0 && payCounter < debtorInfo.payments.length-1){
                 payCounter++
-                runningBalance += +debtorInfo.payments[payCounter].paymentAmount
-                if(runningBalance >= 0){
-                    debtorInfo.payments[payCounter]['space']++
-                }else if(runningBalance < 0){
-                    debtorInfo.payments[payCounter]['space']++
+                if(Number(debtorInfo.payments[payCounter].paymentAmount) === 0){
+                    debtorInfo.payments[payCounter]['space'] = 1
                     debtorInfo.billed[billCounter]['space']++
-                }  
+                }else{
+                    currentPayment += +debtorInfo.payments[payCounter].paymentAmount
+                    if(currentPayment !== 0) debtorInfo.payments[payCounter]['space'] = 1
+                    debtorInfo.billed[billCounter]['space']++
+                }
             }
         }
 
@@ -272,11 +278,6 @@ async function buildTestInfo(caseFileId){
             return debtorInfo
         }
 
-        if(debtorInfo.payments.length === 0){
-            console.log(debtorInfo)
-            return debtorInfo
-        }
-
         console.log(debtorInfo)
        //-----------------
         let payCounter = -1
@@ -303,60 +304,7 @@ async function buildTestInfo(caseFileId){
                 }
             }
         }
- // if(currentPayment === 0){
-        //     billCounter++
-        // }
 
-        // if(currentPayment < 0){
-        //     payCounter++
-        // }
-
-
-
-
-        //if 0 change payment
-        //if > 0 +2 pay
-
-
-
-        // //test
-        // let payCounter = 0
-        // let billCounter = 0
-        // let runningBalance = Number(debtorInfo.payments[0].paymentAmount)
-        // let remainder = 0
-
-
-
-        // while(runningBalance > 0 || payCounter < debtorInfo.payments.length-1){
-        //     if(+debtorInfo.payments[payCounter].paymentAmount <=0){
-        //         debtorInfo.payments[payCounter]['space']++
-        //         debtorInfo.billed[billCounter]['space']++
-        //         payCounter++
-        //         runningBalance = Number(debtorInfo.payments[payCounter].paymentAmount)
-        //     }else{
-        //         if(runningBalance > 0){
-        //             runningBalance -= debtForSelected.minPayment
-        //             debtorInfo.payments[payCounter]['space'] += runningBalance < 0 ? 1 : 2
-        //             billCounter++
-        //         }else if(payCounter < debtorInfo.payments.length-1 && billCounter < debtorInfo.billed.length){
-        //             payCounter++
-                    
-        //             runningBalance += +debtorInfo.payments[payCounter].paymentAmount
-
-        //             if(runningBalance > 0){
-        //                 debtorInfo.payments[payCounter]['space']++
-        //             }else if(runningBalance < 0){
-        //                 debtorInfo.payments[payCounter]['space']++
-        //                 debtorInfo.billed[billCounter]['space']++
-        //             }
-        //         }else{
-        //             payCounter++
-        //             runningBalance += +debtorInfo.payments[payCounter].paymentAmount
-        //             remainder += +debtorInfo.payments[payCounter].paymentAmount
-        //         // console.log(remainder)
-        //         }
-        //     }
-        // }
 
 console.log(debtorInfo)
 
