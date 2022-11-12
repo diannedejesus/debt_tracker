@@ -86,7 +86,7 @@
                     <td rowspan="1" colspan="1"><%= formatDate %></td>
                     <td rowspan="1"><%= debtorInfo.payments[paymentCounter].paymentAmount %></td>
                     <% runningBalance += +debtorInfo.payments[paymentCounter].paymentAmount %>
-                    <td rowspan="1" colspan="2"><%= debtorInfo.payments[paymentCounter].comment %></td>
+                    <td rowspan="1" colspan="2"><%= debtorInfo.payments[paymentCounter].paymentComment %></td>
                     <td><%= runningBalance %></td>
                     <% paymentCounter++ %>
                 </tr>
@@ -98,7 +98,7 @@
                         <td rowspan="1" colspan="1"><%= formatDate %></td>
                         <td rowspan="1">-<%= debtorInfo.billed[billedCounter].paymentAmount %></td>
                         <% runningBalance -= +debtorInfo.billed[billedCounter].paymentAmount %>
-                        <td rowspan="1" colspan="2"><%= debtorInfo.billed[billedCounter].comment %></td>
+                        <td rowspan="1" colspan="2"><%= debtorInfo.billed[billedCounter].paymentComment %></td>
                         <td><%= runningBalance %></td>
                         <% billedCounter++ %>
                     </tr>
@@ -109,7 +109,7 @@
                         <td rowspan="1" colspan="1"><%= formatDate %></td>
                         <td rowspan="1">-<%= debtorInfo.billed[billedCounter].paymentAmount %></td>
                         <% runningBalance -= +debtorInfo.billed[billedCounter].paymentAmount %>
-                        <td rowspan="1" colspan="2"><%= debtorInfo.billed[billedCounter].comment %></td>
+                        <td rowspan="1" colspan="2"><%= debtorInfo.billed[billedCounter].paymentComment %></td>
                         <td><%= runningBalance %></td>
                         <% billedCounter++ %>
                     </tr>

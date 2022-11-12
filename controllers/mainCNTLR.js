@@ -146,18 +146,6 @@ async function buildDebtorInfo(caseFileId){
             return a.paymentDate - b.paymentDate;
           });
 
-        // let totalPaid = debtorInfo.totalPaid
-        // for(let items of debtorInfo.billed){
-        //     if(totalPaid >= debtorInfo.minPayment){
-        //         items.paymentAmount = "paid"
-        //         totalPaid -= debtorInfo.minPayment
-        //     }else if(totalPaid >= 0){
-        //         items.paymentAmount = totalPaid - debtorInfo.minPayment
-        //         totalPaid = 0
-        //     }
-
-        // }
-
 
 console.log(debtorInfo)
 
