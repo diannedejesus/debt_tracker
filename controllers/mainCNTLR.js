@@ -160,28 +160,30 @@ async function buildDebtorInfo(caseFileId){
 
         console.log(debtorInfo)
        //-----------------
-        let payCounter = -1
+        let payCounter = 0
         let billCounter = 0
         let currentPayment = 0 - +debtForSelected.minPayment
 
-        while(currentPayment > 0 || payCounter < debtorInfo.payments.length-1){
+        while(currentPayment > 0 || payCounter < debtorInfo.payments.length){
             if(currentPayment >= 0 && billCounter < debtorInfo.billed.length-1){
                 billCounter++
+                if(currentPayment !== 0) debtorInfo.billed[billCounter]['space'] = 1
                 currentPayment -= +debtForSelected.minPayment //debtorInfo.billed[billCounter].paymentAmount
-                debtorInfo.payments[payCounter]['space']++
-                debtorInfo.billed[billCounter]['space'] = 1
+                debtorInfo.payments[payCounter-1]['space']++
+                
             }
-
-            if(currentPayment <= 0 && payCounter < debtorInfo.payments.length-1){
-                payCounter++
+ 
+            if(currentPayment <= 0 && payCounter < debtorInfo.payments.length){
                 if(Number(debtorInfo.payments[payCounter].paymentAmount) === 0){
                     debtorInfo.payments[payCounter]['space'] = 1
                     debtorInfo.billed[billCounter]['space']++
                 }else{
                     currentPayment += +debtorInfo.payments[payCounter].paymentAmount
                     if(currentPayment !== 0) debtorInfo.payments[payCounter]['space'] = 1
+                    if(currentPayment === 0 && payCounter === debtorInfo.payments.length-1) debtorInfo.payments[payCounter]['space'] = 1
                     debtorInfo.billed[billCounter]['space']++
                 }
+                payCounter++
             }
         }
 
@@ -219,7 +221,92 @@ async function buildTestInfo(caseFileId){
             debt: debtForSelected.debtAmount,
             elapsed: monthElapsed(new Date(debtForSelected.startDate)),
             totalPaid: 0,
-            payments: [],
+            payments: [
+                {
+                  paymentDate: '2021-07-18T14:30:48.271Z',
+                  paymentAmount: 17,
+                  paymentComment: '',
+                  space: 0
+                },
+                {
+                  paymentDate: '2021-09-18T11:16:44.363Z',
+                  paymentAmount: 37,
+                  paymentComment: '',
+                  space: 0
+                },
+                {
+                  paymentDate: '2021-10-26T05:49:06.248Z',
+                  paymentAmount: 18,
+                  paymentComment: '',
+                  space: 0
+                },
+                {
+                  paymentDate: '2022-02-08T09:09:52.586Z',
+                  paymentAmount: 42,
+                  paymentComment: '',
+                  space: 0
+                },
+                {
+                  paymentDate: '2022-02-10T05:20:03.626Z',
+                  paymentAmount: 9,
+                  paymentComment: '',
+                  space: 0
+                },
+                {
+                  paymentDate: '2022-04-05T20:35:16.364Z',
+                  paymentAmount: 44,
+                  paymentComment: '',
+                  space: 0
+                },
+                {
+                  paymentDate: '2022-04-19T23:09:44.341Z',
+                  paymentAmount: 30,
+                  paymentComment: '',
+                  space: 0
+                },
+                {
+                  paymentDate: '2022-05-05T03:47:17.374Z',
+                  paymentAmount: 43,
+                  paymentComment: '',
+                  space: 0
+                },
+                {
+                  paymentDate: '2022-05-07T19:07:43.685Z',
+                  paymentAmount: 12,
+                  paymentComment: '',
+                  space: 0
+                },
+                {
+                  paymentDate: '2022-05-22T12:51:08.661Z',
+                  paymentAmount: 32,
+                  paymentComment: '',
+                  space: 0
+                },
+                {
+                  paymentDate: '2022-05-23T09:53:51.863Z',
+                  paymentAmount: 45,
+                  paymentComment: '',
+                  space: 0
+                },
+                {
+                  paymentDate: '2022-06-24T05:43:45.945Z',
+                  paymentAmount: 29,
+                  paymentComment: '',
+                  space: 0
+                },
+                {
+                  paymentDate: '2022-06-28T07:15:34.091Z',
+                  paymentAmount: 45,
+                  paymentComment: '',
+                  space: 0
+                },
+                {
+                  paymentDate: '2022-09-28T10:52:43.284Z',
+                  paymentAmount: 32,
+                  paymentComment: '',
+                  space: 0
+                }
+              ],
             billed: [],
         }
 
@@ -238,20 +325,27 @@ async function buildTestInfo(caseFileId){
             })
         }
 
-        const paymentAmounts = Math.floor(Math.random() * 15);
-
-        while(debtorInfo.payments.length < paymentAmounts && debtorInfo['totalPaid'] < debtorInfo.debt){
-            let currentPay = Math.floor(Math.random() * 30)
-            
+        //only for static data
+        for(let payments of debtorInfo.payments){
+            let currentPay = payments.paymentAmount
             debtorInfo['totalPaid'] += currentPay
-
-            debtorInfo.payments.push({
-                paymentDate: randomDate(debtForSelected.startDate, new Date()), 
-                paymentAmount: currentPay,
-                paymentComment: '',
-                space: 0,
-            })
         }
+
+        //random data
+        // const paymentAmounts = Math.floor(Math.random() * 15);
+
+        // while(debtorInfo.payments.length < paymentAmounts && debtorInfo['totalPaid'] < debtorInfo.debt){
+        //     let currentPay = Math.floor(Math.random() * 50)
+            
+        //     debtorInfo['totalPaid'] += currentPay
+
+        //     debtorInfo.payments.push({
+        //         paymentDate: randomDate(debtForSelected.startDate, new Date()), 
+        //         paymentAmount: currentPay,
+        //         paymentComment: '',
+        //         space: 0,
+        //     })
+        // }
 
         debtorInfo.payments.sort(function(a,b){
             return a.paymentDate - b.paymentDate;
@@ -280,30 +374,35 @@ async function buildTestInfo(caseFileId){
 
         console.log(debtorInfo)
        //-----------------
-        let payCounter = -1
-        let billCounter = 0
-        let currentPayment = 0 - +debtForSelected.minPayment
+       let payCounter = 0
+       let billCounter = 0
+       let currentPayment = 0 - +debtForSelected.minPayment
 
-        while(currentPayment > 0 || payCounter < debtorInfo.payments.length-1){
-            if(currentPayment >= 0 && billCounter < debtorInfo.billed.length-1){
+       while(currentPayment > 0 || payCounter < debtorInfo.payments.length){
+           if(currentPayment > 0 && billCounter < debtorInfo.billed.length-1){
                 billCounter++
                 currentPayment -= +debtForSelected.minPayment //debtorInfo.billed[billCounter].paymentAmount
-                debtorInfo.payments[payCounter]['space']++
-                debtorInfo.billed[billCounter]['space'] = 1
-            }
+                debtorInfo.payments[payCounter-1]['space']++
+                if(currentPayment !== 0) debtorInfo.billed[billCounter]['space'] = 1
+           }else if(currentPayment === 0 && billCounter < debtorInfo.billed.length-1){
+                billCounter++
+                currentPayment -= +debtForSelected.minPayment //debtorInfo.billed[billCounter].paymentAmount
+                debtorInfo.payments[payCounter-1]['space']++
+           }
 
-            if(currentPayment <= 0 && payCounter < debtorInfo.payments.length-1){
-                payCounter++
-                if(Number(debtorInfo.payments[payCounter].paymentAmount) === 0){
-                    debtorInfo.payments[payCounter]['space'] = 1
-                    debtorInfo.billed[billCounter]['space']++
-                }else{
-                    currentPayment += +debtorInfo.payments[payCounter].paymentAmount
-                    if(currentPayment !== 0) debtorInfo.payments[payCounter]['space'] = 1
-                    debtorInfo.billed[billCounter]['space']++
-                }
-            }
-        }
+           if(currentPayment <= 0 && payCounter < debtorInfo.payments.length){
+               if(Number(debtorInfo.payments[payCounter].paymentAmount) === 0){
+                   debtorInfo.payments[payCounter]['space'] = 1
+                   debtorInfo.billed[billCounter]['space']++
+               }else{
+                   currentPayment += +debtorInfo.payments[payCounter].paymentAmount
+                   if(currentPayment !== 0) debtorInfo.payments[payCounter]['space'] = 1
+                   if(currentPayment === 0 && payCounter === debtorInfo.payments.length-1) debtorInfo.payments[payCounter]['space'] = 1
+                   debtorInfo.billed[billCounter]['space']++
+               }
+               payCounter++
+           }
+       }
 
 
 console.log(debtorInfo)

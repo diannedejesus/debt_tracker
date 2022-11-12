@@ -84,27 +84,28 @@
                 <tr>
 
                         <% if(i === skipPays && payments < debtorInfo.payments.length){ %>   
-                                     
+                                        
                           
                             
-                    <td rowspan="<%= debtorInfo.payments[payments].space %>"><%= debtorInfo.payments[payments].paymentAmount %></td>
+                    <td rowspan="<%= debtorInfo.payments[payments].space %>"><%= i %>- <%= debtorInfo.payments[payments].paymentAmount %></td>
 
                             <% skipPays = i + debtorInfo.payments[payments].space %>
                             <% payments++ %>
-
                         <% } else if(i === skipPays && debtorInfo.payments.length === payments){ %> 
                     <td rowspan="0"></td>
                             <% payments++ %>
                         <% } %>
                         
              
-                    <% if(i === skipDebts || payments >= debtorInfo.payments.length){ %>
+                    <% if(i === skipDebts || payments > debtorInfo.payments.length){ %>
+                      
                         <% let formatDate = new Date(debtorInfo.billed[bills].paymentDate) %>
                     <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
-                    <td rowspan="<%= debtorInfo.billed[bills].space == 0 ? 1 : debtorInfo.billed[bills].space %>" colspan="1"><%= formatDate %></td>
+                    <td rowspan="<%= debtorInfo.billed[bills].space == 0 ? 1 : debtorInfo.billed[bills].space %>" colspan="1"><%= i %>-<%= formatDate %></td>
                     <td rowspan="<%= debtorInfo.billed[bills].space == 0 ? 1 : debtorInfo.billed[bills].space %>" colspan="1"><%= debtorInfo.billed[bills].paymentAmount %></td>
                     
                         <% skipDebts = i + debtorInfo.billed[bills].space %>
+                        
                         <% bills++ %>
                     <% } %> 
                     <td></td>
@@ -114,6 +115,10 @@
                     <% } %>
                 <% } %>
         <% } %>
+                <tr>
+                    <td></td>
+                    <td></td>
+                </tr>
             </tbody>
         </table>
     </main>
