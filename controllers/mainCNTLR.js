@@ -2,6 +2,7 @@ import validator from 'validator';
 import DebtDB from '../models/Debts.js';
 import DebtorsDB from '../models/Debtors.js';
 import PaymentDB from '../models/PaymentLog.js';
+//import { restart } from 'nodemon';
 
 export async function index(req, res){  
     res.render('index.ejs', { 
@@ -198,7 +199,7 @@ console.log(debtorInfo)
     }
 }
 
-async function buildTestInfo(caseFileId){
+async function buildTestInfo2(caseFileId){
     try {
         const selectedDebtor = await DebtorsDB.findOne(caseFileId)
         if(!selectedDebtor){
@@ -404,6 +405,142 @@ async function buildTestInfo(caseFileId){
            }
        }
 
+
+console.log(debtorInfo)
+
+        return debtorInfo
+
+    } catch (error) {
+        throw error 
+        //req.flash('errors', 'An error occured with the database. #004');
+        //return res.redirect(req.headers.referer);
+    }
+}
+
+async function buildTestInfo(caseFileId){
+    try {
+        const selectedDebtor = await DebtorsDB.findOne(caseFileId)
+        if(!selectedDebtor){
+            req.flash('errors', req.params.id + ' is not a valid file id');
+            return res.redirect(req.headers.referer);
+        }
+        
+        const debtForSelected = await DebtDB.findOne({_id: selectedDebtor._id})
+        if(!debtForSelected){
+            req.flash('errors', 'Error debt information not found: ' + req.params.id);
+            return res.redirect(req.headers.referer);
+        }
+        
+        //create information object
+        const debtorInfo = {
+            name: selectedDebtor.name,
+            fileId: selectedDebtor.fileId,
+            startDate: debtForSelected.startDate.setDate(debtForSelected.startDate.getDate()+1),
+            minPayment: Number(debtForSelected.minPayment),
+            debt: debtForSelected.debtAmount,
+            elapsed: monthElapsed(new Date(debtForSelected.startDate)),
+            totalPaid: 0,
+            payments: [],
+            billed: [],
+        }
+
+        
+        //add payment information
+            
+        let owedPaymentsDate = new Date(debtorInfo.startDate)
+            owedPaymentsDate.setDate(1)
+
+        //adding due payments
+        for(let i = 0; i<debtorInfo.elapsed; i++){
+            debtorInfo.billed.push({
+                paymentDate: new Date(owedPaymentsDate.setMonth(owedPaymentsDate.getMonth()+1)),
+                paymentAmount: 0,
+                space: 1,
+            })
+        }
+
+        //only for static data
+        // for(let payments of debtorInfo.payments){
+        //     let currentPay = payments.paymentAmount
+        //     debtorInfo['totalPaid'] += currentPay
+        // }
+
+        //random data
+        const paymentAmounts = Math.floor(Math.random() * 15);
+
+        while(debtorInfo.payments.length < paymentAmounts && debtorInfo['totalPaid'] < debtorInfo.debt){
+            let currentPay = Math.floor(Math.random() * 50)
+            
+            debtorInfo['totalPaid'] += currentPay
+
+            debtorInfo.payments.push({
+                paymentDate: randomDate(debtForSelected.startDate, new Date()), 
+                paymentAmount: currentPay,
+                paymentComment: '',
+                space: 1,
+            })
+        }
+
+        debtorInfo.payments.sort(function(a,b){
+            return a.paymentDate - b.paymentDate;
+          });
+
+        //   first case 0 test
+        //   debtorInfo['totalPaid'] -= debtorInfo.payments[0].paymentAmount
+        //   debtorInfo.payments[0].paymentAmount = 0
+
+        let totalPaid = debtorInfo.totalPaid
+        for(let items of debtorInfo.billed){
+            if(totalPaid >= debtorInfo.minPayment){
+                items.paymentAmount = "paid"
+                totalPaid -= debtorInfo.minPayment
+            }else if(totalPaid >= 0){
+                items.paymentAmount = totalPaid - debtorInfo.minPayment
+                totalPaid = 0
+            }
+
+        }
+
+        if(debtorInfo.payments.length === 0){
+            console.log(debtorInfo)
+            return debtorInfo
+        }
+
+        console.log(debtorInfo)
+       //-----------------
+        let bill = 0
+        let payment = 0
+        let balance = -debtorInfo.minPayment + debtorInfo.payments[payment].paymentAmount
+        let billContinue = () => {
+            balance += debtorInfo.payments[payment].paymentAmount
+        }
+        let paymentContinue = () => {
+            balance += -debtorInfo.minPayment
+        }
+        let zeroStart = () => {
+            balance = -debtorInfo.minPayment + debtorInfo.payments[payment].paymentAmount
+        }
+
+       
+        while(payment < debtorInfo.payments.length-1){
+            if(balance < 0 && bill < debtorInfo.billed.length) {
+                payment++ //payment ends
+                debtorInfo.billed[bill].space++ //bill continues
+                billContinue()
+            }
+
+            if(balance > 0 && payment < debtorInfo.payments.length){
+                debtorInfo.payments[payment].space++ //payment continues
+                bill++ //bill ends
+                paymentContinue()
+            }
+
+            if(balance === 0){
+                bill++ //bill ends
+                payment++ //pay ends
+                zeroStart()
+            }
+        }
 
 console.log(debtorInfo)
 
