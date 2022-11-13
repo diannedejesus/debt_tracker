@@ -5,6 +5,7 @@ import connectDB from './config/database.js'
 //routes path
 import mainRoutes from './routes/mainRTE.js'
 import loginRoutes from './routes/authRTE.js'
+import testRoutes from './routes/testsRTE.js'
 
 
 import mongoose from 'mongoose' //mongoose handles the structure for our mongodb data. It will assure that the data in our database matches the definition we created for it.
@@ -65,6 +66,7 @@ app.use(passport.session())
 //declare routes to use
 app.use('/', mainRoutes)
 app.use('/auth', loginRoutes)
+app.use('/tests', testRoutes)
 
 
 

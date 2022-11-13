@@ -67,7 +67,7 @@
                 </tr>
                 <tr>
                     <th colspan="5">
-                        <a href="/testcase/<%= debtorInfo.fileId %>">Test Case</a>
+                        <a href="/tests/testcase/<%= debtorInfo.fileId %>">Test Case</a>
                         <a href="#">Button</a>
                     </th>
                 </tr>
@@ -85,7 +85,7 @@
                     <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
                     <td rowspan="1" colspan="1"><%= formatDate %></td>
                     <td rowspan="1"><%= debtorInfo.payments[paymentCounter].paymentAmount %></td>
-                    <% runningBalance += +debtorInfo.payments[paymentCounter].paymentAmount %>
+                    <% runningBalance += debtorInfo.payments[paymentCounter].paymentAmount %>
                     <td rowspan="1" colspan="2"><%= debtorInfo.payments[paymentCounter].paymentComment %></td>
                     <td><%= runningBalance %></td>
                     <% paymentCounter++ %>
@@ -97,7 +97,7 @@
                         <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
                         <td rowspan="1" colspan="1"><%= formatDate %></td>
                         <td rowspan="1">-<%= debtorInfo.billed[billedCounter].paymentAmount %></td>
-                        <% runningBalance -= +debtorInfo.billed[billedCounter].paymentAmount %>
+                        <% runningBalance -= debtorInfo.billed[billedCounter].paymentAmount %>
                         <td rowspan="1" colspan="2"><%= debtorInfo.billed[billedCounter].paymentComment %></td>
                         <td><%= runningBalance %></td>
                         <% billedCounter++ %>
