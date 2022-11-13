@@ -19,6 +19,7 @@ router.post('/registerpayment', ensureAuth, mainController.insertNewPayment)
 router.get('/cases/:id',  ensureAuth, mainController.getCaseInfo)
 router.get('/testcase/:id',  ensureAuth, mainController.getTestCaseInfo)
 router.get('/printview/:id',  ensureAuth, mainController.getPrintView)
+router.get('/cases-merge/:id',  ensureAuth, mainController.getCaseInfoMerge)
 
 
 

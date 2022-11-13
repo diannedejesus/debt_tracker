@@ -1,5 +1,7 @@
 <%- include('header.ejs') %>
 
+<% let currencyFormat = new Intl.NumberFormat("en-US", { style: "currency", "currency":"USD" }) %>
+
     <main class='signin clearfix'>
         <h1>Case Review</h1>
 
@@ -7,8 +9,10 @@
         <table>
             <thead>
                 <tr>
-                    <td colspan="4"></td>
-                    <td colspan="1"><a href="/printview/<%= debtorInfo.fileId %>">Print View</a></td>
+                    <td><a href="/testcase/<%= debtorInfo.fileId %>">Random Test Case</a></td>
+                    <td><a href="/cases/<%= debtorInfo.fileId %>">Table View</a></td>
+                    <td><a href="/cases-merge/<%= debtorInfo.fileId %>">Merge View</a></td>
+                    <td colspan="2"><a href="/printview/<%= debtorInfo.fileId %>">Print View</a></td>
                 </tr>
                 <tr>
                     <th colspan="5">Debtor table</th>
@@ -38,8 +42,8 @@
                     <% let formatDate = new Date(debtorInfo.startDate) %>
                     <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
                     <td><%= formatDate %></td>
-                    <td><%= debtorInfo.minPayment %></td>
-                    <td><%= debtorInfo.debt %></td>
+                    <td><%= currencyFormat.format(debtorInfo.minPayment) %></td>
+                    <td><%= currencyFormat.format(debtorInfo.debt) %></td>
                 </tr>
                 <tr>
                     <th>Current Debt</th>
@@ -49,7 +53,7 @@
                     <th>Payments Late</th>
                 </tr>
                 <tr>
-                    <td><%= debtorInfo.debt - debtorInfo.totalPaid %></td>
+                    <td><%= currencyFormat.format(debtorInfo.debt - debtorInfo.totalPaid) %></td>
                     <% let currentDate = new Date() %>
                     <!-- <%= currentDate.setMonth(currentDate.getMonth()+(Math.trunc((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) + 1)) %> -->
                     <!-- <%= currentDate = currentDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
@@ -63,12 +67,6 @@
                     <th colspan="1">Payment Date</th>
                     <th colspan="1">Payment</th>
                     <th colspan="3">Comments</th>
-                </tr>
-                <tr>
-                    <th colspan="5">
-                        <a href="/testcase/<%= debtorInfo.fileId %>">Test Case</a>
-                        <a href="#">Button</a>
-                    </th>
                 </tr>
 
 
@@ -87,7 +85,7 @@
                                         
                           
                             
-                    <td rowspan="<%= debtorInfo.payments[payments].space %>"><%= i %>- <%= debtorInfo.payments[payments].paymentAmount %></td>
+                    <td rowspan="<%= debtorInfo.payments[payments].space %>"><%= currencyFormat.format(debtorInfo.payments[payments].paymentAmount) %></td>
 
                             <% skipPays = i + debtorInfo.payments[payments].space %>
                             <% payments++ %>
@@ -101,8 +99,8 @@
                       
                         <% let formatDate = new Date(debtorInfo.billed[bills].paymentDate) %>
                     <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
-                    <td rowspan="<%= debtorInfo.billed[bills].space == 0 ? 1 : debtorInfo.billed[bills].space %>" colspan="1"><%= i %>-<%= formatDate %></td>
-                    <td rowspan="<%= debtorInfo.billed[bills].space == 0 ? 1 : debtorInfo.billed[bills].space %>" colspan="1"><%= debtorInfo.billed[bills].paymentAmount %></td>
+                    <td rowspan="<%= debtorInfo.billed[bills].space == 0 ? 1 : debtorInfo.billed[bills].space %>" colspan="1"><%= formatDate %></td>
+                    <td rowspan="<%= debtorInfo.billed[bills].space == 0 ? 1 : debtorInfo.billed[bills].space %>" colspan="1"><%= debtorInfo.billed[bills].paymentAmount === "paid" ? debtorInfo.billed[bills].paymentAmount : currencyFormat.format(debtorInfo.billed[bills].paymentAmount) %></td>
                     
                         <% skipDebts = i + debtorInfo.billed[bills].space %>
                         
