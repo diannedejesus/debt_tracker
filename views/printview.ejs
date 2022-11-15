@@ -17,8 +17,8 @@
                 <tr>
                     <td colspan="2"><select onchange="changeDebtor(event)">
                         <option selected value="debtorInfo.fileId"><%= debtorInfo.name %></option>
-                        <% if (typeof debtorsList !== 'undefined'){ %>
-                            <% for(let debtor of debtorsList){ %>
+                        <% if (typeof debtorList !== 'undefined'){ %>
+                            <% for(let debtor of debtorList){ %>
                                 <% if (debtorInfo.name !== debtor.name){ %>
                         <option value="<%= debtor.fileId %>"><%= debtor.name %></option>
                                 <% } %>

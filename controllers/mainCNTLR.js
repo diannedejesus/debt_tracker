@@ -18,8 +18,28 @@ export async function getRegPayment(req, res){
     })
 }
 
+export async function getEditPayment(req, res){
+    if(!req.params.id){
+        req.flash('error', "No payment selected");
+        return res.redirect(req.headers.referer);
+    }
+    
+    const verifyId = await DebtorsDB.findOne({ fileId: req.params.fileId})
+
+    const paymentData = await PaymentDB.findOne({ _id: req.params.id})
+    paymentData.fileID = verifyId.fileId
+
+    if(!paymentData) req.flash('error', "No payment found");
+
+    res.render('editpayment', {
+        user: req.user,
+        paymentData,
+        messages: [...req.flash('errors'), ...req.flash('msg')]
+    })
+}
+
 export async function getCaseInfo(req, res){
-    const debtorsList =  await DebtorsDB.find().select("name fileId")
+    const debtorList =  await DebtorsDB.find().select("name fileId")
     let caseFileId = {fileId: req.params.id}
 
     if(!caseFileId.fileId){
@@ -32,58 +52,38 @@ export async function getCaseInfo(req, res){
     res.render('individualcase', {
         user: req.user,
         debtorInfo,
-        debtorsList,
+        debtorList,
         messages: [...req.flash('errors'), ...req.flash('msg')]
     })
 }
 
 export async function getCaseInfoMerge(req, res){
-    const debtorsList =  await DebtorsDB.find().select("name fileId")
-    let caseFileId = {fileId: req.params.id}
+    const debtorList =  await DebtorsDB.find().select("name fileId")
+    let selectedDebtor = {fileId: req.params.id}
 
-    if(!caseFileId.fileId){
+    if(!selectedDebtor.fileId){
         req.flash('errors', 'No file id sent');
         return res.redirect(req.headers.referer);
     }
 
-    const debtorInfo = await buildDebtorInfoMerge(caseFileId)
+    for(let debtor of debtorList){
+        if(debtor.fileId === selectedDebtor.fileId){
+            selectedDebtor.debtorRef = debtor._id
+        }
+    }
+
+    const debtorInfo = await buildDebtorInfoMerge(selectedDebtor)
 
     res.render('individualcase-merge-view', {
         user: req.user,
         debtorInfo,
-        debtorsList,
+        debtorList,
         messages: [...req.flash('errors'), ...req.flash('msg')]
     })
 }
 
-export async function getTestCaseInfo(req, res){
-    const debtorsList =  await DebtorsDB.find().select("name fileId")
-    let caseFileId = {fileId: req.params.id}
-
-    if(!caseFileId.fileId){
-        req.flash('errors', 'No file id sent');
-        return res.redirect(req.headers.referer);
-    }
-
-    try {
-        const debtorInfo = await buildTestInfo(caseFileId)
-
-        res.render('individualcase', {
-            user: req.user,
-            debtorInfo,
-            debtorsList,
-            messages: [...req.flash('errors'), ...req.flash('msg')]
-        })
-
-    } catch (error) {
-        console.error(error);
-    }
-    
-    
-}
-
 export async function getPrintView(req, res){
-    const debtorsList =  await DebtorsDB.find().select("name fileId")
+    const debtorList =  await DebtorsDB.find().select("name fileId")
     let caseFileId = {fileId: req.params.id}
     
     if(!caseFileId.fileId){
@@ -96,7 +96,7 @@ export async function getPrintView(req, res){
     res.render('printview', {
         user: req.user,
         debtorInfo,
-        debtorsList,
+        debtorList,
         messages: [...req.flash('errors'), ...req.flash('msg')]
     })
 }
@@ -140,7 +140,6 @@ async function buildDebtorInfo(caseFileId){
             debtorInfo.billed.push({
                 paymentDate: new Date(owedPaymentsDate.setMonth(owedPaymentsDate.getMonth()+1)),
                 paymentAmount: debtForSelected.minPayment,
-                space: 0,
             })
         }
 
@@ -150,10 +149,10 @@ async function buildDebtorInfo(caseFileId){
             debtorInfo['totalPaid'] += Number(items.payment)
 
             debtorInfo.payments.push({
+                id: items._id,
                 paymentDate: items.date.setDate(items.date.getDate()+1), 
                 paymentAmount: Number(items.payment),
                 paymentComment: items.comment,
-                space: 0,
             })
         }
 
@@ -162,7 +161,7 @@ async function buildDebtorInfo(caseFileId){
         });
 
 
-console.log(debtorInfo)
+//console.log(debtorInfo)
 
         return debtorInfo
 
@@ -175,63 +174,18 @@ console.log(debtorInfo)
 
 async function buildDebtorInfoMerge(caseFileId){
     try {
-        const selectedDebtor = await DebtorsDB.findOne(caseFileId)
-        if(!selectedDebtor){
-            req.flash('errors', req.params.id + ' is not a valid file id');
-            return res.redirect(req.headers.referer);
-        }
-        
-        const debtForSelected = await DebtDB.findOne({_id: selectedDebtor._id})
-        if(!debtForSelected){
-            req.flash('errors', 'Error debt information not found: ' + req.params.id);
-            return res.redirect(req.headers.referer);
-        }
+        const debtorInfo = await buildDebtorInfo(caseFileId)
 
-        const payments = await PaymentDB.find({caseID: selectedDebtor._id})
-        
-        //create information object
-        const debtorInfo = {
-            name: selectedDebtor.name,
-            fileId: selectedDebtor.fileId,
-            startDate: debtForSelected.startDate.setDate(debtForSelected.startDate.getDate()+1),
-            minPayment: Number(debtForSelected.minPayment),
-            debt: debtForSelected.debtAmount,
-            elapsed: monthElapsed(new Date(debtForSelected.startDate)),
-            totalPaid: 0,
-            payments: [],
-            billed: [],
-        }
-
-        
-        //add payment information
-        let owedPaymentsDate = new Date(debtorInfo.startDate)
-            owedPaymentsDate.setDate(1)
+        if(!debtorInfo.billed || !debtorInfo.payments){ return debtorInfo }
 
         //adding due payments
-        for(let i = 0; i<debtorInfo.elapsed; i++){
-            debtorInfo.billed.push({
-                paymentDate: new Date(owedPaymentsDate.setMonth(owedPaymentsDate.getMonth()+1)),
-                paymentAmount: 0,
-                space: 1,
-            })
+        for(let bill of debtorInfo.billed){
+            bill.space = 1
         }
 
-        if(!payments){ return debtorInfo }
-
-        for(let items of payments){
-            debtorInfo['totalPaid'] += Number(items.payment)
-
-            debtorInfo.payments.push({
-                paymentDate: items.date.setDate(items.date.getDate()+1), 
-                paymentAmount: items.payment,
-                paymentComment: items.comment,
-                space: 1,
-            })
-        }       
-
-        debtorInfo.payments.sort(function(a,b){
-            return a.paymentDate - b.paymentDate;
-        });
+        for(let payment of debtorInfo.payments){
+            payment.space = 1
+        }
 
         let totalPaid = debtorInfo.totalPaid
         for(let items of debtorInfo.billed){
@@ -242,11 +196,6 @@ async function buildDebtorInfoMerge(caseFileId){
                 items.paymentAmount = totalPaid - debtorInfo.minPayment
                 totalPaid = 0
             }
-        }
-
-        if(debtorInfo.payments.length === 0){
-            console.log(debtorInfo)
-            return debtorInfo
         }
 
        //-----------------
@@ -263,7 +212,6 @@ async function buildDebtorInfoMerge(caseFileId){
            if(payment >= debtorInfo.payments.length) return
            balance = -debtorInfo.minPayment + Number(debtorInfo.payments[payment].paymentAmount)
        }
-
       
        while((balance > 0 || payment < debtorInfo.payments.length-1) && bill < debtorInfo.billed.length){
            if(balance < 0 && bill < debtorInfo.billed.length) {
@@ -285,7 +233,7 @@ async function buildDebtorInfoMerge(caseFileId){
            }
        }
 
-console.log(debtorInfo)
+//console.log(debtorInfo)
 
         return debtorInfo
 
@@ -323,6 +271,9 @@ export async function insertNewPayment(req, res){
     try {
         caseID = await DebtorsDB.findOne({fileId: req.body.fileid})
         if(!caseID){ errors.push('Case not found'); }
+
+        const similiarPayments = await PaymentDB.find({payment: req.body.payment, date:req.body.date, caseID:req.body.fileid,})
+        if(similiarPayments){ errors.push(`We found a payment for the same amount and date for this account.`); }
     } catch (error) {
         console.error(error.message);
         errors.push('An error occured with the database. #005');
@@ -358,6 +309,50 @@ export async function insertNewPayment(req, res){
         messages: [...req.flash('errors'), ...req.flash('msg')],
     })
 }
+
+export async function editPayment(req, res){
+    //NOTE:: think about renaming caseid
+    //NOTE:: validation for id
+    let caseID = "" 
+    const errors = dataVerifier({ //validate user submitted info
+        payment: req.body.payment,
+        date: req.body.date,
+        fileid: req.body.fileid,
+    })
+
+    if(errors.length) {
+        req.flash('errors', errors);
+        return res.render('newpayment', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+    }
+
+    //find id
+    try {
+        caseID = await DebtorsDB.findOne({fileId: req.body.fileid})
+        if(!caseID){ errors.push('Case not found'); }
+    } catch (error) {
+        console.error(error.message);
+        errors.push('An error occured with the database. #005');
+    }
+
+    //return errors
+    if(errors.length) {
+        req.flash('errors', errors);
+        return res.render('newpayment', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+    }
+
+//update database
+    const updatedPayment = await PaymentDB.updateOne({_id: req.body.id},{
+        caseID: caseID._id,
+        payment: parseFloat(req.body.payment),
+        date: req.body.date,
+        comment: req.body.comment //NOTE:: any reason to validate?
+    })
+    
+    console.log(updatedPayment)
+    
+    res.redirect(`/cases/${req.body.fileid}`)
+}
+
 
 export async function getDebtorList(req, res){
     try {
@@ -600,4 +595,27 @@ function dataVerifier(data){
     }
     
     return errors
+}
+
+
+
+export async function deletePayment(req, res){
+    try {
+        if(!req.params.id){
+            req.flash('error', "No payment selected");
+            return res.redirect(req.headers.referer);
+        }
+        
+        const deleted = await PaymentDB.deleteOne({ _id: req.params.id })
+        
+        if(deleted.acknowledged){ 
+            req.flash('msg', "Payment deleted"); 
+        }else{
+            req.flash('error', "Payment not deleted");
+        }
+
+        return res.redirect(req.headers.referer);
+    } catch (error) {
+        console.error(error)
+    }
 }

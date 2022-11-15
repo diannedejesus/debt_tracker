@@ -6,8 +6,6 @@
 
 Track who owes money to the program. It stores basic information about the person and their debt and allows for payment logging and debt calculations. For example, the paid-off amount and the number of payments left.
 
-
-# Current and proposed solutions
 <!-- user story: How does a user interact with that solution? How is data handled? -->
 
 ## How is it currently being handled?
@@ -89,9 +87,8 @@ Login:
 Password Reset:
     - [X] user request a password reset, admin reset password on user admin page
     - [X] admin sends created reset code and link or reset link to user
- <!-- - When a user request a password reset, verify the email then a link is sent to their email. -->
- 
     - [X] The link leads to a page that has a form that lets them change their password.
+     <!-- - When a user request a password reset, verify the email then a link is sent to their email. -->
 
 Registration Page:
 - [X] It will verify if it is the admin account,
@@ -275,8 +272,8 @@ Once these wireframes are approved by the client, include them in the user inter
     - [X] basic page that shows debtors
         - [X] show debt payoff info and late payments
     - [X] page for debtors info, debt and payments
-    - [ ] edit payment
-    - [ ] edit info
+    - [ ] edit payment /edit info
+    - [X] delete
     - [X] verify
     - [X] submit
 
@@ -284,7 +281,7 @@ Once these wireframes are approved by the client, include them in the user inter
     - [X] basic layout
     - [X] verify data
         - [X] correct formats
-        - [ ] duplicate payments
+        - [~] duplicate payments (warning + edit to remove)
     - [X] save to database
     
 <!-- ### Secondary Goals
@@ -358,18 +355,17 @@ Once these wireframes are approved by the client, include them in the user inter
 
 ## Issues
 <!-- Things that should be looked into but an alternative solution was/can be implemented  -->
-- how should payments that are greater than the minimun payment be processed?
-- how to handle late/missed payments?
-- verify variable naming schema for password reset and account verification since both use the same code.
+- [X] how should payments that are greater than the minimun payment be processed?
+- how to handle late/missed payments? (zero payment only for pay/bill date to indicated excused payment? server calculation add to object)
+- [X] verify variable naming schema for password reset and account verification since both use the same code.
 - Fix the style sheet of pages
     - create header for pages that are guest / not signed in users
     - Change page titles
 
 - verify how other routes need to handle revoked access [research]
     - how to remove the current session of a user?
-- verify error handling, throw errors [research]
-
-
+- verify how accurate payments left is
+- payments for the a debtor with the same date and payment amount will issue an error. Should the user be able to enter multiple payments for that date?
 <!-- NOTES
 Account Creation & Login
 To setup the page you need to go to the route "pageurl/auth/admin" to create the intial owner account. After the owner account is created this page won't let you create anymore accounts. The newly created owner account can create any kind of new accounts. If all owner accounts are remove or revoked then this page can be used to create a new owner account.
@@ -383,9 +379,13 @@ if the authentication code is not created and/or displayed the administrator can
 
 *This application is ment for small databases. If used with and extensive database then the way data is worked with should be reevaluated to avoid long loading times. You could cache the data locally to avoid calling to the database frequently and setting an interval for verifying for changes. Also modify calls the entire database for only a select amount of data to be displayed. Setting the display data to pages.
 
-NOTE:: Check testing routes with postmen or similar app to ensure restrintion work.
-NOTE:: Verify callback and awaits in same application. Is it ok??
-NOTE:: Verify render vs redirect??
+NOTE:: Check testing routes with postmen or similar app to ensure restrintion work. [research]
+NOTE:: Verify callback and awaits in same application. Is it ok?? [research]
+NOTE:: Verify render vs redirect?? [research]
+NOTE:: Revisit tests
+NOTE:: verify error handling, throw errors [research]
+NOTE:: submitting request for delete or others without forms [research]
+NOTE:: try consolidating views
  -->
 
 

@@ -9,10 +9,9 @@
         <table>
             <thead>
                 <tr>
-                    <td><a href="/testcase/<%= debtorInfo.fileId %>">Random Test Case</a></td>
                     <td><a href="/cases/<%= debtorInfo.fileId %>">Table View</a></td>
                     <td><a href="/cases-merge/<%= debtorInfo.fileId %>">Merge View</a></td>
-                    <td colspan="2"><a href="/printview/<%= debtorInfo.fileId %>">Print View</a></td>
+                    <td colspan="3"><a href="/printview/<%= debtorInfo.fileId %>">Print View</a></td>
                 </tr>
                 <tr>
                     <th colspan="5">Debtor table</th>
@@ -30,8 +29,8 @@
                     
                     <td><select onchange="changeDebtor(event)">
                         <option selected value="debtorInfo.fileId"><%= debtorInfo.name %></option>
-                        <% if (typeof debtorsList !== 'undefined'){ %>
-                            <% for(let debtor of debtorsList){ %>
+                        <% if (typeof debtorList !== 'undefined'){ %>
+                            <% for(let debtor of debtorList){ %>
                                 <% if (debtorInfo.name !== debtor.name){ %>
                         <option value="<%= debtor.fileId %>"><%= debtor.name %></option>
                                 <% } %>
@@ -85,7 +84,15 @@
                                         
                           
                             
-                    <td rowspan="<%= debtorInfo.payments[payments].space %>"><%= currencyFormat.format(debtorInfo.payments[payments].paymentAmount) %></td>
+                    <td rowspan="<%= debtorInfo.payments[payments].space %>">
+                        <form action="/delPayment/<%= debtorInfo.payments[payments].id %>" method="POST">
+                            <input type="submit" value="X" class="deleteBtn"> 
+                        </form>
+                        <%= currencyFormat.format(debtorInfo.payments[payments].paymentAmount) %>
+                        <form action="/editPayment/<%= debtorInfo.fileId %>/<%= debtorInfo.payments[payments].id %>" method="GET">
+                            <input type="submit" value="edit" class="editBtn">
+                        </form>
+                    </td>
 
                             <% skipPays = i + debtorInfo.payments[payments].space %>
                             <% payments++ %>

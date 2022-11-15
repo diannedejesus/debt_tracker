@@ -16,9 +16,14 @@ router.post('/registerdebt', ensureAuth, mainController.insertNewDebt)
 router.get('/registerpayment', ensureAuth, mainController.getRegPayment)
 router.post('/registerpayment', ensureAuth, mainController.insertNewPayment)
 
-router.get('/cases/:id',  ensureAuth, mainController.getCaseInfo)
-router.get('/printview/:id',  ensureAuth, mainController.getPrintView)
-router.get('/cases-merge/:id',  ensureAuth, mainController.getCaseInfoMerge)
+router.get('/cases/:id', ensureAuth, mainController.getCaseInfo)
+router.get('/printview/:id', ensureAuth, mainController.getPrintView)
+router.get('/cases-merge/:id', ensureAuth, mainController.getCaseInfoMerge)
+
+router.post('/delPayment/:id', ensureAuth, mainController.deletePayment)
+
+router.get('/editPayment/:fileId/:id', ensureAuth, mainController.getEditPayment)
+router.post('/editPayment', ensureAuth, mainController.editPayment)
 
 
 
