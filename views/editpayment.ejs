@@ -1,0 +1,17 @@
+<%- include('header.ejs') %>
+
+    <main class='signin clearfix'>
+        <h1>Edit Payment</h1>
+        <form action="/editpayment" method="POST">
+            <label>File ID:</label> <input type="text" name="fileid" value="<%= paymentData.fileID %>">
+            <label>Payment:</label> <input type="number" name="payment" value="<%= paymentData.payment %>">
+            <% let formatDate = new Date(paymentData.date) %>
+
+            <label>Date:</label> <input type="date" name="date" value="<%= formatDate.getFullYear() %>-<%= formatDate.getMonth() < 10 ? 0 : '' %><%= formatDate.getMonth() %>-<%= formatDate.getDate() < 10 ? 0 : '' %><%= formatDate.getDate() %>">
+            <label>Comments:</label> <input type="text" name="comment" value="<%= paymentData.comments %>">
+            <input type="hidden" name="id" value="<%= paymentData.id %>">
+            <input type="submit" class="submitbutton">
+        </form>
+    </main>
+</body>
+</html>
