@@ -554,6 +554,8 @@ export async function insertNewDebt(req, res){
 }
 
 export async function editDebt(req, res){
+    //verify duplications
+
     //validate submitted info
     const errors = dataVerifier({
         name: req.body.name,
@@ -583,13 +585,22 @@ export async function editDebt(req, res){
         fileId: req.body.fileid,
     }
 
-    const updatedDebtor = await DebtorsDB.findOneAndUpdate({fileId: req.body.id}, newDebtor)
-    if(!updatedDebtor) req.flash('error', 'Case not found');
-    
-    const updatedDebt = await DebtDB.updateOne({_id: updatedDebtor._id}, newDebt)
-    if(!updatedDebt.acknowledged) req.flash('error', 'Case not found');
+    try {
+        const updatedDebtor = await DebtorsDB.findOneAndUpdate({fileId: req.body.id}, newDebtor)
+        if(!updatedDebtor)  throw 'debtor not found';
+        
+        const updatedDebt = await DebtDB.updateOne({_id: updatedDebtor._id}, newDebt)
+        if(!updatedDebt.acknowledged || updatedDebt.modifiedCount < 0) throw 'debt not found';
 
-console.log(updatedDebtor, updatedDebt)
+    } catch (error) {
+        console.error(error)
+        req.flash('errors', 'An error occurred:');
+        if(error === 'debtor not found'){req.flash('errors', 'Debtor not found');}
+        if(error === 'debt not found'){req.flash('errors', 'Debt not found');}
+        if(error.codeName === 'DuplicateKey'){req.flash('errors', 'The fileid already exists and must be unique');}
+        
+        return res.redirect(req.headers.referer);
+    }
 
     req.flash('msg', 'Data saved successfully.');
     res.redirect(`/cases/${req.body.fileid}`)

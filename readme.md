@@ -268,14 +268,7 @@ Once these wireframes are approved by the client, include them in the user inter
 -->
 
 ## Goals and milestones
-- [ ] Debtor Page
-    - [X] basic page that shows debtors
-        - [X] show debt payoff info and late payments
-    - [X] page for debtors info, debt and payments
-    - [ ] edit payment /edit info
-    - [X] delete
-    - [X] verify
-    - [X] submit
+
 
 
     
@@ -344,7 +337,15 @@ Once these wireframes are approved by the client, include them in the user inter
         - [~] duplicate payments (warning + edit to remove)
     - [X] save to database
 
-    
+- [X] Debtor Page
+    - [X] basic page that shows debtors
+        - [X] show debt payoff info and late payments
+    - [X] page for debtors info, debt and payments
+    - [X] edit payment /edit info
+    - [X] delete
+    - [X] verify
+    - [X] submit
+
 
 * Issues Resolved
 - [X] can we use req.flash to store other messages besides errors? [test using other name and merging to messages]
