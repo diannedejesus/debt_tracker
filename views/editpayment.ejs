@@ -7,8 +7,8 @@
             <label>Payment:</label> <input type="number" name="payment" value="<%= paymentData.payment %>">
             <% let formatDate = new Date(paymentData.date) %>
 
-            <label>Date:</label> <input type="date" name="date" value="<%= formatDate.getFullYear() %>-<%= formatDate.getMonth() < 10 ? 0 : '' %><%= formatDate.getMonth() %>-<%= formatDate.getDate() < 10 ? 0 : '' %><%= formatDate.getDate() %>">
-            <label>Comments:</label> <input type="text" name="comment" value="<%= paymentData.comments %>">
+            <label>Date:</label> <input type="date" name="date" value="<%= formatDate.getFullYear() %>-<%= formatDate.getMonth()+1 < 10 ? 0 : '' %><%= formatDate.getMonth()+1 %>-<%= formatDate.getDate()+1 < 10 ? 0 : '' %><%= formatDate.getDate()+1 %>">
+            <label>Comments:</label> <input type="text" name="comment" value="<%= paymentData.comment %>">
             <input type="hidden" name="id" value="<%= paymentData.id %>">
             <input type="submit" class="submitbutton">
         </form>

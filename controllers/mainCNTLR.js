@@ -38,6 +38,26 @@ export async function getEditPayment(req, res){
     })
 }
 
+export async function getEditDebtor(req, res){
+    if(!req.params.id){
+        req.flash('error', "No payment selected");
+        return res.redirect(req.headers.referer);
+    }
+    
+    const debtorData = await DebtorsDB.findOne({ fileId: req.params.id })
+    console.log(debtorData)
+    const debtData = await DebtDB.findOne({ _id: debtorData._id})
+
+    if(!debtorData) req.flash('error', "No payment found");
+
+    res.render('editdebtor', {
+        user: req.user,
+        debtorData,
+        debtData,
+        messages: [...req.flash('errors'), ...req.flash('msg')]
+    })
+}
+
 export async function getCaseInfo(req, res){
     const debtorList =  await DebtorsDB.find().select("name fileId")
     let caseFileId = {fileId: req.params.id}
@@ -254,8 +274,7 @@ export async function getRegdebt(req, res){
 
 
 export async function insertNewPayment(req, res){
-    //NOTE:: think about renaming caseid
-    let caseID = "" 
+    let debtorRef = "" 
     const errors = dataVerifier({ //validate user submitted info
         payment: req.body.payment,
         date: req.body.date,
@@ -269,8 +288,8 @@ export async function insertNewPayment(req, res){
 
     //find id
     try {
-        caseID = await DebtorsDB.findOne({fileId: req.body.fileid})
-        if(!caseID){ errors.push('Case not found'); }
+        debtorRef = await DebtorsDB.findOne({fileId: req.body.fileid})
+        if(!debtorRef){ errors.push('Case not found'); }
 
         const similiarPayments = await PaymentDB.find({payment: req.body.payment, date:req.body.date, caseID:req.body.fileid,})
         if(similiarPayments){ errors.push(`We found a payment for the same amount and date for this account.`); }
@@ -287,7 +306,7 @@ export async function insertNewPayment(req, res){
 
     //construct data object
     const newPayment = new PaymentDB({
-        caseID: caseID._id,
+        debtorRef: debtorRef._id,
         payment: parseFloat(req.body.payment),
         date: req.body.date,
         comment: req.body.comment //NOTE:: any reason to validate?
@@ -311,9 +330,8 @@ export async function insertNewPayment(req, res){
 }
 
 export async function editPayment(req, res){
-    //NOTE:: think about renaming caseid
     //NOTE:: validation for id
-    let caseID = "" 
+    let debtorRef = "" 
     const errors = dataVerifier({ //validate user submitted info
         payment: req.body.payment,
         date: req.body.date,
@@ -327,8 +345,8 @@ export async function editPayment(req, res){
 
     //find id
     try {
-        caseID = await DebtorsDB.findOne({fileId: req.body.fileid})
-        if(!caseID){ errors.push('Case not found'); }
+        debtorRef = await DebtorsDB.findOne({fileId: req.body.fileid})
+        if(!debtorRef){ errors.push('Case not found'); }
     } catch (error) {
         console.error(error.message);
         errors.push('An error occured with the database. #005');
@@ -342,7 +360,7 @@ export async function editPayment(req, res){
 
 //update database
     const updatedPayment = await PaymentDB.updateOne({_id: req.body.id},{
-        caseID: caseID._id,
+        debtorRef: debtorRef._id,
         payment: parseFloat(req.body.payment),
         date: req.body.date,
         comment: req.body.comment //NOTE:: any reason to validate?
@@ -533,6 +551,48 @@ export async function insertNewDebt(req, res){
         }
     })
 
+}
+
+export async function editDebt(req, res){
+    //validate submitted info
+    const errors = dataVerifier({
+        name: req.body.name,
+        debtamount: req.body.debtamount,
+        fileid: req.body.fileid,
+        minpayment: req.body.minpayment,
+        startdate: req.body.startdate,
+    })
+
+    if(errors.length) {
+        req.flash('errors', errors);
+        return res.render('newdebt', { 
+            user: req.user, 
+            messages: [...req.flash('errors'), ...req.flash('msg')]
+        });
+    }
+
+    //contruct data objects
+    const newDebt = {
+        debtAmount: parseFloat(req.body.debtamount),
+        minPayment: parseFloat(req.body.minpayment),
+        startDate: req.body.startdate,
+    }
+
+    const newDebtor = {
+        name: req.body.name, 
+        fileId: req.body.fileid,
+    }
+
+    const updatedDebtor = await DebtorsDB.findOneAndUpdate({fileId: req.body.id}, newDebtor)
+    if(!updatedDebtor) req.flash('error', 'Case not found');
+    
+    const updatedDebt = await DebtDB.updateOne({_id: updatedDebtor._id}, newDebt)
+    if(!updatedDebt.acknowledged) req.flash('error', 'Case not found');
+
+console.log(updatedDebtor, updatedDebt)
+
+    req.flash('msg', 'Data saved successfully.');
+    res.redirect(`/cases/${req.body.fileid}`)
 }
 
 function dataVerifier(data){

@@ -277,12 +277,7 @@ Once these wireframes are approved by the client, include them in the user inter
     - [X] verify
     - [X] submit
 
-- [ ] Register payment page
-    - [X] basic layout
-    - [X] verify data
-        - [X] correct formats
-        - [~] duplicate payments (warning + edit to remove)
-    - [X] save to database
+
     
 <!-- ### Secondary Goals
 
@@ -342,6 +337,15 @@ Once these wireframes are approved by the client, include them in the user inter
     - [X] revoke user access
     - [extra] send email with link *
 
+- [X] Register payment page
+    - [X] basic layout
+    - [X] verify data
+        - [X] correct formats
+        - [~] duplicate payments (warning + edit to remove)
+    - [X] save to database
+
+    
+
 * Issues Resolved
 - [X] can we use req.flash to store other messages besides errors? [test using other name and merging to messages]
 - [X] how to handle the reset of an admin password [implement owner/appAdmin account who can create admins but admins can't manage]
@@ -366,6 +370,7 @@ Once these wireframes are approved by the client, include them in the user inter
     - how to remove the current session of a user?
 - verify how accurate payments left is
 - payments for the a debtor with the same date and payment amount will issue an error. Should the user be able to enter multiple payments for that date?
+- have file deletion verify deletion.
 <!-- NOTES
 Account Creation & Login
 To setup the page you need to go to the route "pageurl/auth/admin" to create the intial owner account. After the owner account is created this page won't let you create anymore accounts. The newly created owner account can create any kind of new accounts. If all owner accounts are remove or revoked then this page can be used to create a new owner account.
