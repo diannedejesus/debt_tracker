@@ -4,12 +4,12 @@
 
 ## Description
 
-Track who owes money to the program. It stores basic information about the person and their debt and allows for payment logging and debt calculations. For example, the paid-off amount and the number of payments left.
+Track who owes money to the agency. It stores basic information about the person and their debt. It has payment logging and it calculates data related to the debt. For example, the paid-off amount and the number of payments left.
 
 <!-- user story: How does a user interact with that solution? How is data handled? -->
 
 ## How is it currently being handled?
-The current solution is an Excel spreadsheet containing the information about every person with debt. When a debt needs to be registered, the case worker opens the file and duplicates the template sheet. The template sheet allows the case worker to enter the following information:
+The current solution is an Excel spreadsheet containing the information on every person with a debt. When a new debt needs to be registered, the case worker opens the file and duplicates the template sheet. The template sheet allows the case worker to enter the following information:
 - name
 - debt amount (the initial amount owed)
 - case id
@@ -28,13 +28,13 @@ On that same spreadsheet is a section for registering payments made. When eviden
 - amount paid
 - comments
 
-If a person solicits a summary of their account or the case worker needs to send an annual summarization to the person, then they open the file and navigate to the summary sheet. This sheet pulls data from the selected person's debt sheet, using a dropdown filled with information from another sheet. The sheet that provides the information lists all sheets in the file. 
+If a person solicits a summary of their account or the case worker needs to send an annual summarization to the person, then they open the file and navigate to the summary sheet. This sheet pulls data from the selected person's debt sheet, using a dropdown. The dropdown references the persons sheet and fills in the information into the current sheet. The sheet that provides the information to the dropdown lists all sheets in the file. 
 
-It displays the information in a format that should be easy for anyone to understand.
+The summary displays the information in a format that should be easy for anyone to understand.
 
 
 ## What problem is this software addressing? Who will be using it?
-This software is to facilitate the management of debt cases. Currently the documentation for these cases is found in individual case files or on an Excel spreadsheet managed by a single person. Meaning that the process of assuring debt payments are up-to-date and viewing the status of these cases falls on a single person. Also, the only way to see which ones are in default is to go through each sheet. Because of this a cases can easily lack follow-up when the workload of that case worker is higher than the norm or have a leave of absence. 
+This software is to facilitate the management of debt cases. Currently the documentation for these cases is found in individual case files or on an Excel spreadsheet managed by a single person. Meaning that the process of assuring debt payments are up-to-date and viewing the status of these cases falls on a single person. Also, the only way to see which ones are in default is to go through each sheet and examine the sheet to see if current payments cover the rent owed. Because of this a cases can easily lack follow-up when the workload of that case worker is higher than the normal or has a leave of absence. 
 
 This software is for authorized case workers who will: enter payments, new debts and follow up on active cases.
 
@@ -43,10 +43,10 @@ This software is for authorized case workers who will: enter payments, new debts
 <!-- Functional Descrition
  With this section, you’re trying to answer a simple question: What does the software do? Of course, to answer this question thoroughly, you’ll need to dig a little deeper. In your functional description, you should cover error handling, one-time startup procedures, user limitations, and other similar details.  -->
 
-### Login
+### Login / Registration / User Admin
 A login is necessary to keep the information confidential and assure that only authorized personnel has access. Due to this, it will not have a traditional registration page. Instead, there will be a page where an administrator can create new accounts.
 
-The login should include a message for unregistered people, telling them that the admin must make them an account. Only the administrator will have access to the registration page. There they will be able to create accounts for authorized case workers. The user will need to validate their account and create a password. The page can also revoke access.
+The login should include a message for unregistered people, telling them that the admin must make them an account. Only administrative accounts will have access to the registration page. There they will be able to create accounts for authorized case workers. The user will need to validate their account and create a password. The page can also revoke access.
 
 #### **Additional Details**
 * In the current scope, there is no need to implement access levels for the case worker accounts. 
@@ -63,17 +63,15 @@ The login should include a message for unregistered people, telling them that th
         - [X] admin restricted
         - [X] create new accounts
         - [X] create activation code and link
-        <!-- - sends initial login link -->
+        - [X] reset password button
+            - [X] verify user exists
+            - [X] create activation code and link
+        <!-- - sends activation/reset link -->
 
-    * reset password
+    * reset password page
         - [X] verify user
-        - [X] create activation code and link
-        <!-- - send secure reset link -->
-
-* reset password page
-    - [X] verify user
-    - [X] verify reset code
-    - [X] change password
+        - [X] verify reset code
+        - [X] change password
 
 #### **Pages Breakdown**
 
@@ -346,7 +344,6 @@ Once these wireframes are approved by the client, include them in the user inter
     - [X] verify
     - [X] submit
 
-
 * Issues Resolved
 - [X] can we use req.flash to store other messages besides errors? [test using other name and merging to messages]
 - [X] how to handle the reset of an admin password [implement owner/appAdmin account who can create admins but admins can't manage]
@@ -357,21 +354,24 @@ Once these wireframes are approved by the client, include them in the user inter
 - [X] loggedin user should not have access to verify account page
 - [X] error when user create is submitted can't find page redirect.
 - [X] getting header error when submitting user that is already created and it is giving me the verification code and it is creating the invalid account
+- [X] verify variable naming schema for password reset and account verification since both use the same code.
+- [X] how should payments that are greater than the minimun payment be processed?
 
 ## Issues
 <!-- Things that should be looked into but an alternative solution was/can be implemented  -->
-- [X] how should payments that are greater than the minimun payment be processed?
-- how to handle late/missed payments? (zero payment only for pay/bill date to indicated excused payment? server calculation add to object)
-- [X] verify variable naming schema for password reset and account verification since both use the same code.
+- [X] payments for a debtor with the same date and payment amount will issue an error.
+- [X] verify how accurate payments left is
+- [X] how to handle late/missed payments? (zero payment only for pay/bill date to indicated excused payment? server calculation add to object)
 - Fix the style sheet of pages
     - create header for pages that are guest / not signed in users
     - Change page titles
 
-- verify how other routes need to handle revoked access [research]
-    - how to remove the current session of a user?
-- verify how accurate payments left is
-- payments for the a debtor with the same date and payment amount will issue an error. Should the user be able to enter multiple payments for that date?
+- [X] verify how other routes need to handle revoked access [research]
+    - [ ] Implement warning about revoking access, saying it only stop the user from logging in at their next attempt.
+    - [-] how to remove the current session of a user?
 - have file deletion verify deletion.
+- Test payments over dued amount
+
 <!-- NOTES
 Account Creation & Login
 To setup the page you need to go to the route "pageurl/auth/admin" to create the intial owner account. After the owner account is created this page won't let you create anymore accounts. The newly created owner account can create any kind of new accounts. If all owner accounts are remove or revoked then this page can be used to create a new owner account.

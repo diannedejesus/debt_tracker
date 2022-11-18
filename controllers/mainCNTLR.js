@@ -18,6 +18,13 @@ export async function getRegPayment(req, res){
     })
 }
 
+export async function getExcusedPayment(req, res){
+    res.render('excusedpayment', {
+        user: req.user,
+        messages: [...req.flash('errors'), ...req.flash('msg')]
+    })
+}
+
 export async function getEditPayment(req, res){
     if(!req.params.id){
         req.flash('error', "No payment selected");
@@ -124,6 +131,7 @@ export async function getPrintView(req, res){
 async function buildDebtorInfo(caseFileId){
     try {
         const selectedDebtor = await DebtorsDB.findOne(caseFileId)
+        let excusedPayments = await PaymentDB.find({caseID: selectedDebtor._id, payment: 0}).limit(1).sort({date:-1})
 
         if(!selectedDebtor){
             req.flash('errors', req.params.id + ' is not a valid file id');
@@ -136,8 +144,14 @@ async function buildDebtorInfo(caseFileId){
             return res.redirect(req.headers.referer);
         }
 
+
+        const elapsed = monthElapsed(new Date(debtForSelected.startDate))
         const payments = await PaymentDB.find({caseID: selectedDebtor._id})
-        
+
+        if(excusedPayments.length <= 0){
+            excusedPayments.date = debtForSelected.startDate
+        }
+
         //create information object
         const debtorInfo = {
             name: selectedDebtor.name,
@@ -145,7 +159,7 @@ async function buildDebtorInfo(caseFileId){
             startDate: debtForSelected.startDate.setDate(debtForSelected.startDate.getDate()+1),
             minPayment: Number(debtForSelected.minPayment),
             debt: debtForSelected.debtAmount,
-            elapsed: monthElapsed(new Date(debtForSelected.startDate)),
+            elapsed: monthElapsed(new Date(excusedPayments.date)),
             totalPaid: 0,
             payments: [],
             billed: [],
@@ -156,7 +170,7 @@ async function buildDebtorInfo(caseFileId){
             owedPaymentsDate.setDate(1)
 
         //adding payments due/billed
-        for(let i = 0; i<debtorInfo.elapsed; i++){
+        for(let i = 0; i<elapsed; i++){
             debtorInfo.billed.push({
                 paymentDate: new Date(owedPaymentsDate.setMonth(owedPaymentsDate.getMonth()+1)),
                 paymentAmount: debtForSelected.minPayment,
@@ -179,9 +193,6 @@ async function buildDebtorInfo(caseFileId){
         debtorInfo.payments.sort(function(a,b){
             return a.paymentDate - b.paymentDate;
         });
-
-
-//console.log(debtorInfo)
 
         return debtorInfo
 
@@ -291,8 +302,14 @@ export async function insertNewPayment(req, res){
         debtorRef = await DebtorsDB.findOne({fileId: req.body.fileid})
         if(!debtorRef){ errors.push('Case not found'); }
 
-        const similiarPayments = await PaymentDB.find({payment: req.body.payment, date:req.body.date, caseID:req.body.fileid,})
-        if(similiarPayments){ errors.push(`We found a payment for the same amount and date for this account.`); }
+        const similiarPayments = await PaymentDB.find({
+            payment: req.body.payment, 
+            date: req.body.date, 
+            caseID: debtorRef._id
+        })
+
+        if(similiarPayments.length > 0){ errors.push(`We found a payment for the same amount and date for this account.`); }
+
     } catch (error) {
         console.error(error.message);
         errors.push('An error occured with the database. #005');
@@ -306,7 +323,7 @@ export async function insertNewPayment(req, res){
 
     //construct data object
     const newPayment = new PaymentDB({
-        debtorRef: debtorRef._id,
+        caseID: debtorRef._id,
         payment: parseFloat(req.body.payment),
         date: req.body.date,
         comment: req.body.comment //NOTE:: any reason to validate?
@@ -315,18 +332,84 @@ export async function insertNewPayment(req, res){
     //save to database
     newPayment.save((err) => {
         if(err){
-            console.error(err)
+            console.error(err._message)
             req.flash('errors', 'There was an error submitting the data to the database. #003');
             return res.render('newpayment', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
         }
 
         req.flash('msg', 'Successfully saved.');
+        res.render('newpayment', {
+            user: req.user,
+            messages: [...req.flash('errors'), ...req.flash('msg')],
+        })
     })
     
-    res.render('newpayment', {
-        user: req.user,
-        messages: [...req.flash('errors'), ...req.flash('msg')],
+    
+}
+
+export async function excusedPayment(req, res){
+    let debtorRef = "" 
+    const errors = dataVerifier({ //validate user submitted info
+        date: req.body.date,
+        fileid: req.body.fileid,
+        comment: req.body.comment,
     })
+
+    
+
+    if(errors.length) {
+        req.flash('errors', errors);
+        return res.render('excusedpayment', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+    }
+
+    //find id
+    try {
+        debtorRef = await DebtorsDB.findOne({fileId: req.body.fileid})
+        if(!debtorRef){ errors.push('Case not found'); }
+
+        const similiarPayments = await PaymentDB.find({
+            payment: 0, 
+            date: req.body.date, 
+            caseID: debtorRef._id
+        })
+
+        if(similiarPayments.length > 0){ errors.push(`We found a payment for the same amount and date for this account.`); }
+
+    } catch (error) {
+        console.error(error.message);
+        errors.push('An error occured with the database. #005');
+    }
+
+    //return errors
+    if(errors.length) {
+        req.flash('errors', errors);
+        return res.render('excusedpayment', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+    }
+
+    //construct data object
+    const excusedPayment = new PaymentDB({
+        caseID: debtorRef._id,
+        payment: 0,
+        date: req.body.date,
+        comment: req.body.comment //NOTE:: any reason to validate?
+    })
+
+    //save to database
+    excusedPayment.save((err) => {
+        if(err){
+            console.error(err._message)
+            req.flash('errors', 'There was an error submitting the data to the database. #003');
+            return res.render('excusedpayment', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+        }
+
+        req.flash('msg', 'Successfully saved.');
+        res.render('excusedpayment', {
+            user: req.user,
+            messages: [...req.flash('errors'), ...req.flash('msg')],
+        })
+    })
+    
+    
 }
 
 export async function editPayment(req, res){
@@ -650,8 +733,8 @@ function dataVerifier(data){
     }
 
     if(data.payment !== undefined){
-        if(!validator.isLength(data.payment, {min: 1})){
-            errors.push('Payment cannot be empty');
+        if(!validator.isLength(data.payment, {min: 1}) || data.payment == 0){
+            errors.push('Payment cannot be empty or 0');
         }else if(!validator.isCurrency(data.payment, {require_symbol: false, allow_negatives: false})){
             errors.push( 'Payment can only be a valid positive currency format (###.##))');
         }
@@ -662,6 +745,12 @@ function dataVerifier(data){
             errors.push('Date cannot be empty');
         }else if(!validator.isDate(data.date)){
             errors.push('Date can only be a valid date format, dd/mm/yyyy.');
+        }
+    }
+
+    if(data.comment !== undefined){
+        if(!validator.isLength(data.comment, {min: 8})){
+            errors.push('An reason must be present for excused payments.');
         }
     }
     

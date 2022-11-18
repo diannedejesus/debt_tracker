@@ -62,10 +62,9 @@
                     <!-- <%= currentDate.setMonth(currentDate.getMonth()+(Math.trunc((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) + 1)) %> -->
                     <!-- <%= currentDate = currentDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
                     <td><%= currentDate %></td>
-                    <td><%= Math.trunc((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) + 1 %></td>
+                    <td><%= Math.ceil((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) %></td>
                     <td><%= debtorInfo.payments.length %></td>
                     <td><%= (debtorInfo.totalPaid < (debtorInfo.elapsed * debtorInfo.minPayment)) ? 'Yes' : 'No' %></td>
-                    
                 </tr>
                 <tr>
                     <th colspan="1">Payment Date</th>

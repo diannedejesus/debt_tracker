@@ -58,7 +58,7 @@
                     <td class="highlight" colspan="1"><%= currencyFormat.format(debtorInfo.minPayment) %></td>
                     <td colspan="1"></td>
                     <td colspan="2">Payments Due</td>
-                    <td class="highlight" colspan="1"><%= Math.trunc((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) + 1 %></td>
+                    <td class="highlight" colspan="1"><%= Math.ceil((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) %></td>
                 </tr>
                 <tr>
                     <td class="thinline" colspan="2">Amount Paid</td>
