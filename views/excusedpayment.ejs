@@ -1,0 +1,13 @@
+<%- include('header.ejs') %>
+
+    <main class='signin clearfix'>
+        <h1>Excuse a Payment</h1>
+        <form action="/excusepayment" method="POST">
+            <label>File ID:</label> <input type="text" name="fileid">
+            <label>Date:</label> <input type="date" name="date">
+            <label>Comments:</label> <input type="text" name="comment">
+            <input type="submit" class="submitbutton">
+        </form>
+    </main>
+</body>
+</html>

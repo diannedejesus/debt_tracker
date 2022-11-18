@@ -1,0 +1,18 @@
+<%- include('header.ejs') %>
+
+    <main class='signin clearfix'>
+        <h1>Edit Debt</h1>
+        <form action="/editdebt" method="POST">
+            <label>Name:</label> <input type="text" name="name" value="<%= debtorData.name %>">
+            <label>Debt Amount:</label> <input type="number" name="debtamount" value="<%= debtData.debtAmount %>">
+            <label>File ID:</label> <input type="text" name="fileid" value="<%= debtorData.fileId %>">
+            <label>Minimun Payment:</label> <input type="number" name="minpayment" value="<%= debtData.minPayment %>">
+            <% let formatDate = new Date(debtData.startDate) %>
+
+            <label>Start Date:</label> <input type="date" name="startdate" value="<%= formatDate.getFullYear() %>-<%= formatDate.getMonth()+1 < 10 ? 0 : '' %><%= formatDate.getMonth()+1 %>-<%= formatDate.getDate()+1 < 10 ? 0 : '' %><%= formatDate.getDate()+1 %>">
+            <input type="hidden" name="id" value="<%= debtorData.fileId %>">
+            <input type="submit" class="submitbutton">
+        </form>
+    </main>
+</body>
+</html>
