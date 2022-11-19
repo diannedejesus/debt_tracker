@@ -147,7 +147,7 @@ async function buildDebtorInfo(caseFileId){
 
 
         const elapsed = monthElapsed(new Date(debtForSelected.startDate))
-        const payments = randomizedPayments(100, debtForSelected.startDate) //await PaymentDB.find({caseID: selectedDebtor._id})
+        const payments = await PaymentDB.find({caseID: selectedDebtor._id}) //randomizedPayments(100, debtForSelected.startDate) 
 
         if(excusedPayments.length <= 0){
             excusedPayments.date = debtForSelected.startDate
@@ -194,7 +194,7 @@ async function buildDebtorInfo(caseFileId){
         debtorInfo.payments.sort(function(a,b){
             return a.paymentDate - b.paymentDate;
         });
-console.log(debtorInfo.payments)
+
         return debtorInfo
 
     } catch (error) {
@@ -229,6 +229,8 @@ async function buildDebtorInfoMerge(caseFileId){
                 totalPaid = 0
             }
         }
+
+        if(!debtorInfo.payments) return debtorInfo
 
        //-----------------
        let bill = 0

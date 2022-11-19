@@ -51,9 +51,9 @@
                 <% if (typeof user !== 'undefined'){ %> 
                     <% if (user.accountType === "Owner"){ %> 
                 <select name="accountType">
+                    <option selected value="Case Worker">Case Worker</option>
                     <option value="App Manager">App Manager</option>
                     <option value="Owner">Owner</option>
-                    <option value="Case Worker">Case Worker</option>
                 </select>
                     <% }else{ %>
                 <input type="hidden" name="accountType" value="Case Worker">

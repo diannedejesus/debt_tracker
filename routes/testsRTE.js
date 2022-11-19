@@ -5,7 +5,6 @@ import { ensureAuth, ensureGuest } from '../middleware/auth.js';
 const router = express.Router()
 
 
-router.get('/testcase/:id',  ensureAuth, testController.getTestCaseInfo)
 
 
 
