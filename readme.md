@@ -3,7 +3,6 @@
 
 
 ## Description
-
 Track who owes money to the agency. It stores basic information about the person and their debt. It has payment logging and it calculates data related to the debt. For example, the paid-off amount and the number of payments left.
 
 <!-- user story: How does a user interact with that solution? How is data handled? -->
@@ -130,27 +129,35 @@ Initial Admin
 - This page does not use an activation code. The user directly creates the password while setting up the account.
 
 
-### Register debt/ Insert New Debt
-On this page, a user will enter a new debt with all the accompanying information. As a safety measure, we will have a database for the debt information and another for the name and Id. The debtor's name will be the only identifiable information saved about the person who owes the debt.
+### Insert/Register Debt Account
+For entering the information of a debt account. As a safety measure, we will have a database for the debt information and another for the name and Id. The debtor's name will be the only identifiable information saved about the person who owes the debt.
 
 The new debt page will accept the following information:
-- [X] name [string]
-- [X] debt amount [number]
-- [X] file id [string]
-- [X] minimum payment [number]
-- [X] start date [date]
+- name [string]
+- debt amount [number]
+- file id [string]
+- minimum payment [number]
+- start date [date]
 
-#### **Pages Outline**
-- Enter debt page
-    - Form
+#### **Outline**
+- Form
+- Debtor collection
+- Debt collection
+- Encyption
+- Data conversion
 
-#### **Pages Breakdown**
+#### **Breakdown**
+- Any type of account can create a new debt account.
+- Data collected is verified.
+    - No field can be left empty 
+    - The data submitted must match the type of data for that field
+    - Payment and debt can not be 0 and will be saved without decimals.
+- Name and file id will be stored encypted.
+- If debt information can't be saved to the database then we will remove the debtor information previously saved
+- The id created by the database for the debtor information will be used to relate all the data for that debtor.
+- Only one debt per person should be registered
+    - file id will be used to verify the uniqueness of a debtor
 
-Register Debt:
-- [X] A page with a form for the user to add a new account/debtor. 
-- [X] The name and case id of the debtor belongs in a separate database and will be encrypted.
-- [X] The debt information will be stored in the database with an identifier to relate it to the name.
-- [X] identifier is the case number (encrypted) which will be unique to ensure that we don't register a person with two debt accounts.
 
 ### View debt List
 On this page, a user can see people who have debts and the basic information for each one. It will have a link for each person's case. 
@@ -412,6 +419,7 @@ Once these wireframes are approved by the client, include them in the user inter
 - verify how secure a chosen password is.
 - have user section of header display a name and not the whole email.
 - have identifier for admin account instead of name
+- set limits for dates that are entered
 
 <!-- NOTES
 Account Creation & Login

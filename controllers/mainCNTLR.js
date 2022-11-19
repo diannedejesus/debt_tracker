@@ -580,7 +580,7 @@ export async function insertNewDebt(req, res){
         startDate: req.body.startdate,
     })
 
-    const newDebtor = new Debtors({
+    const newDebtor = new DebtorsDB({
         name: req.body.name, 
         fileId: req.body.fileid,
     })
