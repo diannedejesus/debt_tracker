@@ -76,6 +76,7 @@ User Administration View
     - password status (an authentication code exist meaning user needs to enter an initial password or new password)
     - button for reseting user password
     - revoke status (whether the accounts access has been revoked)
+    - when accessing the data we make sure we are not including password information.
 - displays a section for creating user accounts
     - form for entering email associated to the account
     - owner accounts will have a dropdown to select the type of account they want to create (defaulted to caseworker)
@@ -159,61 +160,105 @@ The new debt page will accept the following information:
     - file id will be used to verify the uniqueness of a debtor
 
 
-### View debt List
-On this page, a user can see people who have debts and the basic information for each one. It will have a link for each person's case. 
+### Debtor List
+A user can see a list/table of all the accounts with basic information for each one. It will have a link to go to a full overview of the case. 
 
-This page displays a summary of each debtors using the information in the database.This information will be:
+The list will display the following information
+- name [string]
+- current debt [number]
+- payments left [int]
+- late payment [boolean]
 
-- [X] name [string]
-- [X] current debt [number]
-<!-- - debt payoff date [date] -->
-- [X] payments left [int]
-- [X] late payment [boolean]
+#### **Outline**
+- information display
+- calculations
+    - current debt
+    - payments left
+    - is payment late
+- link to overview page
 
-#### **Pages Outline**
+#### **Breakdown**
+- The page only displays the information provided by the server.
+- The list is constructed on the server with only the pertinate information needed for the displayed information.
+
+### Case Overview
+The case overview page will use the information already in the database to calculate additional information for each case and then display all the information. This includes all the information entered from the registration page and any payments made. 
+
+The information displayed from the database will be:
+- name [string]
+- debt amount [number]
+- file id [string]
+- minimum payment [number]
+- start date [date]
+- payment date [date]
+- payment amount [number]
+- payment comment [string]
+
+The calculated information displayed will be:
+- current debt [number]
+- debt payoff date [date]
+- payments left [int]
+- payments made [int]
+- late payments [boolean]
+
+#### **Outline**
 - information display/dashboard
-- menu
+- edit debt/debtor information
+- list debt account
+- edit or eliminate payment
+- table view for payments
+- merge view for payments
 
-#### **Pages Breakdown**
-- [X] a basic page that displays the information
-    - [X] list of debtors
-    - [X] displays late payments
-    - [X] current amount owed
-    - [X] payments left
-    - ? displays paid-off
+#### **Breakdown**
+Basic Information
+- A basic page that displays the information
+- Dropdown has a list of all other cases and switches to those case when selected.
+- Data is collected on server and use to create displayed information.
+- Data is formatted 
 
-### View debt status / case info
-The case page will use the information already in the database to calculate additional information for each case and then display all the information. This includes all the information entered from the registration page and any payments made. This additional information will be:
+Edit
+- Prefilled form
+- submitted data is verified same as when submitted
+    - debtor information must already exist
+    - debtor file id can't be the same for another account
+    - payments can't be duplicate (same debtor, date, payment amount)
+    - payment will reference debtor for id
 
-- [X] current debt [number]
-- [X] debt payoff date [date]
-- [X] payments left [int]
-- [X] payments made [int]
-- [X] late payments [boolean]
+Delete
+- removes a payment
+- debtor/debt can not be removed
 
-#### **Pages Outline**
-- information display/dashboard
+Merge View
+- displays bills and payments side by side.
+- bills and payments will expand across their counter part which they cover. Meaning a payment that covers two bills will expand to occupy the same rows as those two bills or half way is it  covers part of the bill. Bills will do the same thing, if various payments are used to cover the bill, it will occupy those rows or half if it is a partial use.
 
-#### **Pages Breakdown**
-- [X] a basic page that displays the information
-    - [X] displays whether payments is late
-    - [X] displays paid-off date
-    - [X] displays payments made
+Table View
+- displays payments and bills linearly.
+- bills and payments are order in ascending order.
+- a running balance is kept ending in a positive number if there is an over payment or a negative if there is an under payments or 0 if all payments are up to date.
+- displays whether the the bill is paid or the amount of that bill that is owed.
 
-### Register payment / Insert New Payment
-This page is for entering payment information. This information will be:
-- [X] date [date]
-- [X] the amount paid [number]
-- [X] reference to the debtor information [string]
-- [X] comments [string]
+
+### Insert/Register Payment
+This page is for entering payment information. 
+
+This information will be:
+- date [date]
+- the amount paid [number]
+- reference to the debtor information [string]
+- comments [string]
 
 #### **Pages Outline**
 - enter payment page
-    - form
 
 #### **Pages Breakdown**
-- [X] Contains a form that lets the user add the information for payment.
-- [X] Form that lets the user select a debtor.
+- Any type of account can create a new debt account.
+- Data collected is verified.
+    - Only the comment field can be left empty 
+    - The data submitted must match the type of data for that field
+    - Payment can not be 0 and will be saved without decimals.
+    - The payment can be the same date and amount for the same debtor to avoid duplicates
+- The id for the debtor will be used as the reference
 
 
 ### Print View
@@ -247,7 +292,7 @@ Payment History
 #### **Pages Breakdown**
 - [X] lays out the information in an easy-to-understand format with just the information necessary for the debtor to know how much they owe, how long it will take to pay off and to verify payments.
 
-### Additional Ideas
+## Additional Ideas
 * [X] Modify so currency is displayed as such
 * Access log: Keep track of case workers' logins, edits, and views. Plus changes made to users and debts
 * Letters: This is a wish list item. A page that produces a letter for different situations when working with debt accounts.
@@ -258,7 +303,7 @@ Payment History
 * Edit an account to change type
 * Review code / optimize
 
-### Databases
+## Databases
 * Names
     - ID [string]
     - Name [string]
@@ -415,11 +460,17 @@ Once these wireframes are approved by the client, include them in the user inter
 ### Added
 - merge view: edit so it displays all payments even if no more bills are due
 - verify if it should add future bills if payments exceed currently dued.
-- change the way info is displayed in merge view. Have rolling balance, display dates
+- change the way info is displayed in merge view. Have rolling balance.
 - verify how secure a chosen password is.
 - have user section of header display a name and not the whole email.
 - have identifier for admin account instead of name
 - set limits for dates that are entered
+- place id on debt list view
+- Either switch or include name for registering payment info or implement alternate method for doing
+- update the debt list page with the new calculation for when a debt is late.
+- excused payment access
+- have edit payment check for duplicate values
+- include payment info for merge view.
 
 <!-- NOTES
 Account Creation & Login
