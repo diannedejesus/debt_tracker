@@ -99,6 +99,25 @@
                     <td><%= currencyFormat.format(runningBalance) %></td>
                     <% paymentCounter++ %>
                 </tr>
+                <% }else if(billedCounter >= debtorInfo.billed.length && paymentCounter < debtorInfo.payments.length){ %>
+                    <tr class="highlight">
+                        <% let formatDate = new Date(debtorInfo.payments[paymentCounter].paymentDate) %>
+                        <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
+                        <td rowspan="1" colspan="1"><%= formatDate %></td>
+                        <td rowspan="1">
+                            <form action="/delPayment/<%= debtorInfo.payments[paymentCounter].id %>" method="POST">
+                                <input type="submit" value="X" class="deleteBtn"> 
+                            </form>
+                            <%= currencyFormat.format(debtorInfo.payments[paymentCounter].paymentAmount) %>
+                            <form action="/editPayment/<%= debtorInfo.fileId %>/<%= debtorInfo.payments[paymentCounter].id %>" method="GET">
+                                <input type="submit" value="edit" class="editBtn">
+                            </form>
+                        </td>
+                        <% runningBalance += debtorInfo.payments[paymentCounter].paymentAmount %>
+                        <td rowspan="1" colspan="2"><%= debtorInfo.payments[paymentCounter].paymentComment %></td>
+                        <td><%= currencyFormat.format(runningBalance) %></td>
+                        <% paymentCounter++ %>
+                    </tr>
                 <% } %>
                 <% if(billedCounter < debtorInfo.billed.length && runningBalance > 0){ %>
                     <tr>

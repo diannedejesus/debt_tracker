@@ -213,6 +213,7 @@ Payment History
 * Letters: This is a wish list item. A page that produces a letter for different situations when working with debt accounts.
 * [X] Have the individual case page have an option to switch to another case with out going to list page.
 * Have revoke and reset accounts ask for user password for extra security
+    - have payment deletion verify deletion.
 * implement an email sender for verification codes
 * Edit an account to change type
 * Review code / optimize
@@ -362,15 +363,18 @@ Once these wireframes are approved by the client, include them in the user inter
 - [X] payments for a debtor with the same date and payment amount will issue an error.
 - [X] verify how accurate payments left is
 - [X] how to handle late/missed payments? (zero payment only for pay/bill date to indicated excused payment? server calculation add to object)
+- [X] Test payments over dued amount
+- [X] verify how other routes need to handle revoked access [research]
+    - [X] Implement warning about revoking access, saying it only stop the user from logging in at their next attempt.
+    - [-] how to remove the current session of a user?
+
 - Fix the style sheet of pages
     - create header for pages that are guest / not signed in users
     - Change page titles
 
-- [X] verify how other routes need to handle revoked access [research]
-    - [ ] Implement warning about revoking access, saying it only stop the user from logging in at their next attempt.
-    - [-] how to remove the current session of a user?
-- have file deletion verify deletion.
-- Test payments over dued amount
+### Added
+- merge view: edit so it displays all payments even if no more bills are due
+- verify if it should add future bills if payments exceed currently dued.
 
 <!-- NOTES
 Account Creation & Login

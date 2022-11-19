@@ -261,13 +261,13 @@ console.log(debtorInfo)
     }
 }
 
-function randomizedPayments(maxPayment, startDate){
-    const paymentAmounts = Math.floor(Math.random() * 15);
+export function randomizedPayments(maxPayment, startDate){
+    const paymentAmounts = Math.floor(Math.random() * 30);
     const randomPayments = []
     let totalPaid = 0
 
-    while(randomPayments.length < paymentAmounts && totalPaid < maxPayment){
-        let currentPay = Math.floor(Math.random() * 30)
+    while(randomPayments.length < paymentAmounts && totalPaid < 2000){
+        let currentPay = Math.floor(Math.random() * maxPayment)
         totalPaid += currentPay
 
         randomPayments.push({
@@ -277,7 +277,7 @@ function randomizedPayments(maxPayment, startDate){
             space: 0,
         })
     }
-    
+     
     return randomPayments
 }
 

@@ -317,6 +317,8 @@ export async function revokeToggle(req, res, next){
 
   await User.updateOne({email: req.body.email}, {revoked: !toggleAccess.revoked})
 
+  //Implement warning about revoking access, saying it only stop the user from logging in at their next attempt.
+  req.flash('msg', `${req.body.email} continue to have access if the account is currently logged in but will not be able to relogin to their account once they logout.`);
   return res.redirect(req.headers.referer);
 };
 
