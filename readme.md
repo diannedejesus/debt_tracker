@@ -52,7 +52,7 @@ The login should include a message for unregistered people, telling them that th
 * In the current scope, there is no need to implement access levels for the case worker accounts. 
 * Setting a time limit for passwords needs to be evaluated.
 
-#### **Pages Outline**
+#### **Outline**
 * Login
 * User administration
     * User registration
@@ -62,11 +62,12 @@ The login should include a message for unregistered people, telling them that th
 * Authenticate account
 * Initial admin creation
 
-#### **Pages Breakdown**
+#### **Breakdown**
 Login
 - It will use a local login since emails to be used are not compatible with any third-party authenticator
 - If a user without an account tries to login, they will recieve a message indicating that only an admin can create an account.
 - A newly created account needs to be authenticated first.
+
 
 User Administration View
 - restricted access, only administrative accounts (owner and app managers)
@@ -80,6 +81,7 @@ User Administration View
     - form for entering email associated to the account
     - owner accounts will have a dropdown to select the type of account they want to create (defaulted to caseworker)
 
+
 User Registration
 - Only an administrative account can access this page to create, revoke and/or reset passwords.
 - Their will be two type of administrave accounts: owner and app manager.
@@ -91,12 +93,14 @@ User Registration
 - The key is not saved but if lost, the administrator can use the reset password button to create a new one.
 - [Add-Feature] Implement an email sender to handle account activation and password reset.
 
+
 Revoke User Access
 - Only an administrative accounts can revoke access.
 - Owner accounts can revoke access to any account.
 - App mangers can revoke access to case workers and other app managers.
 - No account can revoke their own access.
 - When access is revoked the users session is not suspended. Revoking access only prevents the user from logging into their account.
+
 
 Password Reset
 - Only an administrative account can reset a users password.
@@ -106,16 +110,19 @@ Password Reset
 - Lost reset codes can not be recovered but the the account can be reset again for a new code.
 - [Add-Feature] Implement email sender so a user can reset their own password.
 
+
 Authorize User / Change Password
 - Verifys that code is exists and has not expired.
 - Verifys the password and email submitted.
 - If code, password and email passes checks then the password for the associated account is updated.
 - If link is used the code and email does not need to be entered.
 
+
 Authentication Code
 - Generates a 10 character code for an account with an expiration time
 - Only one code should be present for user.
 - Does not deactivate account or removes current password.
+
 
 Initial Admin
 - Only for creating an owner account if no owner account is present or all are revoked.
