@@ -182,7 +182,7 @@ The list will display the following information
 - The list is constructed on the server with only the pertinate information needed for the displayed information.
 
 ### Case Overview
-The case overview page will use the information already in the database to calculate additional information for each case and then display all the information. This includes all the information entered from the registration page and any payments made. 
+The case overview page will use the information already in the database to calculate additional information for each case and then display all the information on the page. This includes all the information entered from the registration page and any payments made. 
 
 The information displayed from the database will be:
 - name [string]
@@ -204,40 +204,61 @@ The calculated information displayed will be:
 #### **Outline**
 - information display/dashboard
 - edit debt/debtor information
-- list debt account
+- list debt accounts
 - edit or eliminate payment
 - table view for payments
 - merge view for payments
+- print view
 
 #### **Breakdown**
-Basic Information
-- A basic page that displays the information
+Basic Display
+- Displays the information for the account
 - Dropdown has a list of all other cases and switches to those case when selected.
-- Data is collected on server and use to create displayed information.
-- Data is formatted 
+- Data is collected on server and used to create displayed information.
+- Data is formatted
+
+Calculations
+- current debt: how much the account currently owes after applying all payments
+- debt payoff date: estimate date the account will be paid off, based on the amount currently owed and on the minimun payment.
+- payments left: amount of minimun payments need to payoff the current debt.
+- payments made: how many payments have been made. Not minimun, just the total amount of payments registered.
+- late payments: if the account holder is late on its current payment. If current payment is excused this calculation starts from that date onward.
 
 Edit
-- Prefilled form
-- submitted data is verified same as when submitted
-    - debtor information must already exist
-    - debtor file id can't be the same for another account
+- Show a prefilled form
+- Submitted data is verified:
+    
+    Payments
+    - Only the comment field can be left empty 
+    - The data submitted must match the type of data for that field
+    - Payment can not be 0 and will be saved without decimals.
+    - The payment can be the same date and amount for the same debtor to avoid duplicates
     - payments can't be duplicate (same debtor, date, payment amount)
     - payment will reference debtor for id
+    
+    Debtor
+    - No field can be left empty 
+    - The data submitted must match the type of data for that field
+    - Payment and debt can not be 0 and will be saved without decimals.
+    - debtor file id can't be the same for another account
+
+    Both
+    - debtor/payment information must already exist 
+    
 
 Delete
-- removes a payment
-- debtor/debt can not be removed
+- Removes a payment
+- Debtor/debt can not be removed
 
 Merge View
-- displays bills and payments side by side.
-- bills and payments will expand across their counter part which they cover. Meaning a payment that covers two bills will expand to occupy the same rows as those two bills or half way is it  covers part of the bill. Bills will do the same thing, if various payments are used to cover the bill, it will occupy those rows or half if it is a partial use.
+- Displays bills and payments side by side.
+- Bills and payments will expand across their counter part displaying how much they cover. Meaning a payment that covers two bills will expand to occupy the same rows as those two bills or half way is it covers part of the bill. Bills will do the same thing, if various payments are used to cover the bill, it will occupy those rows or half if it is a partial use.
+- Displays whether the the bill is paid or the amount of that bill that is owed.
 
 Table View
-- displays payments and bills linearly.
-- bills and payments are order in ascending order.
-- a running balance is kept ending in a positive number if there is an over payment or a negative if there is an under payments or 0 if all payments are up to date.
-- displays whether the the bill is paid or the amount of that bill that is owed.
-
+- Displays payments and bills linearly.
+- Bills and payments are order in ascending order.
+- A running balance is kept ending in a positive number if there is an over-payment or a negative if there is an under-payments or 0 if all payments are up-to-date.
 
 ### Insert/Register Payment
 This page is for entering payment information. 
@@ -249,7 +270,7 @@ This information will be:
 - comments [string]
 
 #### **Pages Outline**
-- enter payment page
+- Enter payment information form
 
 #### **Pages Breakdown**
 - Any type of account can create a new debt account.
@@ -267,41 +288,34 @@ The page will function as a printout for clients, indicating the current status 
 The information contained on this page will be:
 
 Basic Information
-- [X] current date
-- [X] name
-- [X] start date
-- [X] initial balance
-- [X] amount payed
-- [X] estimated end
-- [X] payments made
-- [X] payments left
-- [X] amount left
+- current date [date]
+- name [string]
+- start date [date]
+- initial balance [number]
+- amount paid [number]
+- estimated payoff [date]
+- payments made [int]
+- payments due [int]
+- amount owed [number]
 
 Payment History
-- [X] number
-- [X] date
-- [X] balance
-- [X] paid
-- [X] comments
-- [X] final
+- number [int]
+- payment date [date]
+- inicial balance [number]
+- amount [number]
+- comments [string]
+- final balance [number]
 
-#### **Pages Outline**
-- View summary
-    - display account summary
+#### **Outline**
+- Display account summary
+- Calculate data
 
-#### **Pages Breakdown**
-- [X] lays out the information in an easy-to-understand format with just the information necessary for the debtor to know how much they owe, how long it will take to pay off and to verify payments.
+#### **Breakdown**
+- Lays out the information in an easy-to-understand format with just the information necessary for the debtor to know how much they owe, how long it will take to pay off and to verify payments made.
+- Payments are displayed in ascending order with a running balance of the total debt owed are the payment is applied.
 
-## Additional Ideas
-* [X] Modify so currency is displayed as such
-* Access log: Keep track of case workers' logins, edits, and views. Plus changes made to users and debts
-* Letters: This is a wish list item. A page that produces a letter for different situations when working with debt accounts.
-* [X] Have the individual case page have an option to switch to another case with out going to list page.
-* Have revoke and reset accounts ask for user password for extra security
-    - have payment deletion verify deletion.
-* implement an email sender for verification codes
-* Edit an account to change type
-* Review code / optimize
+
+
 
 ## Databases
 * Names
@@ -310,14 +324,14 @@ Payment History
     - File id [string]
 
 * Debt Information
-    - ID [string]
+    - ID (=Names.id) [string]
     - Debt amount [number]
     - Minimun payment [number]
     - Start date [date] 
 
 * Payment History
     - ID [string]
-    - Reference [string]
+    - Reference (=Names.id) [string]
     - Date [date]
     - Amount paid [number]
     - Comments [string]
@@ -331,8 +345,7 @@ Payment History
 * Accounts
     - Email [string]
     - Password [string]
-    - AppManager [boolean] <!-- formerly admin-->
-    - Owner [boolean]
+    - AccountType [enum]
     - Revoked [boolean]
 
 ## User/Client Interface
@@ -352,19 +365,91 @@ Once these wireframes are approved by the client, include them in the user inter
 -->
 
 ## Goals and milestones
+Fixes
+- update the debt list page with the new calculation for when a debt is late.
+- excused payment access
+- have edit payment check for duplicate values
+- verify how excused payments and late payments are calculated.
+
+Modifications
+- Either switch or include name for registering payment info or implement alternate method for doing
+- place id on debt list view
+- have identifier for admin account instead of name
+- have user section of header display a name and not the whole email.
+- include payment info for merge view.
+- change the way info is displayed in merge view. Have rolling balance.
+
+Funtionality
+- merge view: edit so it displays all payments even if no more bills are due
+- verify if it should add future bills if payments exceed currently dued.
+- verify how secure a chosen password is.
+- set limits for dates that are entered
+
+<!-- Secondary Goals, Wishlist Feature, Future -->
+
+### Additional Features
+* [X] Modify so currency is displayed as such
+* [X] Have the individual case page have an option to switch to another case with out going to list page.
+* Access log: Keep track of case workers' logins, edits, and views. Plus changes made to users and debts
+* Letters: This is a wish list item. A page that produces a letter for different situations when working with debt accounts.
+* Have revoke and reset accounts ask for user password for extra security
+    - have payment deletion verify deletion.
+* Implement an email sender for verification codes
+* Edit an account to change type
+* Review code / optimize
+
+### Issues
+<!-- Things that should be looked into but an alternative solution was/can be implemented  -->
+- Fix the style sheet of pages
+    - create header for pages that are guest / not signed in users
+    - Change page titles
+
+### Brain Dump
 
 
 
-    
-<!-- ### Secondary Goals
 
 
-### Wishlist Feature
 
 
-### Future -->
 
+<!-- NOTES
+Account Creation & Login
+To setup the page you need to go to the route "pageurl/auth/admin" to create the intial owner account. After the owner account is created this page won't let you create anymore accounts. The newly created owner account can create any kind of new accounts. If all owner accounts are remove or revoked then this page can be used to create a new owner account.
+This can be done manually in the database. NOTE:: But it might be posible for two owner accounts to revoke each others access while both are login in at the same time.
 
+Only an admin account can create user account. The user creation process will verify if the current user session is an administor before creating an account.
+
+if the authentication code is not created and/or displayed the administrator can just reset the password to get a new code
+
+*If the web app requiered the creation of accounts without an administrator then an authentication process should be implemented. Most likely by adding additional databases to handle authentication of users to avoid abandoned signups.
+
+*This application is ment for small databases. If used with and extensive database then the way data is worked with should be reevaluated to avoid long loading times. You could cache the data locally to avoid calling to the database frequently and setting an interval for verifying for changes. Also modify calls the entire database for only a select amount of data to be displayed. Setting the display data to pages.
+
+================
+Login Process additional features:
+- change password with initial login
+    - the idea behind this is to add to the registration process the autocreation of a password or have a blank password for a created user. Then send them a link informing them that an account has been created for them and that they need to confirm it through the link or code. When they confirm the email, they are prompted to change/create a password for the created account.
+- send secure reset link (for password reset)
+    - The idea is to confirm that it is really the user through there email by sending them a unique code/link.
+- creates temporary password (for user creation)
+    - The idea is when a new user is created a temporary password is created to secure the account and is sent to the user as a unique identifier to confirm the identify through email.
+    - alternativly the password can be left blank and unique code is sent to confirm the account through email.
+- sends initial login link (for user restration)
+    - Sends a special link to a page that verifies newly created accounts. 
+    - alternativly a process can be added to the login process for this.
+
+NOTE:: Check testing routes with postmen or similar app to ensure restrintion work. [research]
+NOTE:: Verify callback and awaits in same application. Is it ok?? [research]
+DONE:: Verify render vs redirect?? [research]
+NOTE:: How to validate a comment field
+NOTE:: Revisit tests
+NOTE:: verify error handling, throw errors [research]
+NOTE:: submitting request for delete or others without forms [research]
+NOTE:: try consolidating views
+NOTE:: removing all saved session to prevent access to revoked user.
+NOTE:: verify changeing password hashing to data model
+ -->
 
 ### Completed
 - [X] database connection *
@@ -442,9 +527,6 @@ Once these wireframes are approved by the client, include them in the user inter
 - [X] getting header error when submitting user that is already created and it is giving me the verification code and it is creating the invalid account
 - [X] verify variable naming schema for password reset and account verification since both use the same code.
 - [X] how should payments that are greater than the minimun payment be processed?
-
-## Issues
-<!-- Things that should be looked into but an alternative solution was/can be implemented  -->
 - [X] payments for a debtor with the same date and payment amount will issue an error.
 - [X] verify how accurate payments left is
 - [X] how to handle late/missed payments? (zero payment only for pay/bill date to indicated excused payment? server calculation add to object)
@@ -452,53 +534,6 @@ Once these wireframes are approved by the client, include them in the user inter
 - [X] verify how other routes need to handle revoked access [research]
     - [X] Implement warning about revoking access, saying it only stop the user from logging in at their next attempt.
     - [-] how to remove the current session of a user?
-
-- Fix the style sheet of pages
-    - create header for pages that are guest / not signed in users
-    - Change page titles
-
-### Added
-- merge view: edit so it displays all payments even if no more bills are due
-- verify if it should add future bills if payments exceed currently dued.
-- change the way info is displayed in merge view. Have rolling balance.
-- verify how secure a chosen password is.
-- have user section of header display a name and not the whole email.
-- have identifier for admin account instead of name
-- set limits for dates that are entered
-- place id on debt list view
-- Either switch or include name for registering payment info or implement alternate method for doing
-- update the debt list page with the new calculation for when a debt is late.
-- excused payment access
-- have edit payment check for duplicate values
-- include payment info for merge view.
-
-<!-- NOTES
-Account Creation & Login
-To setup the page you need to go to the route "pageurl/auth/admin" to create the intial owner account. After the owner account is created this page won't let you create anymore accounts. The newly created owner account can create any kind of new accounts. If all owner accounts are remove or revoked then this page can be used to create a new owner account.
-This can be done manually in the database. NOTE:: But it might be posible for two owner accounts to revoke each others access while both are login in at the same time.
-
-Only an admin account can create user account. The user creation process will verify if the current user session is an administor before creating an account.
-
-if the authentication code is not created and/or displayed the administrator can just reset the password to get a new code
-
-*If the web app requiered the creation of accounts without an administrator then an authentication process should be implemented. Most likely by adding additional databases to handle authentication of users to avoid abandoned signups.
-
-*This application is ment for small databases. If used with and extensive database then the way data is worked with should be reevaluated to avoid long loading times. You could cache the data locally to avoid calling to the database frequently and setting an interval for verifying for changes. Also modify calls the entire database for only a select amount of data to be displayed. Setting the display data to pages.
-
-NOTE:: Check testing routes with postmen or similar app to ensure restrintion work. [research]
-NOTE:: Verify callback and awaits in same application. Is it ok?? [research]
-NOTE:: Verify render vs redirect?? [research]
-NOTE:: Revisit tests
-NOTE:: verify error handling, throw errors [research]
-NOTE:: submitting request for delete or others without forms [research]
-NOTE:: try consolidating views
-NOTE:: removing all saved session to prevent access to revoked user.
-NOTE:: verify changeing password hashing to data model
- -->
-
-
-
-
 
 
 
@@ -538,22 +573,3 @@ Your first draft of an SDD doesn’t necessarily need to be your last—it shoul
 
 <!-- Update your SDD
 Once you’ve written your software design document and gotten approval from stakeholders, don’t lock it away in some dusty drawer (or whatever the digital equivalent is). As your project progresses, team members should be referencing the SDD constantly. If there’s a delay, update your timeline. By treating an SDD as a living document, it will become an invaluable single source of truth. -->
-
-
-<!-- 
-NOTES:
-
-Login Process additional features:
-- change password with initial login
-    - the idea behind this is to add to the registration process the autocreation of a password or have a blank password for a created user. Then send them a link informing them that an account has been created for them and that they need to confirm it through the link or code. When they confirm the email, they are prompted to change/create a password for the created account.
-- send secure reset link (for password reset)
-    - The idea is to confirm that it is really the user through there email by sending them a unique code/link.
-- creates temporary password (for user creation)
-    - The idea is when a new user is created a temporary password is created to secure the account and is sent to the user as a unique identifier to confirm the identify through email.
-    - alternativly the password can be left blank and unique code is sent to confirm the account through email.
-- sends initial login link (for user restration)
-    - Sends a special link to a page that verifies newly created accounts. 
-    - alternativly a process can be added to the login process for this.
-
-
- -->

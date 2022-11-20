@@ -335,7 +335,6 @@ export function logout(req, res){
 
 //functions
 async function createAuthenticationCode(userIdentity){
-  //NOTE:: rework
   const resetToken = nanoid(10);
   const AuthenticationCode = new Registration({
     email: userIdentity,

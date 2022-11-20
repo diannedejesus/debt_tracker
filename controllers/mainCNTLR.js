@@ -329,7 +329,7 @@ export async function insertNewPayment(req, res){
         caseID: debtorRef._id,
         payment: parseFloat(req.body.payment),
         date: req.body.date,
-        comment: req.body.comment //NOTE:: any reason to validate?
+        comment: req.body.comment
     })
 
     //save to database
@@ -394,7 +394,7 @@ export async function excusedPayment(req, res){
         caseID: debtorRef._id,
         payment: 0,
         date: req.body.date,
-        comment: req.body.comment //NOTE:: any reason to validate?
+        comment: req.body.comment
     })
 
     //save to database
@@ -449,10 +449,8 @@ export async function editPayment(req, res){
         debtorRef: debtorRef._id,
         payment: parseFloat(req.body.payment),
         date: req.body.date,
-        comment: req.body.comment //NOTE:: any reason to validate?
+        comment: req.body.comment
     })
-    
-    console.log(updatedPayment)
     
     res.redirect(`/cases/${req.body.fileid}`)
 }
