@@ -11,7 +11,14 @@
                 <tr>
                     <td><a href="/cases/<%= debtorInfo.fileId %>">Table View</a></td>
                     <td><a href="/cases-merge/<%= debtorInfo.fileId %>">Merge View</a></td>
-                    <td colspan="3"><a href="/printview/<%= debtorInfo.fileId %>">Print View</a></td>
+                    <td colspan="2">
+                        <a href="/printview/<%= debtorInfo.fileId %>">Print View</a>
+                    </td>
+                    <td>
+                        <form action="/editDebtor/<%= debtorInfo.fileId %>" method="GET">
+                            <input type="submit" value="edit" class="editBtn">
+                        </form>
+                    </td>
                 </tr>
                 <tr>
                     <th colspan="5">Debtor table</th>
@@ -127,6 +134,5 @@
             </tbody>
         </table>
     </main>
-    <script type="text/javascript" src="../js/main.js"></script>
-</body>
-</html>
+
+<%- include('footer.ejs') %>

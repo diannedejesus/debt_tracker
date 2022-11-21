@@ -3,7 +3,6 @@ import DebtDB from '../models/Debts.js';
 import DebtorsDB from '../models/Debtors.js';
 import PaymentDB from '../models/PaymentLog.js';
 import { randomizedPayments } from '../controllers/testsCNTLR.js'
-//import { restart } from 'nodemon';
 
 export async function index(req, res){  
     res.render('index.ejs', { 
@@ -358,8 +357,6 @@ export async function excusedPayment(req, res){
         comment: req.body.comment,
     })
 
-    
-
     if(errors.length) {
         req.flash('errors', errors);
         return res.render('excusedpayment', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
@@ -411,8 +408,7 @@ export async function excusedPayment(req, res){
             messages: [...req.flash('errors'), ...req.flash('msg')],
         })
     })
-    
-    
+ 
 }
 
 export async function editPayment(req, res){
@@ -510,7 +506,12 @@ export async function getDashboard(req, res){
 
     } catch (error) {
         console.error(error.message);
-        req.flash('errors', 'There was an error submitting the data to the database. #006'); 
+        req.flash('errors', 'There was an error submitting the data to the database. #006');
+        res.render('dashboard', {
+            user: req.user,
+            debtors: '',
+            messages: [...req.flash('errors'), ...req.flash('msg')],
+        })
     }
 }
 
@@ -634,7 +635,6 @@ export async function insertNewDebt(req, res){
             })
         }
     })
-
 }
 
 export async function editDebt(req, res){
@@ -757,8 +757,6 @@ function dataVerifier(data){
     
     return errors
 }
-
-
 
 export async function deletePayment(req, res){
     try {

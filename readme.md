@@ -405,7 +405,8 @@ Funtionality
     - Change page titles
 
 ### Brain Dump
-
+- Verify render paths of insert debt/payment
+- Have insert debt/payment return data on error for correction
 
 
 

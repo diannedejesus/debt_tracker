@@ -1,12 +1,12 @@
 <%- include('header.ejs') %>
 
-    <main class='signin clearfix'>
-            <h1>Current Debts Owed</h1>
-
+    <main class="d-flex justify-content-center">
+        <section>
+            <h1>Debts</h1>
             <table>
                 <thead>
                     <tr>
-                        <th colspan="5">Debtor table</th>
+                        <th colspan="5"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -28,6 +28,7 @@
                     <% } %>
                 </tbody>
             </table>
+        </section>  
     </main>
-</body>
-</html>
+
+<%- include('footer.ejs') %>

@@ -1,15 +1,17 @@
 <%- include('header.ejs') %>
 
-    <main class='signin clearfix'>
-        <h1>Register Debt</h1>
-        <form action="/registerdebt" method="POST">
-            <label>Name:</label> <input type="text" name="name">
-            <label>Debt Amount:</label> <input type="number" name="debtamount">
-            <label>File ID:</label> <input type="text" name="fileid">
-            <label>Minimun Payment:</label> <input type="number" name="minpayment">
-            <label>Start Date:</label> <input type="date" name="startdate">
-            <input type="submit" class="submitbutton">
-        </form>
+    <main class="d-flex justify-content-center">
+        <section>
+            <h1>Register Debt</h1>
+            <form action="/registerdebt" method="POST">
+                <label>Name:</label> <input type="text" name="name">
+                <label>Debt Amount:</label> <input type="number" name="debtamount">
+                <label>File ID:</label> <input type="text" name="fileid">
+                <label>Minimun Payment:</label> <input type="number" name="minpayment">
+                <label>Start Date:</label> <input type="date" name="startdate">
+                <input type="submit" class="submitbutton">
+            </form>
+        </section>
     </main>
-</body>
-</html>
+
+<%- include('footer.ejs') %>

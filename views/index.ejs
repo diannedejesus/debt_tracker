@@ -7,16 +7,17 @@
     <title>Application Template</title>
     <link rel="stylesheet" href="/css/normalize.css">
     <link rel="stylesheet" href="/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
 </head>
 <body>
-    <header>
+    <header class="navbar navbar-expand-lg bg-light" style="padding: 1em">
         <section class="logo"><span>&#128507;</span><span class="under">&#9889;</span></section>
         <nav>
-             <ul>
-                 <li><a href="/dashboard">Dashboard</a></li>
+             <ul class="nav justify-content-center">
+                 <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
              </ul>
-         </nav>
-         <section class="account">
+        </nav>
+        <section class="account">
             <% if (typeof user !== 'undefined'){ %> 
                 <% if (user.admin){ %> 
                     <%= user.email %> (Administrator)
@@ -27,8 +28,8 @@
             <% }else{ %>
                 <a href="/auth/login">Login</a>
             <% } %>
-           </section>
-     </header>
+        </section>
+    </header>
 
     <% if (typeof messages !== 'undefined'){ %>
         <% messages.forEach( (error)=> { %>
@@ -36,11 +37,15 @@
         <% }) %>
     <% } %>
     
-    <main>
-        <h1>Welcome</h1>
-        <p>This application was designed to manage debts accumalated by participates of subsidized fundings. These debts don't accrue interest but need to be paid in full in order to continue benefiting from the program or similiar programs.</p>
-        <p>Access is limited to users created by the page administrator.</p>
+    <main class="d-flex align-items-center justify-content-center" style="height: 85%">
+        <div class="card w-50 text-center">
+            <div class="card-body">
+                <h2 class="card-title">Welcome</h2>
+                <p class="card-text">This application was designed to manage debts accumalated by participates of subsidized fundings. These debts don't accrue interest but need to be paid in full in order to continue benefiting from the program or similiar programs.</p>
+                <p class="card-text">Access is limited to users created by the page administrator.</p>
+                <a href="#" class="btn btn-primary">Button</a>
+            </div>
+        </div>
     </main>
-   
-</body>
-</html>
+
+<%- include('footer.ejs') %>
