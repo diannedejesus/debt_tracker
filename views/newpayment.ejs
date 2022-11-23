@@ -1,14 +1,29 @@
 <%- include('header.ejs') %>
 
     <main class="d-flex justify-content-center">
-        <section>
+        <section class="w-25 d-grid gap-3">
             <h1>Register Payment</h1>
-            <form action="/registerpayment" method="POST">
-                <label>File ID:</label> <input type="text" name="fileid">
-                <label>Payment:</label> <input type="number" name="payment">
-                <label>Date:</label> <input type="date" name="date">
-                <label>Comments:</label> <input type="text" name="comment">
-                <input type="submit" class="submitbutton">
+            <form class="row g-3" action="/registerpayment" method="POST">
+                <div class="col-12">
+                    <label class="form-label">File ID:</label>
+                    <input type="text" class="form-control" name="fileid">
+                </div>
+                
+                <div class="col-md-6">
+                    <label class="form-label">Payment:</label> <input type="number" class="form-control" name="payment">
+                </div>   
+                <div class="col-md-6">    
+                    <label class="form-label">Date:</label> <input type="date" class="form-control" name="date">
+                </div>
+                
+                <div class="col-12">
+                    <label class="form-label">Comments:</label>
+                    <textarea type="text" class="form-control" name="comment"></textarea>
+                </div>
+                
+                <div class="col-12">
+                    <input type="submit" class="btn btn-primary">
+                </div>
             </form>
         </section>
     </main>

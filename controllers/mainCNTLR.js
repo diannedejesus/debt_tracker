@@ -26,23 +26,32 @@ export async function getExcusedPayment(req, res){
 }
 
 export async function getEditPayment(req, res){
-    if(!req.params.id){
+    if(!req.params.paymentid || !req.params.fileId){
         req.flash('error', "No payment selected");
         return res.redirect(req.headers.referer);
     }
-    
-    const verifyId = await DebtorsDB.findOne({ fileId: req.params.fileId})
 
-    const paymentData = await PaymentDB.findOne({ _id: req.params.id})
-    paymentData.fileID = verifyId.fileId
+    try {
+        const paymentinfo = await PaymentDB.findOne({_id: req.params.paymentid})
+        const paymentData = {
+            _id: paymentinfo._id,
+            fileID: req.params.fileId,
+            payment: paymentinfo.payment,
+            date: paymentinfo.date,
+            comment: paymentinfo.comment
+        }
+        console.log(paymentData.date)
 
-    if(!paymentData) req.flash('error', "No payment found");
 
-    res.render('editpayment', {
-        user: req.user,
-        paymentData,
-        messages: [...req.flash('errors'), ...req.flash('msg')]
-    })
+        res.render('editpayment', {
+            user: req.user,
+            paymentData,
+            messages: [...req.flash('errors'), ...req.flash('msg')]
+        })
+        
+    } catch (error) {
+        console.error(error)
+    }
 }
 
 export async function getEditDebtor(req, res){
@@ -229,7 +238,7 @@ async function buildDebtorInfoMerge(caseFileId){
             }
         }
 
-        if(!debtorInfo.payments) return debtorInfo
+        if(debtorInfo.payments.length <= 0 || !debtorInfo.payments.length) return debtorInfo
 
        //-----------------
        let bill = 0
@@ -422,7 +431,7 @@ export async function editPayment(req, res){
 
     if(errors.length) {
         req.flash('errors', errors);
-        return res.render('newpayment', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+        return res.render('editpayment', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
     }
 
     //find id
@@ -437,16 +446,23 @@ export async function editPayment(req, res){
     //return errors
     if(errors.length) {
         req.flash('errors', errors);
-        return res.render('newpayment', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+        return res.render('editpayment', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
     }
 
 //update database
+try {
     const updatedPayment = await PaymentDB.updateOne({_id: req.body.id},{
         debtorRef: debtorRef._id,
         payment: parseFloat(req.body.payment),
         date: req.body.date,
         comment: req.body.comment
     })
+} catch (error) {
+    console.log('update error')
+    console.log(error)
+
+}
+
     
     res.redirect(`/cases/${req.body.fileid}`)
 }

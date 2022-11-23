@@ -1,18 +1,36 @@
 <%- include('header.ejs') %>
 
-    <main class='signin clearfix'>
-        <h1>Edit Debt</h1>
-        <form action="/editdebt" method="POST">
-            <label>Name:</label> <input type="text" name="name" value="<%= debtorData.name %>">
-            <label>Debt Amount:</label> <input type="number" name="debtamount" value="<%= debtData.debtAmount %>">
-            <label>File ID:</label> <input type="text" name="fileid" value="<%= debtorData.fileId %>">
-            <label>Minimun Payment:</label> <input type="number" name="minpayment" value="<%= debtData.minPayment %>">
-            <% let formatDate = new Date(debtData.startDate) %>
-
-            <label>Start Date:</label> <input type="date" name="startdate" value="<%= formatDate.getFullYear() %>-<%= formatDate.getMonth()+1 < 10 ? 0 : '' %><%= formatDate.getMonth()+1 %>-<%= formatDate.getDate()+1 < 10 ? 0 : '' %><%= formatDate.getDate()+1 %>">
-            <input type="hidden" name="id" value="<%= debtorData.fileId %>">
-            <input type="submit" class="submitbutton">
-        </form>
+    <main class="d-flex justify-content-center">
+        <section class="w-25 d-grid gap-3">
+            <h1>Edit Debt</h1>
+            <form class="row g-3" action="/editdebt" method="POST">
+                <div class="col-md-8">
+                    <label class="form-label">Name:</label>
+                    <input type="text" class="form-control" name="name" value="<%= debtorData.name %>">
+                </div>
+                <div class="col-md">
+                    <label class="form-label">File ID:</label>
+                    <input type="text" class="form-control" name="fileid" value="<%= debtorData.fileId %>">
+                </div>
+                <div class="col-md-8">
+                    <label class="form-label">Total Debt:</label>
+                    <input type="number" class="form-control" name="debtamount" value="<%= debtData.debtAmount %>">
+                </div>
+                <div class="col-md">
+                    <label class="form-label">Payment:</label>
+                    <input type="number" class="form-control" name="minpayment" value="<%= debtData.minPayment %>">
+                </div>
+                <% let formatDate = new Date(debtData.startDate) %>
+                <div class="col-12">
+                    <label class="form-label">Start Date:</label>
+                    <input type="date" class="form-control" name="startdate" value="<%= formatDate.getFullYear() %>-<%= formatDate.getMonth()+1 < 10 ? 0 : '' %><%= formatDate.getMonth()+1 %>-<%= formatDate.getDate()+1 < 10 ? 0 : '' %><%= formatDate.getDate()+1 %>">
+                </div>
+                <input type="hidden" name="id" value="<%= debtorData.fileId %>">
+                <div class="col-12">
+                    <input type="submit" class="btn btn-primary">
+                </div>
+            </form>
+        </section>
     </main>
 
 <%- include('footer.ejs') %>

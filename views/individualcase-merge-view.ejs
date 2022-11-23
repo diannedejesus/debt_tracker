@@ -2,38 +2,42 @@
 
 <% let currencyFormat = new Intl.NumberFormat("en-US", { style: "currency", "currency":"USD" }) %>
 
-    <main class='signin clearfix'>
+    <main class="justify-content-center d-grid gap-3">
         <h1>Case Review</h1>
 
         <% if (typeof debtorInfo !== 'undefined'){ %>
-        <table>
+        <table class="table">
             <thead>
                 <tr>
-                    <td><a href="/cases/<%= debtorInfo.fileId %>">Table View</a></td>
-                    <td><a href="/cases-merge/<%= debtorInfo.fileId %>">Merge View</a></td>
-                    <td colspan="2">
-                        <a href="/printview/<%= debtorInfo.fileId %>">Print View</a>
-                    </td>
-                    <td>
+                    <th colspan="4" class="p-0">
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link" aria-current="page" href="/cases/<%= debtorInfo.fileId %>">Table View</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" href="/cases-merge/<%= debtorInfo.fileId %>">Merge View</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/printview/<%= debtorInfo.fileId %>">Print View</a>
+                            </li>
+                        </ul>
+                    </th>
+                    <th style="text-align:right;">
                         <form action="/editDebtor/<%= debtorInfo.fileId %>" method="GET">
-                            <input type="submit" value="edit" class="editBtn">
+                            <input type="submit" value="edit" class="btn btn-secondary btn-outline-light btn-sm">
                         </form>
-                    </td>
-                </tr>
-                <tr>
-                    <th colspan="5">Debtor table</th>
+                    </th> 
                 </tr>
             </thead>
-            <tbody>
-                <tr>
+            <tbody class="table-group-divider">
+                <tr class="table-light">
                     <th>Name</th>
                     <th>File Id</th>
                     <th>Started</th>
                     <th>Payment</th>
                     <th>Debt</th>
                 </tr>
-                <tr>
-                    
+                <tr>     
                     <td><select onchange="changeDebtor(event)">
                         <option selected value="debtorInfo.fileId"><%= debtorInfo.name %></option>
                         <% if (typeof debtorList !== 'undefined'){ %>
@@ -51,7 +55,7 @@
                     <td><%= currencyFormat.format(debtorInfo.minPayment) %></td>
                     <td><%= currencyFormat.format(debtorInfo.debt) %></td>
                 </tr>
-                <tr>
+                <tr class="table-light">
                     <th>Current Debt</th>
                     <th>End Date</th>
                     <th>Payments Left</th>
@@ -69,12 +73,17 @@
                     <td><%= (debtorInfo.totalPaid < (debtorInfo.elapsed * debtorInfo.minPayment)) ? 'Yes' : 'No' %></td>
                     
                 </tr>
-                <tr>
-                    <th colspan="1">Payment Date</th>
-                    <th colspan="1">Payment</th>
-                    <th colspan="3">Comments</th>
-                </tr>
-
+                <tr colspan="5"><td colspan="5">
+                    <table class="table table-borderless"">
+                        <thead>
+                            <tr class="table-dark">
+                                <th colspan="1">Payment Amount</th>
+                                <th colspan="1">Date</th>
+                                <th colspan="2">Bill Amount</th>
+                                <th colspan="1">Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
 
 <!-- Payments -->
                 <% if (typeof debtorInfo.billed !== 'undefined'){ %>
@@ -86,51 +95,40 @@
                     
                     <% while(bills < debtorInfo.billed.length){ %>
                 <tr>
-
                         <% if(i === skipPays && payments < debtorInfo.payments.length){ %>   
-                                        
-                          
-                            
-                    <td rowspan="<%= debtorInfo.payments[payments].space %>">
-                        <form action="/delPayment/<%= debtorInfo.payments[payments].id %>" method="POST">
+                    <td class="<%= payments % 2 === 0 ? 'table-active' : '' %>" rowspan="<%= debtorInfo.payments[payments].space %>">
+                        <form class="button" action="/delPayment/<%= debtorInfo.payments[payments].id %>" method="POST">
                             <input type="submit" value="X" class="deleteBtn"> 
                         </form>
                         <%= currencyFormat.format(debtorInfo.payments[payments].paymentAmount) %>
-                        <form action="/editPayment/<%= debtorInfo.fileId %>/<%= debtorInfo.payments[payments].id %>" method="GET">
+                        <form  class="button" action="/editPayment/<%= debtorInfo.fileId %>/<%= debtorInfo.payments[payments].id %>" method="GET">
                             <input type="submit" value="edit" class="editBtn">
                         </form>
                     </td>
-
                             <% skipPays = i + debtorInfo.payments[payments].space %>
                             <% payments++ %>
                         <% } else if(i === skipPays && debtorInfo.payments.length === payments){ %> 
-                    <td rowspan="0"></td>
+                    <td class="table-dark" rowspan="0">End of Payments</td>
                             <% payments++ %>
                         <% } %>
-                        
-             
                     <% if(i === skipDebts || payments > debtorInfo.payments.length){ %>
-                      
                         <% let formatDate = new Date(debtorInfo.billed[bills].paymentDate) %>
                     <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
-                    <td rowspan="<%= debtorInfo.billed[bills].space == 0 ? 1 : debtorInfo.billed[bills].space %>" colspan="1"><%= formatDate %></td>
-                    <td rowspan="<%= debtorInfo.billed[bills].space == 0 ? 1 : debtorInfo.billed[bills].space %>" colspan="1"><%= debtorInfo.billed[bills].paymentAmount === "paid" ? debtorInfo.billed[bills].paymentAmount : currencyFormat.format(debtorInfo.billed[bills].paymentAmount) %></td>
+                    <td class="<%= bills % 2 === 0 ? 'table-active' : '' %>" rowspan="<%= debtorInfo.billed[bills].space == 0 ? 1 : debtorInfo.billed[bills].space %>" colspan="1"><%= formatDate %></td>
+                    <td class="<%= bills % 2 === 0 ? 'table-active' : '' %>" rowspan="<%= debtorInfo.billed[bills].space == 0 ? 1 : debtorInfo.billed[bills].space %>" colspan="1"><%= debtorInfo.billed[bills].paymentAmount === "paid" ? debtorInfo.billed[bills].paymentAmount : currencyFormat.format(debtorInfo.billed[bills].paymentAmount) %></td>
                     
                         <% skipDebts = i + debtorInfo.billed[bills].space %>
                         
                         <% bills++ %>
-                    <% } %> 
-                    <td></td>
-                    <td></td>
+                    <% } %>
+                    <td class="<%= bills % 2 === 0 ? '' : 'table-active'  %>"></td>
+                    <td class="<%= bills % 2 === 0 ? '' : 'table-active' %>"></td>
                 </tr>
                 <% i++ %>  
                     <% } %>
                 <% } %>
         <% } %>
-                <tr>
-                    <td></td>
-                    <td></td>
-                </tr>
+                </td></tr>
             </tbody>
         </table>
     </main>

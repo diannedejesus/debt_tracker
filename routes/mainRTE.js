@@ -22,7 +22,7 @@ router.get('/cases-merge/:id', ensureAuth, mainController.getCaseInfoMerge)
 
 router.post('/delPayment/:id', ensureAuth, mainController.deletePayment)
 
-router.get('/editPayment/:fileId/:id', ensureAuth, mainController.getEditPayment)
+router.get('/editPayment/:fileId/:paymentid', ensureAuth, mainController.getEditPayment)
 router.post('/editPayment', ensureAuth, mainController.editPayment)
 
 router.get('/editDebtor/:id', ensureAuth, mainController.getEditDebtor)

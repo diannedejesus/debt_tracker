@@ -92,7 +92,11 @@ footer {
 h1{
      text-align: center;
 }
-form, table{
+
+form.button{
+     float: right;
+}
+/* form, table{
      width: fit-content;
      margin: 0 auto;
 }
@@ -105,10 +109,10 @@ input{
 }
 .submitbutton{
      margin-top: 1rem;
-}
+} */
 
 
-table{
+/* table{
      border-bottom: 5px solid black;
      padding: 1em;
      border-collapse: collapse;
@@ -133,26 +137,26 @@ th{
 }
 thead th{
      background-color:azure;
-}
+} */
 
-label{
+/* label{
      display: inline-block;
      width: fit-content;
-}
+} */
 
 .printview, .printview tr, .printview th, .printview td{
      border: none;
 }
 
-.printview th{
+/* .printview th{
      color: white;
      background-color: rgb(78, 78, 78);
-}
-.printview td{
+} */
+/* .printview td{
      text-align: left;
-}
+} */
 
-.printview .highlight{
+/* .printview .highlight{
      background-color: lightgrey;
      text-align: right;
 }
@@ -164,27 +168,32 @@ label{
 .printview .thinline{
      border-bottom: 1px solid black;
 }
-
+*/
 .printview .left{
      text-align: left;
 }
 .printview .right{
      text-align: right;
-}
+} 
 
-.highlight{
+/* .highlight{
      background-color: black;
      color: yellow;
      font-style: italic;
      font-weight: bold;
      font-size: 1.2rem;
-}
+} */
 
 
 @media print {
-     .message, header{
-          display: none;
+     .message, header *{
+          display: none !important;
      }
+
+     header{
+          border: none !important;
+     }
+
      select{
           border: none;
           appearance: none;
@@ -192,6 +201,7 @@ label{
      body{
           font-size: 1rem;
      }
+
      .printview .highlight{
           background-color: lightgrey;
      }

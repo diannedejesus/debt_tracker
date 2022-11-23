@@ -2,9 +2,9 @@
 
 <% let currencyFormat = new Intl.NumberFormat("en-US", { style: "currency", "currency":"USD" }) %>
 
-<main class='signin clearfix'>
-        <table class="printview">
-                    <tr class="thickline">
+    <main class="justify-content-center d-grid gap-3">
+        <table class="table printview">
+                    <tr class="border-bottom border-dark border-5">
                         <td colspan="7"><h1 class="left">Summary of Payment Plan</h1></td>
                     </tr>
                 <tr>
@@ -28,44 +28,44 @@
                     <td colspan="5"></td>
                 </tr>
                 <tr>
-                    <td class="thickline" colspan="2"></td>
-                    <td class="thickline" colspan="1"></td>
+                    <td class="border-bottom border-dark border-5" colspan="2"></td>
+                    <td class="border-bottom border-dark border-5" colspan="1"></td>
                     <td colspan="1"></td>
-                    <td class="thickline" colspan="2"></td>
-                    <td class="thickline" colspan="1"></td>
+                    <td class="border-bottom border-dark border-5" colspan="2"></td>
+                    <td class="border-bottom border-dark border-5" colspan="1"></td>
                 </tr>
                 <tr>
                     <td colspan="2">Start Date</td>
                     <% let formatDate = new Date(debtorInfo.startDate) %>
                     <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
-                    <td class="highlight" colspan="1"><%= formatDate %></td>
+                    <td class="table-active" colspan="1"><%= formatDate %></td>
                     <td colspan="1"></td>
                     <% let endDate = new Date() %>
                     <!-- <%= endDate.setMonth(endDate.getMonth()+(Math.trunc((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) + 1)) %> -->
                     <!-- <%= endDate = endDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
                     <td colspan="2">Payoff Date</td>
-                    <td class="highlight" colspan="1"><%= endDate %></td>
+                    <td class="table-active" colspan="1"><%= endDate %></td>
                 </tr>
                 <tr>
                     <td colspan="2">Initial Balance</td>
-                    <td class="highlight" colspan="1"><%= currencyFormat.format(debtorInfo.debt) %></td>
+                    <td class="table-active" colspan="1"><%= currencyFormat.format(debtorInfo.debt) %></td>
                     <td colspan="1"></td>
                     <td colspan="2">Payments Made</td>
-                    <td class="highlight" colspan="1"><%= debtorInfo.payments.length %></td>
+                    <td class="table-active" colspan="1"><%= debtorInfo.payments.length %></td>
                 </tr>
                 <tr>
                     <td colspan="2">Payment</td>
-                    <td class="highlight" colspan="1"><%= currencyFormat.format(debtorInfo.minPayment) %></td>
+                    <td class="table-active" colspan="1"><%= currencyFormat.format(debtorInfo.minPayment) %></td>
                     <td colspan="1"></td>
                     <td colspan="2">Payments Due</td>
-                    <td class="highlight" colspan="1"><%= Math.ceil((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) %></td>
+                    <td class="table-active" colspan="1"><%= Math.ceil((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) %></td>
                 </tr>
                 <tr>
-                    <td class="thinline" colspan="2">Amount Paid</td>
-                    <td class="thinline highlight" colspan="1"><%= currencyFormat.format(debtorInfo.totalPaid) %></td>
+                    <td class="border-bottom border-dark border-1" colspan="2">Amount Paid</td>
+                    <td class="border-bottom border-dark border-1 table-active" colspan="1"><%= currencyFormat.format(debtorInfo.totalPaid) %></td>
                     <td colspan="1"></td>
-                    <td class="thinline" colspan="2">Amount Owed</td>
-                    <td class="thinline highlight" colspan="1"><%= currencyFormat.format(debtorInfo.debt - debtorInfo.totalPaid) %></td>
+                    <td class="border-bottom border-dark border-1" colspan="2">Amount Owed</td>
+                    <td class="border-bottom border-dark border-1 table-active" colspan="1"><%= currencyFormat.format(debtorInfo.debt - debtorInfo.totalPaid) %></td>
                 </tr>
                 <tr>
                     <td colspan="2"></td>
@@ -75,7 +75,7 @@
                     <td colspan="1"></td>
                 </tr>
 
-                <tr>
+                <tr class="table-dark"> 
                     <th>#</th>
                     <th>Date</th>
                     <th>Inicial Balance</th>
@@ -96,7 +96,7 @@
                     <td><%= currencyFormat.format(payment.paymentAmount) %></td>
                     <!-- <%= runningBalance -= payment.paymentAmount %> -->
                     <td colspan="2"><%= payment.paymentComment ? payment.paymentComment : "" %></td>
-                    <td class="highlight"><%= currencyFormat.format(runningBalance) %></td>
+                    <td class="table-active"><%= currencyFormat.format(runningBalance) %></td>
                 </tr>
                         <!-- <%= counter++ %> -->
                     <% } %>

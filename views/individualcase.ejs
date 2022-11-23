@@ -2,30 +2,36 @@
 
 <% let currencyFormat = new Intl.NumberFormat("en-US", { style: "currency", "currency":"USD" }) %>
 
-    <main class='signin clearfix'>
+    <main class="justify-content-center d-grid gap-3">
         <h1>Case Review</h1>
 
         <% if (typeof debtorInfo !== 'undefined'){ %>
-        <table>
+            
+        <table class="table">
             <thead>
                 <tr>
-                    <td><a href="/cases/<%= debtorInfo.fileId %>">Table View</a></td>
-                    <td><a href="/cases-merge/<%= debtorInfo.fileId %>">Merge View</a></td>
-                    <td colspan="2">
-                        <a href="/printview/<%= debtorInfo.fileId %>">Print View</a>
-                    </td>
-                    <td>
+                    <th colspan="4" class="p-0">
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item">
+                              <a class="nav-link active" aria-current="page" href="/cases/<%= debtorInfo.fileId %>">Table View</a>
+                            </li>
+                            <li class="nav-item">
+                              <a class="nav-link" href="/cases-merge/<%= debtorInfo.fileId %>">Merge View</a>
+                            </li>
+                            <li class="nav-item">
+                              <a class="nav-link" href="/printview/<%= debtorInfo.fileId %>">Print View</a>
+                            </li>
+                        </ul>
+                    </th>
+                    <th style="text-align:right;">
                         <form action="/editDebtor/<%= debtorInfo.fileId %>" method="GET">
-                            <input type="submit" value="edit" class="editBtn">
+                            <input type="submit" value="edit" class="btn btn-secondary btn-outline-light btn-sm">
                         </form>
-                    </td>
-                </tr>
-                <tr>
-                    <th colspan="5">Debtor table</th>
+                    </th> 
                 </tr>
             </thead>
-            <tbody>
-                <tr>
+            <tbody class="table-group-divider">
+                <tr class="table-light">
                     <th>Name</th>
                     <th>File Id</th>
                     <th>Started</th>
@@ -51,7 +57,7 @@
                     <td><%= currencyFormat.format(debtorInfo.minPayment) %></td>
                     <td><%= currencyFormat.format(debtorInfo.debt) %></td>
                 </tr>
-                <tr>
+                <tr class="table-light">
                     <th>Current Debt</th>
                     <th>End Date</th>
                     <th>Payments Left</th>
@@ -68,13 +74,18 @@
                     <td><%= debtorInfo.payments.length %></td>
                     <td><%= (debtorInfo.totalPaid < (debtorInfo.elapsed * debtorInfo.minPayment)) ? 'Yes' : 'No' %></td>
                 </tr>
-                <tr>
+        <tr colspan="5"><td colspan="5">
+        <table class="table table-striped">
+            <thead>
+                <tr class="table-dark">
                     <th colspan="1">Payment Date</th>
                     <th colspan="1">Payment</th>
-                    <th colspan="2">Comments</th>
-                    <th colspan="2">Balance</th>
+                    <th colspan="1">Comments</th>
+                    <th colspan="1">Balance</th>
+                    <th colspan="1">Actions</th>
                 </tr>
-
+            </thead>
+            <tbody>
 
 <!-- Payments -->
             <% let billedCounter = 0 %>
@@ -83,7 +94,7 @@
 
             <% while(billedCounter < debtorInfo.billed.length || paymentCounter < debtorInfo.payments.length){ %>
                 <% if(paymentCounter < debtorInfo.payments.length && runningBalance <= 0){ %>
-                <tr class="highlight">
+                <tr class="">
                     <% let formatDate = new Date(debtorInfo.payments[paymentCounter].paymentDate) %>
                     <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
                     <td rowspan="1" colspan="1"><%= formatDate %></td>
@@ -92,11 +103,11 @@
                     <td rowspan="1"><%= debtorInfo.payments[paymentCounter].paymentComment %></td>
                     <td><%= currencyFormat.format(runningBalance) %></td>
                     <td>
-                        <form action="/delPayment/<%= debtorInfo.payments[paymentCounter].id %>" method="POST">
-                            <input type="submit" value="X" class="deleteBtn"> 
+                        <form class="button" action="/delPayment/<%= debtorInfo.payments[paymentCounter].id %>" method="POST">
+                            <input type="submit" value="X" class="btn btn-secondary btn-outline-light btn-sm">
                         </form>
-                        <form action="/editPayment/<%= debtorInfo.fileId %>/<%= debtorInfo.payments[paymentCounter].id %>" method="GET">
-                            <input type="submit" value="edit" class="editBtn">
+                        <form class="button" action="/editPayment/<%= debtorInfo.fileId %>/<%= debtorInfo.payments[paymentCounter].id %>" method="GET">
+                            <input type="submit" value="Edit" class="btn btn-secondary btn-outline-light btn-sm">
                         </form>
                     </td>
                     <% paymentCounter++ %>
@@ -111,10 +122,10 @@
                         <td rowspan="1"><%= debtorInfo.payments[paymentCounter].paymentComment %></td>
                         <td><%= currencyFormat.format(runningBalance) %></td>
                         <td>
-                            <form action="/delPayment/<%= debtorInfo.payments[paymentCounter].id %>" method="POST">
+                            <form class="button" action="/delPayment/<%= debtorInfo.payments[paymentCounter].id %>" method="POST">
                                 <input type="submit" value="X" class="deleteBtn"> 
                             </form>
-                            <form action="/editPayment/<%= debtorInfo.fileId %>/<%= debtorInfo.payments[paymentCounter].id %>" method="GET">
+                            <form class="button" action="/editPayment/<%= debtorInfo.fileId %>/<%= debtorInfo.payments[paymentCounter].id %>" method="GET">
                                 <input type="submit" value="edit" class="editBtn">
                             </form>
                         </td>
@@ -128,8 +139,9 @@
                         <td rowspan="1" colspan="1"><%= formatDate %></td>
                         <td rowspan="1">-<%= currencyFormat.format(debtorInfo.billed[billedCounter].paymentAmount) %></td>
                         <% runningBalance -= debtorInfo.billed[billedCounter].paymentAmount %>
-                        <td rowspan="1" colspan="2"><%= debtorInfo.billed[billedCounter].paymentComment %></td>
+                        <td rowspan="1"><%= debtorInfo.billed[billedCounter].paymentComment %></td>
                         <td><%= currencyFormat.format(runningBalance) %></td>
+                        <td></td>
                         <% billedCounter++ %>
                     </tr>
                 <% }else if(billedCounter < debtorInfo.billed.length && paymentCounter >= debtorInfo.payments.length){ %>
@@ -139,20 +151,15 @@
                         <td rowspan="1"><%= formatDate %></td>
                         <td rowspan="1">-<%= currencyFormat.format(debtorInfo.billed[billedCounter].paymentAmount) %></td>
                         <% runningBalance -= +debtorInfo.billed[billedCounter].paymentAmount %>
-                        <td rowspan="1" colspan="2"><%= debtorInfo.billed[billedCounter].paymentComment %></td>
+                        <td rowspan="1"><%= debtorInfo.billed[billedCounter].paymentComment %></td>
                         <td><%= currencyFormat.format(runningBalance) %></td>
+                        <td></td>
                         <% billedCounter++ %>
                     </tr>
                 <% } %>
-            <% } %>
-
-                
-                      
-        <% } %>
-                <tr>
-                    <td></td>
-                    <td></td>
-                </tr>
+            <% } %>      
+        <% } %>   
+                </td></tr>
             </tbody>
         </table>
     </main>
