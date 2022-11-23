@@ -350,7 +350,7 @@ Payment History
 
 ## User/Client Interface
 ### Login Page
-![login page](https://github.com/diannedejesus/debt_tracker/blob/main/resources/login.png?raw=true "Login Page")
+<img scr="https://github.com/diannedejesus/debt_tracker/blob/main/resources/login.png" alt="Login Page" width="320">
 ***
 
 ### User Admin
@@ -361,6 +361,7 @@ Payment History
 ![Debt View - Table](https://github.com/diannedejesus/debt_tracker/blob/main/resources/debts-table.png?raw=true "Debt View - Table")
 
 ![Debt View - Merge](https://github.com/diannedejesus/debt_tracker/blob/main/resources/debts-merge.png?raw=true "Debt View - Merge")
+
 ***
 
 
