@@ -351,7 +351,7 @@ Payment History
 ## User/Client Interface
 ### Login Page
 
-![login page](https://github.com/diannedejesus/debt_tracker/blob/main/resources/login.png? =320x   "Login Page")
+![login page](https://github.com/diannedejesus/debt_tracker/blob/main/resources/login.png "Login Page")
 ***
 
 ### User Admin
