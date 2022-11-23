@@ -349,9 +349,9 @@ Payment History
     - Revoked [boolean]
 
 ## User/Client Interface
-<!-- ### Login Page
-![login page](https://github.com/diannedejesus/update_contacts/blob/main/login-signup.PNG?raw=true "Login Page")
-*** -->
+### Login Page
+![login page](https://github.com/diannedejesus/update_contacts/blob/main/resources/login.PNG?raw=true "Login Page")
+***
 
 
 <!-- User Interfase
@@ -408,6 +408,7 @@ Funtionality
 - Verify render paths of insert debt/payment
 - Have insert debt/payment return data on error for correction
 - Fix print view grey bg of header
+- Adjust views for distint screens
 
 
 
