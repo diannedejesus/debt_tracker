@@ -1,7 +1,7 @@
 <%- include('header.ejs') %>
     
     <main class="d-flex justify-content-center">
-        <section class="w-25 d-grid gap-3">
+        <section class="w-75 d-grid gap-3">
             <h1>Edit Payment</h1>
             <form class="row g-3" action="/editpayment" method="POST">
                 <% if (typeof paymentData !== 'undefined'){ %>
@@ -9,14 +9,13 @@
                     <label class="form-label">File ID:</label>
                     <input type="text" class="form-control" name="fileid" value="<%= paymentData.fileID %>">
                 </div>
-                <div class="col-md-6">
+                <div class="col-6">
                     <label class="form-label">Payment:</label>
                     <input type="number" class="form-control" name="payment" value="<%= paymentData.payment %>">
                 </div>
-                <% let formatDate = new Date(paymentData.date) %>
-                <div class="col-md-6">
+                <div class="col-6">
                     <label class="form-label">Date:</label>
-                    <input type="date" class="form-control" name="date" value="<%= formatDate.getFullYear() %>-<%= formatDate.getMonth()+1 < 10 ? 0 : '' %><%= formatDate.getMonth()+1 %>-<%= formatDate.getDate()+1 < 10 ? 0 : '' %><%= formatDate.getDate()+1 %>">
+                    <input type="date" class="form-control" name="date" value="<%= new Date(paymentData.date).toJSON().slice(0,10) %>">
                 </div>
                 <div class="col-12">
                     <label class="form-label">Comments:</label>

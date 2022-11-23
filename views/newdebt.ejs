@@ -1,22 +1,22 @@
 <%- include('header.ejs') %>
 
     <main class="d-flex justify-content-center">
-        <section class="w-25 d-grid gap-3">
+        <section class="w-75 d-grid gap-3">
             <h1>Register Debt</h1>
             <form class="row g-3" action="/registerdebt" method="POST">
-                <div class="col-md-8">
+                <div class="col-8">
                     <label class="form-label">Name:</label>
                     <input type="text" class="form-control" name="name">
                 </div>
-                <div class="col-md">
+                <div class="col">
                     <label class="form-label">File ID:</label>
                     <input type="text" class="form-control" name="fileid">
                 </div>
-                <div class="col-md-8">
+                <div class="col-8">
                     <label class="form-label">Total Debt:</label>
                     <input type="number" class="form-control" name="debtamount">
                 </div>
-                <div class="col-md">
+                <div class="col">
                     <label class="form-label">Payment:</label>
                     <input type="number" class="form-control" name="minpayment">
                 </div>

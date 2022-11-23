@@ -14,7 +14,7 @@
         <section class="logo"><span>&#128507;</span><span class="under">&#9889;</span></section>
         <nav>
              <ul class="nav justify-content-center">
-                 <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+                <% if (typeof user !== 'undefined'){ %> <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li> <% } %>
              </ul>
         </nav>
         <section class="account">
@@ -37,13 +37,12 @@
         <% }) %>
     <% } %>
     
-    <main class="d-flex align-items-center justify-content-center" style="height: 85%">
+    <main class="d-flex justify-content-center">
         <div class="card w-50 text-center">
             <div class="card-body">
                 <h2 class="card-title">Welcome</h2>
-                <p class="card-text">This application was designed to manage debts accumalated by participates of subsidized fundings. These debts don't accrue interest but need to be paid in full in order to continue benefiting from the program or similiar programs.</p>
+                <p class="card-text">This application's design is for managing debts accumulated by a participant. These debts don't accrue interest but must be paid in full to continue benefiting from the program or similar programs.</p>
                 <p class="card-text">Access is limited to users created by the page administrator.</p>
-                <a href="#" class="btn btn-primary">Button</a>
             </div>
         </div>
     </main>

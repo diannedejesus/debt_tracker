@@ -40,8 +40,6 @@ export async function getEditPayment(req, res){
             date: paymentinfo.date,
             comment: paymentinfo.comment
         }
-        console.log(paymentData.date)
-
 
         res.render('editpayment', {
             user: req.user,
@@ -54,6 +52,7 @@ export async function getEditPayment(req, res){
     }
 }
 
+
 export async function getEditDebtor(req, res){
     if(!req.params.id){
         req.flash('error', "No payment selected");
@@ -61,7 +60,6 @@ export async function getEditDebtor(req, res){
     }
     
     const debtorData = await DebtorsDB.findOne({ fileId: req.params.id })
-    console.log(debtorData)
     const debtData = await DebtDB.findOne({ _id: debtorData._id})
 
     if(!debtorData) req.flash('error', "No payment found");
