@@ -350,7 +350,7 @@ Payment History
 
 ## User/Client Interface
 ### Login Page
-<img scr="https://github.com/diannedejesus/debt_tracker/blob/main/resources/login.png" alt="Login Page" width="320">
+<img scr="/blob/main/resources/login.png" alt="Login Page" width="320">
 ***
 
 ### User Admin
