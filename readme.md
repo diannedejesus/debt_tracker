@@ -353,6 +353,16 @@ Payment History
 ![login page](https://github.com/diannedejesus/debt_tracker/blob/main/resources/login.png?raw=true "Login Page")
 ***
 
+### User Admin
+![User Admin](https://github.com/diannedejesus/debt_tracker/blob/main/resources/user-admin.png?raw=true "User Administration Page")
+***
+
+### Debt Views
+![Debt View - Table](https://github.com/diannedejesus/debt_tracker/blob/main/resources/debts-table.png?raw=true "Debt View - Table")
+
+![Debt View - Merge](https://github.com/diannedejesus/debt_tracker/blob/main/resources/debts-merge.png?raw=true "Debt View - Merge")
+***
+
 
 <!-- User Interfase
 There’s a good chance your coding project is going to be an application, which means it will have a user interface. (If your project is a library or something similar, there won’t be an interface.) As clients, UX designers, and programmers discuss and plan the user interface, it’s easy for the lines to get crossed. If the client doesn’t adequately communicate their vision, your teams might build out the user interface only to have the design shot down.  
