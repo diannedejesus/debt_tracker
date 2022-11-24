@@ -351,7 +351,7 @@ Payment History
 ## User/Client Interface
 ### Login Page
 
-![login page](https://github.com/diannedejesus/debt_tracker/blob/main/resources/login.png "Login Page")
+![login page](https://github.com/diannedejesus/debt_tracker/blob/main/resources/login.png "Login Page")git
 ***
 
 ### User Admin
@@ -378,9 +378,10 @@ Once these wireframes are approved by the client, include them in the user inter
 
 ## Goals and milestones
 Fixes
-- update the debt list page with the new calculation for when a debt is late.
+- update the debt list and dashboard page with the new calculation for when a debt is late.
 - excused payment access
-- have edit payment check for duplicate values
+- [X] have edit payment check for duplicate values
+    - verify display of error
 - verify how excused payments and late payments are calculated.
 
 Modifications
@@ -421,9 +422,6 @@ Funtionality
 - Have insert debt/payment return data on error for correction
 - Fix print view grey bg of header
 - Adjust views for distint screens
-
-
-
 
 
 

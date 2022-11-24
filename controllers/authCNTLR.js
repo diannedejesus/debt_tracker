@@ -20,7 +20,7 @@ export async function getCreateAdmin(req, res){
     }
   }
 
-  res.render('administrator', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+  res.render('administrator', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
 };
 
 // export async function getReset(req, res){
@@ -35,13 +35,15 @@ export async function getVerifyAccount(req, res){
     user: req.user, 
     token: req.params.token,
     userid: req.params.userid,
-    messages: [...req.flash('errors'), ...req.flash('msg')] });
+    messages: [...req.flash('msg')], 
+    errors: [...req.flash('errors')], });
 };
 
 export async function getLogin(req, res){
   res.render('login', { 
     user: req.user, 
-    messages: [...req.flash('errors'), ...req.flash('msg')] 
+    messages: [...req.flash('msg')], 
+    errors: [...req.flash('errors')],
   });
 };
 
@@ -66,11 +68,12 @@ export async function getUserAdmin(req, res){
     res.render('createUser', { 
       user: req.user,
       userList,
-      messages: [...req.flash('errors'), ...req.flash('msg')]
+      messages: [...req.flash('msg')], 
+      errors: [...req.flash('errors')],
     });
   } else {
     req.flash('errors', 'Not an administrator account');
-    res.render('dashboard', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+    res.render('dashboard', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
   }
 };
 
@@ -87,7 +90,7 @@ export async function loginUser(req, res, next){
 
   if(errors.length) {
     req.flash('errors', errors);
-    return res.render('login', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+    return res.render('login', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
   }
 
   req.body.email = validator.normalizeEmail(req.body.email.trim(), { gmail_remove_dots: false });
@@ -106,12 +109,12 @@ export async function loginUser(req, res, next){
       }
       
       console.error('Login Error:', info)
-      return res.render('login', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+      return res.render('login', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
     }
 
     if(user.revoked) {
       req.flash('errors', 'user access was revoked, contact administrator');
-      return res.render('login', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+      return res.render('login', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
     }
 
     req.logIn(user, (err) => {
@@ -195,7 +198,7 @@ export async function addAdmin(req, res, next){
 
   if(errors.length) {
     req.flash('errors', errors);
-    return res.render('administrator', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+    return res.render('administrator', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
   }
 
   //create user objet
@@ -211,7 +214,7 @@ export async function addAdmin(req, res, next){
 
     if(foundDoc) {
       req.flash('errors', 'an account with that email/username already exists');
-      return res.render('administrator', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+      return res.render('administrator', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
     }
     //save new user
     createdUser.save((err, SavedDoc) => {
@@ -220,7 +223,7 @@ export async function addAdmin(req, res, next){
       if(SavedDoc){
         //send verification email
         req.flash('msg', 'Account created');
-        return res.render('login', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+        return res.render('login', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
       }
     })
   })
@@ -237,7 +240,7 @@ export async function authenticateUser(req, res, next){
 
   if(errors.length) {
     req.flash('errors', errors);
-    return res.render('verifyaccount', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+    return res.render('verifyaccount', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
   }
 
   //validate with database
@@ -249,7 +252,7 @@ export async function authenticateUser(req, res, next){
 
   if(errors.length) {
     req.flash('errors', errors);
-    return res.render('verifyaccount', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+    return res.render('verifyaccount', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
   }
 
   //set values
@@ -267,7 +270,7 @@ export async function authenticateUser(req, res, next){
   })
 
   req.flash('msg', "Account verified, new passord created");
-  return res.render('login', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+  return res.render('login', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
 }
 
 export async function resetPassword(req, res){

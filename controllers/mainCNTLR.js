@@ -7,21 +7,24 @@ import { randomizedPayments } from '../controllers/testsCNTLR.js'
 export async function index(req, res){  
     res.render('index.ejs', { 
         user: req.user,
-        messages: [...req.flash('errors'), ...req.flash('msg')],
+        messages: [...req.flash('msg')],
+        errors: [...req.flash('errors')],
     })
 }
 
 export async function getRegPayment(req, res){
     res.render('newpayment', {
         user: req.user,
-        messages: [...req.flash('errors'), ...req.flash('msg')]
+        messages: [...req.flash('msg')],
+        errors: [...req.flash('errors')],
     })
 }
 
 export async function getExcusedPayment(req, res){
     res.render('excusedpayment', {
         user: req.user,
-        messages: [...req.flash('errors'), ...req.flash('msg')]
+        messages: [...req.flash('msg')],
+        errors: [...req.flash('errors')],
     })
 }
 
@@ -44,7 +47,8 @@ export async function getEditPayment(req, res){
         res.render('editpayment', {
             user: req.user,
             paymentData,
-            messages: [...req.flash('errors'), ...req.flash('msg')]
+            messages: [...req.flash('msg')],
+            errors: [...req.flash('errors')],
         })
         
     } catch (error) {
@@ -68,7 +72,8 @@ export async function getEditDebtor(req, res){
         user: req.user,
         debtorData,
         debtData,
-        messages: [...req.flash('errors'), ...req.flash('msg')]
+        messages: [...req.flash('msg')],
+        errors: [...req.flash('errors')],
     })
 }
 
@@ -87,7 +92,8 @@ export async function getCaseInfo(req, res){
         user: req.user,
         debtorInfo,
         debtorList,
-        messages: [...req.flash('errors'), ...req.flash('msg')]
+        messages: [...req.flash('msg')],
+        errors: [...req.flash('errors')],
     })
 }
 
@@ -112,7 +118,8 @@ export async function getCaseInfoMerge(req, res){
         user: req.user,
         debtorInfo,
         debtorList,
-        messages: [...req.flash('errors'), ...req.flash('msg')]
+        messages: [...req.flash('msg')],
+        errors: [...req.flash('errors')],
     })
 }
 
@@ -131,7 +138,8 @@ export async function getPrintView(req, res){
         user: req.user,
         debtorInfo,
         debtorList,
-        messages: [...req.flash('errors'), ...req.flash('msg')]
+        messages: [...req.flash('msg')],
+        errors: [...req.flash('errors')],
     })
 }
 
@@ -287,7 +295,8 @@ async function buildDebtorInfoMerge(caseFileId){
 export async function getRegdebt(req, res){
     res.render('newdebt', {
         user: req.user,
-        messages: [...req.flash('errors'), ...req.flash('msg')]
+        messages: [...req.flash('msg')],
+        errors: [...req.flash('errors')],
     })
 }
 
@@ -303,7 +312,7 @@ export async function insertNewPayment(req, res){
 
     if(errors.length) {
         req.flash('errors', errors);
-        return res.render('newpayment', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+        return res.render('newpayment', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
     }
 
     //find id
@@ -327,7 +336,7 @@ export async function insertNewPayment(req, res){
     //return errors
     if(errors.length) {
         req.flash('errors', errors);
-        return res.render('newpayment', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+        return res.render('newpayment', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
     }
 
     //construct data object
@@ -343,13 +352,14 @@ export async function insertNewPayment(req, res){
         if(err){
             console.error(err._message)
             req.flash('errors', 'There was an error submitting the data to the database. #003');
-            return res.render('newpayment', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+            return res.render('newpayment', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
         }
 
         req.flash('msg', 'Successfully saved.');
         res.render('newpayment', {
             user: req.user,
-            messages: [...req.flash('errors'), ...req.flash('msg')],
+            messages: [...req.flash('msg')], 
+            errors: [...req.flash('errors')],
         })
     })
     
@@ -366,7 +376,7 @@ export async function excusedPayment(req, res){
 
     if(errors.length) {
         req.flash('errors', errors);
-        return res.render('excusedpayment', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+        return res.render('excusedpayment', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
     }
 
     //find id
@@ -390,7 +400,7 @@ export async function excusedPayment(req, res){
     //return errors
     if(errors.length) {
         req.flash('errors', errors);
-        return res.render('excusedpayment', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+        return res.render('excusedpayment', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
     }
 
     //construct data object
@@ -406,13 +416,14 @@ export async function excusedPayment(req, res){
         if(err){
             console.error(err._message)
             req.flash('errors', 'There was an error submitting the data to the database. #003');
-            return res.render('excusedpayment', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+            return res.render('excusedpayment', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
         }
 
         req.flash('msg', 'Successfully saved.');
         res.render('excusedpayment', {
             user: req.user,
-            messages: [...req.flash('errors'), ...req.flash('msg')],
+            messages: [...req.flash('msg')], 
+            errors: [...req.flash('errors')],
         })
     })
  
@@ -429,7 +440,7 @@ export async function editPayment(req, res){
 
     if(errors.length) {
         req.flash('errors', errors);
-        return res.render('editpayment', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+        return res.redirect(req.headers.referer);
     }
 
     //find id
@@ -441,10 +452,18 @@ export async function editPayment(req, res){
         errors.push('An error occured with the database. #005');
     }
 
+    const similiarPayments = await PaymentDB.find({
+        payment: req.body.payment, 
+        date: req.body.date, 
+        caseID: debtorRef._id
+    })
+
+    if(similiarPayments.length > 0){ errors.push(`We found a payment for the same amount and date for this account.`); }
+
     //return errors
     if(errors.length) {
         req.flash('errors', errors);
-        return res.render('editpayment', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] });
+        return res.redirect(req.headers.referer);
     }
 
 //update database
@@ -480,13 +499,14 @@ export async function getDebtorList(req, res){
         res.render('debtors', {
             user: req.user,
             debtors: debtorList,
-            messages: [...req.flash('errors'), ...req.flash('msg')],
+            messages: [...req.flash('msg')], 
+            errors: [...req.flash('errors')],
         })
 
     } catch (error) {
         console.error(error);
         req.flash('errors', 'Error submitting data to database. #006');
-        res.render('debtors', { user: req.user, messages: [...req.flash('errors'), ...req.flash('msg')] })
+        res.render('debtors', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], })
     }
 }
 
@@ -515,7 +535,8 @@ export async function getDashboard(req, res){
         res.render('dashboard', {
             user: req.user,
             debtors: debtorList,
-            messages: [...req.flash('errors'), ...req.flash('msg')],
+            messages: [...req.flash('msg')], 
+            errors: [...req.flash('errors')],
         })
 
     } catch (error) {
@@ -524,7 +545,8 @@ export async function getDashboard(req, res){
         res.render('dashboard', {
             user: req.user,
             debtors: '',
-            messages: [...req.flash('errors'), ...req.flash('msg')],
+            messages: [...req.flash('msg')], 
+            errors: [...req.flash('errors')],
         })
     }
 }
@@ -582,7 +604,8 @@ export async function insertNewDebt(req, res){
         req.flash('errors', errors);
         return res.render('newdebt', { 
             user: req.user, 
-            messages: [...req.flash('errors'), ...req.flash('msg')]
+            messages: [...req.flash('msg')], 
+            errors: [...req.flash('errors')],
         });
     }
 
@@ -605,14 +628,16 @@ export async function insertNewDebt(req, res){
             req.flash('errors', 'The file id already exist, a person can not have two debts.');
             return res.render('newdebt', { 
                 user: req.user, 
-                messages: [...req.flash('errors'), ...req.flash('msg')]
+                messages: [...req.flash('msg')], 
+                errors: [...req.flash('errors')],
             });
         }else if(err){
             console.error(err)
             req.flash('errors', 'Error submitting data to database. #001');
             return res.render('newdebt', { 
                 user: req.user, 
-                messages: [...req.flash('errors'), ...req.flash('msg')] 
+                messages: [...req.flash('msg')], 
+                errors: [...req.flash('errors')],
             });
         }
 
@@ -637,14 +662,16 @@ export async function insertNewDebt(req, res){
                     req.flash('errors', 'Error submitting data to database. #002');
                     return res.render('newdebt', { 
                         user: req.user, 
-                        messages: [...req.flash('errors'), ...req.flash('msg')] 
+                        messages: [...req.flash('msg')], 
+                        errors: [...req.flash('errors')],
                     });
                 }
 
                 req.flash('msg', 'Data saved successfully.');
                 return res.render('newdebt', { 
                     user: req.user, 
-                    messages: [...req.flash('errors'), ...req.flash('msg')]
+                    messages: [...req.flash('msg')], 
+                    errors: [...req.flash('errors')],
                 });
             })
         }
@@ -667,7 +694,8 @@ export async function editDebt(req, res){
         req.flash('errors', errors);
         return res.render('newdebt', { 
             user: req.user, 
-            messages: [...req.flash('errors'), ...req.flash('msg')]
+            messages: [...req.flash('msg')], 
+            errors: [...req.flash('errors')],
         });
     }
 

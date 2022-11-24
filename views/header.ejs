@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Application Template</title>
+    <title>Debt Tracker</title>
     <link rel="stylesheet" href="/css/normalize.css">
     <link rel="stylesheet" href="/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
@@ -21,10 +21,10 @@
                 <li class="nav-item dropdown">
             <% if (typeof user !== 'undefined'){ %>
                 <% if (user.accountType === "Owner"){ %> 
-                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><%= user.email %> (Owner)</a>
+                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><%= user.email %> (O)</a>
                     <ul class="dropdown-menu">
                 <% }else if(user.accountType === "App Manager"){ %>
-                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><%= user.email %> (App Manager)</a>
+                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><%= user.email %> (A.M.)</a>
                     <ul class="dropdown-menu">
                 <% }else{ %>
                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><%= user.email %></a>
@@ -44,8 +44,17 @@
         </nav>
     </header>
 
-     <% if (typeof messages !== 'undefined'){ %> 
+    <% if (typeof messages !== 'undefined'){ %> 
         <% messages.forEach( (msg)=> { %>
-            <p class='message'><%= msg %></p>
+            <div class="alert alert-success" role="alert">
+                <p><%= msg %></p>
+            </div>
+        <% }) %>
+    <% } %>
+    <% if (typeof errors !== 'undefined'){ %> 
+        <% errors.forEach( (msg)=> { %>
+            <div class="alert alert-danger" role="alert">
+                <p><%= msg %></p>
+            </div>
         <% }) %>
     <% } %>
