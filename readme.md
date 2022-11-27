@@ -381,7 +381,7 @@ Fixes
 - update the debt list and dashboard page with the new calculation for when a debt is late.
 - excused payment access
 - [X] have edit payment check for duplicate values
-    - verify display of error
+    - [x] verify display of error
 - verify how excused payments and late payments are calculated.
 
 Modifications
@@ -391,6 +391,7 @@ Modifications
 - have user section of header display a name and not the whole email.
 - include payment info for merge view.
 - change the way info is displayed in merge view. Have rolling balance.
+- create a footer
 
 Funtionality
 - merge view: edit so it displays all payments even if no more bills are due
