@@ -423,7 +423,7 @@ Funtionality
 - Have insert debt/payment return data on error for correction
 - Fix print view grey bg of header
 - Adjust views for distint screens
-
+- adjust login, manualcode, verifyaccount, administrator styles
 
 
 

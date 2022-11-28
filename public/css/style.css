@@ -32,7 +32,6 @@ body {
 
 main{
      margin-top: 2em;
-     min-height: 70%;
 }
 
 /******************************************
@@ -83,9 +82,9 @@ nav{
 
 
 /*---------------- Footer ----------------*/
-footer {
+/* footer {
 
-}
+} */
 
 /******************************************
 /* ADDITIONAL STYLES
@@ -94,9 +93,9 @@ h1{
      text-align: center;
 }
 
-form.button{
+/* form.button{
      float: right;
-}
+} */
 /* form, table{
      width: fit-content;
      margin: 0 auto;
