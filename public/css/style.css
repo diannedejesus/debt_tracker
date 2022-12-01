@@ -32,6 +32,7 @@ body {
 
 main{
      margin-top: 2em;
+     margin-bottom: 2em;
 }
 
 /******************************************
@@ -92,7 +93,11 @@ nav{
 h1{
      text-align: center;
 }
-
+.comment{
+     font-weight: bolder;
+     font-style: italic;
+     font-size: smaller;
+}
 /* form.button{
      float: right;
 } */

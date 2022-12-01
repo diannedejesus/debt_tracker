@@ -33,8 +33,12 @@ export default function (passport) {
    })
  
    passport.deserializeUser((id, done) => {
-     User.findById(id, (err, user) => done(err, user)).select("email revoked accountType")
+     User.findById(id, (err, user) => {
+      user.name = user.email.split("@")[0]
+      done(err, user)
+    }).select("email revoked accountType")
    })
+
   }
 
 

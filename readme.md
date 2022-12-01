@@ -351,7 +351,7 @@ Payment History
 ## User/Client Interface
 ### Login Page
 
-![login page](https://github.com/diannedejesus/debt_tracker/blob/main/resources/login.png "Login Page")git
+![login page](https://github.com/diannedejesus/debt_tracker/blob/main/resources/login.png "Login Page")
 ***
 
 ### User Admin
@@ -386,12 +386,13 @@ Fixes
 
 Modifications
 - Either switch or include name for registering payment info or implement alternate method for doing
-- place id on debt list view
-- have identifier for admin account instead of name
-- have user section of header display a name and not the whole email.
-- include payment info for merge view.
-- change the way info is displayed in merge view. Have rolling balance.
-- create a footer
+    - possible have a look up in file id input
+- [X] place id on debt list view
+- [X] have identifier for admin account instead of name
+- [X] have user section of header display a name and not the whole email.
+- [X] include payment info (date, comments) for merge view.
+- [X] change the way info is displayed in merge view. Have rolling balance.
+- [X] create a footer
 
 Funtionality
 - merge view: edit so it displays all payments even if no more bills are due
@@ -423,7 +424,9 @@ Funtionality
 - Have insert debt/payment return data on error for correction
 - Fix print view grey bg of header
 - Adjust views for distint screens
-- adjust login, manualcode, verifyaccount, administrator styles
+- adjust login, manualcode, verifyaccount, administrator, index styles
+- debtor list modify debt as currency and possible center info
+- implement check for unicode icon for compatibility
 
 
 

@@ -486,6 +486,7 @@ try {
 
 
 export async function getDebtorList(req, res){
+    console.log(req.user)
     try {
         const debtsInfo = await DebtDB.find({})
         const debtorsInfo = await DebtorsDB.find({})

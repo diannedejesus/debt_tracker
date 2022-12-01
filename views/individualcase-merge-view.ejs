@@ -77,16 +77,18 @@
                     <table class="table table-borderless"">
                         <thead>
                             <tr class="table-dark">
+                                <th colspan="1">Date</th>
                                 <th colspan="1">Payment Amount</th>
                                 <th colspan="1">Date</th>
-                                <th colspan="2">Bill Amount</th>
-                                <th colspan="1">Comments</th>
+                                <th colspan="1">Bill Amount</th>
+                                <th colspan="1"></th>
                             </tr>
                         </thead>
                         <tbody>
 
 <!-- Payments -->
                 <% if (typeof debtorInfo.billed !== 'undefined'){ %>
+                    <% let runningBalance = 0 %>
                     <% let bills = 0 %>
                     <% let payments = 0 %>
                     <% let skipPays = 0 %>
@@ -94,34 +96,45 @@
                     <% let i=0 %>
                     
                     <% while(bills < debtorInfo.billed.length){ %>
+                        
                 <tr>
-                        <% if(i === skipPays && payments < debtorInfo.payments.length){ %>   
-                    <td class="<%= payments % 2 === 0 ? 'table-active' : '' %>" rowspan="<%= debtorInfo.payments[payments].space %>">
-                        <form class="button" action="/delPayment/<%= debtorInfo.payments[payments].id %>" method="POST">
-                            <input type="submit" value="X" class="deleteBtn"> 
-                        </form>
-                        <%= currencyFormat.format(debtorInfo.payments[payments].paymentAmount) %>
-                        <form  class="button" action="/editPayment/<%= debtorInfo.fileId %>/<%= debtorInfo.payments[payments].id %>" method="GET">
-                            <input type="submit" value="edit" class="editBtn">
-                        </form>
+                        <% if(i === skipPays && payments < debtorInfo.payments.length){ %>
+                    <td class="<%= payments % 2 === 0 ? 'table-active' : '' %> border-top border-secondary" rowspan="<%= debtorInfo.payments[payments].space %>">
+                        <% let formatDate = new Date(debtorInfo.payments[payments].paymentDate) %>
+                    <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
+                    <%= formatDate %>
+                    <p class="comment"><%= debtorInfo.payments[payments].paymentComment %></p>
+                    </td>  
+                    <td class="<%= payments % 2 === 0 ? 'table-active' : '' %> border-top border-secondary" rowspan="<%= debtorInfo.payments[payments].space %>">
+                        <div class="d-flex">
+                            <span class="p-1"><%= currencyFormat.format(debtorInfo.payments[payments].paymentAmount) %></span>
+
+                            <form class="p-1" action="/delPayment/<%= debtorInfo.payments[payments].id %>" method="POST">
+                                <input type="submit" value="X"> 
+                            </form>
+
+                            <form class="p-1" action="/editPayment/<%= debtorInfo.fileId %>/<%= debtorInfo.payments[payments].id %>" method="GET">
+                                <input type="submit" value="edit">
+                            </form>
+                        </div>
                     </td>
                             <% skipPays = i + debtorInfo.payments[payments].space %>
                             <% payments++ %>
                         <% } else if(i === skipPays && debtorInfo.payments.length === payments){ %> 
-                    <td class="table-dark" rowspan="0">End of Payments</td>
+                    <td class="table-dark border-top" rowspan="0" colspan="2">End of Payments</td>
                             <% payments++ %>
                         <% } %>
                     <% if(i === skipDebts || payments > debtorInfo.payments.length){ %>
                         <% let formatDate = new Date(debtorInfo.billed[bills].paymentDate) %>
                     <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
-                    <td class="<%= bills % 2 === 0 ? 'table-active' : '' %>" rowspan="<%= debtorInfo.billed[bills].space == 0 ? 1 : debtorInfo.billed[bills].space %>" colspan="1"><%= formatDate %></td>
-                    <td class="<%= bills % 2 === 0 ? 'table-active' : '' %>" rowspan="<%= debtorInfo.billed[bills].space == 0 ? 1 : debtorInfo.billed[bills].space %>" colspan="1"><%= debtorInfo.billed[bills].paymentAmount === "paid" ? debtorInfo.billed[bills].paymentAmount : currencyFormat.format(debtorInfo.billed[bills].paymentAmount) %></td>
+                    <td class="<%= bills % 2 === 0 ? 'table-active' : '' %> border-top border-secondary" rowspan="<%= debtorInfo.billed[bills].space == 0 ? 1 : debtorInfo.billed[bills].space %>" colspan="1"><%= formatDate %></td>
+                    <td class="<%= bills % 2 === 0 ? 'table-active' : '' %> border-top border-secondary" rowspan="<%= debtorInfo.billed[bills].space == 0 ? 1 : debtorInfo.billed[bills].space %>" colspan="1"><%= debtorInfo.billed[bills].paymentAmount === "paid" ? debtorInfo.billed[bills].paymentAmount : currencyFormat.format(runningBalance +=debtorInfo.billed[bills].paymentAmount) %></td>
                     
                         <% skipDebts = i + debtorInfo.billed[bills].space %>
                         
                         <% bills++ %>
                     <% } %>
-                    <td class="<%= bills % 2 === 0 ? '' : 'table-active'  %>"></td>
+                    
                     <td class="<%= bills % 2 === 0 ? '' : 'table-active' %>"></td>
                 </tr>
                 <% i++ %>  
