@@ -6,24 +6,24 @@
             <form class="row g-3" action="/registerdebt" method="POST">
                 <div class="col-8">
                     <label class="form-label">Name:</label>
-                    <input type="text" class="form-control" name="name">
+                    <input type="text" class="form-control" name="name" placeholder="Debtor Name" value="<%= typeof pagevalues !== 'undefined' ? pagevalues.name : '' %>">
                 </div>
                 <div class="col">
                     <label class="form-label">File ID:</label>
-                    <input type="text" class="form-control" name="fileid">
+                    <input type="text" class="form-control" name="fileid" placeholder="File ID" value="<%= typeof pagevalues !== 'undefined' ? pagevalues.fileid : '' %>">
                 </div>
                 <div class="col-8">
                     <label class="form-label">Total Debt:</label>
-                    <input type="number" class="form-control" name="debtamount">
+                    <input type="number" class="form-control" name="debtamount" placeholder="Total Debt" value="<%= typeof pagevalues !== 'undefined' ? pagevalues.debtamount : '' %>">
                 </div>
                 <div class="col">
                     <label class="form-label">Payment:</label>
-                    <input type="number" class="form-control" name="minpayment">
+                    <input type="number" class="form-control" name="minpayment" placeholder="Minimun Payment" value="<%= typeof pagevalues !== 'undefined' ? pagevalues.minpayment : '' %>">
                 </div>
                 
                 <div class="col-12">
                     <label class="form-label">Start Date:</label>
-                    <input type="date" class="form-control" name="startdate">
+                    <input type="date" class="form-control" name="startdate" value="<%= typeof pagevalues !== 'undefined' ? new Date(pagevalues.startdate).toJSON().slice(0,10) : '' %>">
                 </div>
                 <div class="col-12">
                     <input type="submit" class="btn btn-primary">

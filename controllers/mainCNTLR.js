@@ -13,25 +13,53 @@ export async function index(req, res){
 }
 
 export async function getRegPayment(req, res){
-    const debtorList =  await DebtorsDB.find().select("name fileId")
+    try {
+        const debtorList =  await DebtorsDB.find().select("name fileId")
 
-    res.render('newpayment', {
+        res.render('newpayment', {
+            user: req.user,
+            debtorList,
+            messages: [...req.flash('msg')],
+            errors: [...req.flash('errors')],
+        })
+    } catch (error) {
+        console.error(error) //does not matter if info could not be accessed
+
+        res.render('newpayment', {
+            user: req.user,
+            messages: [...req.flash('msg')],
+            errors: [...req.flash('errors')],
+        })
+    }
+}
+
+export async function getRegdebt(req, res){
+    res.render('newdebt', {
         user: req.user,
-        debtorList,
         messages: [...req.flash('msg')],
         errors: [...req.flash('errors')],
     })
 }
 
 export async function getExcusedPayment(req, res){
-    const debtorList =  await DebtorsDB.find().select("name fileId")
+    try {
+        const debtorList =  await DebtorsDB.find().select("name fileId")
 
-    res.render('excusedpayment', {
-        user: req.user,
-        debtorList,
-        messages: [...req.flash('msg')],
-        errors: [...req.flash('errors')],
-    })
+        res.render('excusedpayment', {
+            user: req.user,
+            debtorList,
+            messages: [...req.flash('msg')],
+            errors: [...req.flash('errors')],
+        })
+    } catch (error) {
+        console.error(error) //does not matter if info could not be accessed
+
+        res.render('excusedpayment', {
+            user: req.user,
+            messages: [...req.flash('msg')],
+            errors: [...req.flash('errors')],
+        })
+    }
 }
 
 export async function getEditPayment(req, res){
@@ -49,6 +77,7 @@ export async function getEditPayment(req, res){
             date: paymentinfo.date,
             comment: paymentinfo.comment
         }
+        console.log(paymentData)
 
         res.render('editpayment', {
             user: req.user,
@@ -59,6 +88,13 @@ export async function getEditPayment(req, res){
         
     } catch (error) {
         console.error(error)
+        req.flash('errors', 'Error finding database info.');
+
+        res.render('editpayment', {
+            user: req.user,
+            messages: [...req.flash('msg')],
+            errors: [...req.flash('errors')],
+        })
     }
 }
 
@@ -69,84 +105,128 @@ export async function getEditDebtor(req, res){
         return res.redirect(req.headers.referer);
     }
     
-    const debtorData = await DebtorsDB.findOne({ fileId: req.params.id })
-    const debtData = await DebtDB.findOne({ _id: debtorData._id})
+    try {
+        const debtorData = await DebtorsDB.findOne({ fileId: req.params.id })
+        const debtData = await DebtDB.findOne({ _id: debtorData._id})
 
-    if(!debtorData) req.flash('error', "No payment found");
+        if(!debtorData) req.flash('error', "No payment found");
 
-    res.render('editdebtor', {
-        user: req.user,
-        debtorData,
-        debtData,
-        messages: [...req.flash('msg')],
-        errors: [...req.flash('errors')],
-    })
+        res.render('editdebtor', {
+            user: req.user,
+            debtorData,
+            debtData,
+            messages: [...req.flash('msg')],
+            errors: [...req.flash('errors')],
+        })
+    } catch (error) {
+        console.error(error)
+        req.flash('errors', error);
+
+        res.render('editdebtor', {
+            user: req.user,
+            messages: [...req.flash('msg')],
+            errors: [...req.flash('errors')],
+        })
+    }
 }
 
 export async function getCaseInfo(req, res){
-    const debtorList =  await DebtorsDB.find().select("name fileId")
-    let caseFileId = {fileId: req.params.id}
+    try {
+        const debtorList =  await DebtorsDB.find().select("name fileId")
+        let caseFileId = {fileId: req.params.id}
 
-    if(!caseFileId.fileId){
-        req.flash('errors', 'No file id sent');
-        return res.redirect(req.headers.referer);
-    }
+        if(!caseFileId.fileId){
+            req.flash('errors', 'No file id sent');
+            return res.redirect(req.headers.referer);
+        }
 
-    const debtorInfo = await buildDebtorInfo(caseFileId)
+        const debtorInfo = await buildDebtorInfo(caseFileId)
 
-    res.render('individualcase', {
-        user: req.user,
-        debtorInfo,
-        debtorList,
-        messages: [...req.flash('msg')],
-        errors: [...req.flash('errors')],
-    })
+        res.render('individualcase', {
+            user: req.user,
+            debtorInfo,
+            debtorList,
+            messages: [...req.flash('msg')],
+            errors: [...req.flash('errors')],
+        })
+    } catch (error) {
+        console.error(error)
+        req.flash('errors', error);
+
+        res.render('individualcase', {
+            user: req.user,
+            messages: [...req.flash('msg')],
+            errors: [...req.flash('errors')],
+        })
+    }  
 }
 
 export async function getCaseInfoMerge(req, res){
-    const debtorList =  await DebtorsDB.find().select("name fileId")
-    let selectedDebtor = {fileId: req.params.id}
+    try {
+        const debtorList =  await DebtorsDB.find().select("name fileId")
+        let selectedDebtor = {fileId: req.params.id}
 
-    if(!selectedDebtor.fileId){
-        req.flash('errors', 'No file id sent');
-        return res.redirect(req.headers.referer);
-    }
-
-    for(let debtor of debtorList){
-        if(debtor.fileId === selectedDebtor.fileId){
-            selectedDebtor.debtorRef = debtor._id
+        if(!selectedDebtor.fileId){
+            req.flash('errors', 'No file id sent');
+            return res.redirect(req.headers.referer);
         }
+
+        for(let debtor of debtorList){
+            if(debtor.fileId === selectedDebtor.fileId){
+                selectedDebtor.debtorRef = debtor._id
+            }
+        }
+
+        const debtorInfo = await buildDebtorInfoMerge(selectedDebtor)
+
+        res.render('individualcase-merge-view', {
+            user: req.user,
+            debtorInfo,
+            debtorList,
+            messages: [...req.flash('msg')],
+            errors: [...req.flash('errors')],
+        })
+    } catch (error) {
+        console.error(error)
+        req.flash('errors', error);
+
+        res.render('individualcase-merge-view', {
+            user: req.user,
+            messages: [...req.flash('msg')],
+            errors: [...req.flash('errors')],
+        })
     }
-
-    const debtorInfo = await buildDebtorInfoMerge(selectedDebtor)
-
-    res.render('individualcase-merge-view', {
-        user: req.user,
-        debtorInfo,
-        debtorList,
-        messages: [...req.flash('msg')],
-        errors: [...req.flash('errors')],
-    })
 }
 
 export async function getPrintView(req, res){
-    const debtorList =  await DebtorsDB.find().select("name fileId")
-    let caseFileId = {fileId: req.params.id}
-    
-    if(!caseFileId.fileId){
-        req.flash('errors', 'No file id sent');
-        return res.redirect(req.headers.referer);
+    try {
+        const debtorList =  await DebtorsDB.find().select("name fileId")
+        let caseFileId = {fileId: req.params.id}
+        
+        if(!caseFileId.fileId){
+            req.flash('errors', 'No file id sent');
+            return res.redirect(req.headers.referer);
+        }
+
+        const debtorInfo = await buildDebtorInfo(caseFileId)
+
+        res.render('printview', {
+            user: req.user,
+            debtorInfo,
+            debtorList,
+            messages: [...req.flash('msg')],
+            errors: [...req.flash('errors')],
+        })
+    } catch (error) {
+        console.error(error)
+        req.flash('errors', error);
+
+        res.render('printview', {
+            user: req.user,
+            messages: [...req.flash('msg')],
+            errors: [...req.flash('errors')],
+        })
     }
-
-    const debtorInfo = await buildDebtorInfo(caseFileId)
-
-    res.render('printview', {
-        user: req.user,
-        debtorInfo,
-        debtorList,
-        messages: [...req.flash('msg')],
-        errors: [...req.flash('errors')],
-    })
 }
 
 async function buildDebtorInfo(caseFileId){
@@ -167,13 +247,13 @@ async function buildDebtorInfo(caseFileId){
 
 
         const elapsed = monthElapsed(new Date(debtForSelected.startDate))
-        const payments = randomizedPayments(100, debtForSelected.startDate) //await PaymentDB.find({caseID: selectedDebtor._id})
+        const payments = await PaymentDB.find({caseID: selectedDebtor._id}) //randomizedPayments(100, debtForSelected.startDate)
 
         if(excusedPayments.length <= 0){
             excusedPayments.date = debtForSelected.startDate
         }
 
-    verifyAccountStatus(debtForSelected, payments)
+        verifyAccountStatus(debtForSelected, payments)
 
         //create information object
         const debtorInfo = {
@@ -300,27 +380,29 @@ async function buildDebtorInfoMerge(caseFileId){
     }
 }
 
-export async function getRegdebt(req, res){
-    res.render('newdebt', {
-        user: req.user,
-        messages: [...req.flash('msg')],
-        errors: [...req.flash('errors')],
-    })
-}
-
 
 
 export async function insertNewPayment(req, res){
-    let debtorRef = "" 
-    const errors = dataVerifier({ //validate user submitted info
+//NOTE:: Rework
+    const debtorList =  await DebtorsDB.find().select("name fileId")
+    let debtorRef = ""
+    const pagevalues = {
         payment: req.body.payment,
         date: req.body.date,
         fileid: req.body.fileid,
-    })
+        comment: req.body.comment,
+    }
+    const errors = dataVerifier(pagevalues)
 
     if(errors.length) {
         req.flash('errors', errors);
-        return res.render('newpayment', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
+        return res.render('newpayment', { 
+            user: req.user, 
+            pagevalues, 
+            debtorList, 
+            messages: [...req.flash('msg')], 
+            errors: [...req.flash('errors')], 
+        });
     }
 
     //find id
@@ -344,7 +426,13 @@ export async function insertNewPayment(req, res){
     //return errors
     if(errors.length) {
         req.flash('errors', errors);
-        return res.render('newpayment', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
+        return res.render('newpayment', { 
+            user: req.user, 
+            pagevalues, 
+            debtorList, 
+            messages: [...req.flash('msg')], 
+            errors: [...req.flash('errors')], 
+        });
     }
 
     //construct data object
@@ -355,12 +443,19 @@ export async function insertNewPayment(req, res){
         comment: req.body.comment
     })
 
+//NOTE:: verify
     //save to database
     newPayment.save((err) => {
         if(err){
             console.error(err._message)
             req.flash('errors', 'There was an error submitting the data to the database. #003');
-            return res.render('newpayment', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
+            return res.render('newpayment', { 
+                user: req.user, 
+                pagevalues, 
+                debtorList, 
+                messages: [...req.flash('msg')], 
+                errors: [...req.flash('errors')], 
+            });
         }
 
         req.flash('msg', 'Successfully saved.');
@@ -370,8 +465,7 @@ export async function insertNewPayment(req, res){
             errors: [...req.flash('errors')],
         })
     })
-    
-    
+
 }
 
 export async function excusedPayment(req, res){
@@ -419,6 +513,7 @@ export async function excusedPayment(req, res){
         comment: req.body.comment
     })
 
+//NOTE:: callback
     //save to database
     excusedPayment.save((err) => {
         if(err){
@@ -438,12 +533,11 @@ export async function excusedPayment(req, res){
 }
 
 export async function editPayment(req, res){
-    //NOTE:: validation for id
-    let debtorRef = "" 
     const errors = dataVerifier({ //validate user submitted info
         payment: req.body.payment,
         date: req.body.date,
         fileid: req.body.fileid,
+        mongoId: req.body.id,
     })
 
     if(errors.length) {
@@ -451,50 +545,48 @@ export async function editPayment(req, res){
         return res.redirect(req.headers.referer);
     }
 
-    //find id
+    
     try {
-        debtorRef = await DebtorsDB.findOne({fileId: req.body.fileid})
+        //find id
+        const debtorRef = await DebtorsDB.findOne({fileId: req.body.fileid})
         if(!debtorRef){ errors.push('Case not found'); }
+
+        //find duplicates
+        const similiarPayments = await PaymentDB.find({
+            payment: req.body.payment, 
+            date: req.body.date, 
+            caseID: debtorRef._id
+        })
+
+        if(similiarPayments.length > 0){ errors.push(`We found a payment for the same amount and date for this account.`); }
+
+        //return errors
+        if(errors.length) {
+            req.flash('errors', errors);
+            return res.redirect(req.headers.referer);
+        }
+
+        //update database
+        await PaymentDB.updateOne({_id: req.body.id},{
+            debtorRef: debtorRef._id,
+            payment: parseFloat(req.body.payment),
+            date: req.body.date,
+            comment: req.body.comment
+        })
+
+        res.redirect(`/cases/${req.body.fileid}`)
+
     } catch (error) {
         console.error(error.message);
         errors.push('An error occured with the database. #005');
-    }
 
-    const similiarPayments = await PaymentDB.find({
-        payment: req.body.payment, 
-        date: req.body.date, 
-        caseID: debtorRef._id
-    })
-
-    if(similiarPayments.length > 0){ errors.push(`We found a payment for the same amount and date for this account.`); }
-
-    //return errors
-    if(errors.length) {
-        req.flash('errors', errors);
         return res.redirect(req.headers.referer);
     }
 
-//update database
-try {
-    const updatedPayment = await PaymentDB.updateOne({_id: req.body.id},{
-        debtorRef: debtorRef._id,
-        payment: parseFloat(req.body.payment),
-        date: req.body.date,
-        comment: req.body.comment
-    })
-} catch (error) {
-    console.log('update error')
-    console.log(error)
-
-}
-
-    
-    res.redirect(`/cases/${req.body.fileid}`)
 }
 
 
 export async function getDebtorList(req, res){
-    console.log(req.user)
     try {
         const debtsInfo = await DebtDB.find({})
         const debtorsInfo = await DebtorsDB.find({})
@@ -515,6 +607,7 @@ export async function getDebtorList(req, res){
     } catch (error) {
         console.error(error);
         req.flash('errors', 'Error submitting data to database. #006');
+
         res.render('debtors', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], })
     }
 }
@@ -530,7 +623,6 @@ export async function getDashboard(req, res){
         }
 
         for(let items of debtsInfo){
-            const currentDate = new Date(Date.now())
             const payments = await PaymentDB.find({caseID: items._id}) //NOTE:: can slow things if dealing with bad connection or lots of items
             const latePayments = verifyAccountStatus(items, payments)
             
@@ -550,7 +642,8 @@ export async function getDashboard(req, res){
 
     } catch (error) {
         console.error(error.message);
-        req.flash('errors', 'There was an error submitting the data to the database. #006');
+        req.flash('errors', 'There was an error submitting the data to the database. #007');
+
         res.render('dashboard', {
             user: req.user,
             debtors: '',
@@ -608,26 +701,28 @@ function buildList(debtorInfo, debtInfo, paymentInfo){
 
 
 export async function insertNewDebt(req, res){
-    //validate submitted info
-    const errors = dataVerifier({
+    const pagevalues = {
         name: req.body.name,
         debtamount: req.body.debtamount,
         fileid: req.body.fileid,
         minpayment: req.body.minpayment,
         startdate: req.body.startdate,
-    })
+    }
+    //validate submitted info
+    const errors = dataVerifier(pagevalues)
 
     if(errors.length) {
         req.flash('errors', errors);
         return res.render('newdebt', { 
-            user: req.user, 
+            user: req.user,
+            pagevalues,
             messages: [...req.flash('msg')], 
             errors: [...req.flash('errors')],
         });
     }
 
     //contruct data objects
-    const newDebt = new Debt({
+    const newDebt = new DebtDB({
         debtAmount: parseFloat(req.body.debtamount),
         minPayment: parseFloat(req.body.minpayment),
         startDate: req.body.startdate,
@@ -638,13 +733,15 @@ export async function insertNewDebt(req, res){
         fileId: req.body.fileid,
     })
 
+//NOTE:: verify
     //submit data to db
     newDebtor.save((err, savedDoc) => {
         if(err && err.code === 11000){
             console.error(err)
             req.flash('errors', 'The file id already exist, a person can not have two debts.');
             return res.render('newdebt', { 
-                user: req.user, 
+                user: req.user,
+                pagevalues,
                 messages: [...req.flash('msg')], 
                 errors: [...req.flash('errors')],
             });
@@ -652,7 +749,8 @@ export async function insertNewDebt(req, res){
             console.error(err)
             req.flash('errors', 'Error submitting data to database. #001');
             return res.render('newdebt', { 
-                user: req.user, 
+                user: req.user,
+                pagevalues,
                 messages: [...req.flash('msg')], 
                 errors: [...req.flash('errors')],
             });
@@ -678,7 +776,8 @@ export async function insertNewDebt(req, res){
                     console.error(err)
                     req.flash('errors', 'Error submitting data to database. #002');
                     return res.render('newdebt', { 
-                        user: req.user, 
+                        user: req.user,
+                        pagevalues,
                         messages: [...req.flash('msg')], 
                         errors: [...req.flash('errors')],
                     });
@@ -696,8 +795,6 @@ export async function insertNewDebt(req, res){
 }
 
 export async function editDebt(req, res){
-    //verify duplications
-
     //validate submitted info
     const errors = dataVerifier({
         name: req.body.name,
@@ -729,24 +826,31 @@ export async function editDebt(req, res){
     }
 
     try {
+        if(req.body.id !== req.body.fileid){
+            const duplicateDebtor = await DebtorsDB.findOne({fileId: req.body.fileid})
+            if(duplicateDebtor)  throw 'debtor file id already exists';
+        }
+
         const updatedDebtor = await DebtorsDB.findOneAndUpdate({fileId: req.body.id}, newDebtor)
         if(!updatedDebtor)  throw 'debtor not found';
         
         const updatedDebt = await DebtDB.updateOne({_id: updatedDebtor._id}, newDebt)
         if(!updatedDebt.acknowledged || updatedDebt.modifiedCount < 0) throw 'debt not found';
 
+        req.flash('msg', 'Data saved successfully.');
+        res.redirect(`/cases/${req.body.fileid}`)
+
     } catch (error) {
         console.error(error)
         req.flash('errors', 'An error occurred:');
         if(error === 'debtor not found'){req.flash('errors', 'Debtor not found');}
         if(error === 'debt not found'){req.flash('errors', 'Debt not found');}
+        if(error === 'debtor file id already exists'){req.flash('errors', 'The fileid already exists and must be unique');}
         if(error.codeName === 'DuplicateKey'){req.flash('errors', 'The fileid already exists and must be unique');}
         
         return res.redirect(req.headers.referer);
     }
 
-    req.flash('msg', 'Data saved successfully.');
-    res.redirect(`/cases/${req.body.fileid}`)
 }
 
 function dataVerifier(data){
@@ -813,6 +917,12 @@ function dataVerifier(data){
             errors.push('An reason must be present for excused payments.');
         }
     }
+
+    if(data.mongoId !== undefined){
+        if(!validator.isMongoId(data.mongoId)){
+            errors.push('Not a valid database id');
+        }
+    }
     
     return errors
 }
@@ -835,6 +945,9 @@ export async function deletePayment(req, res){
         return res.redirect(req.headers.referer);
     } catch (error) {
         console.error(error)
+        req.flash('error', "An error occurred #008");
+
+        return res.redirect(req.headers.referer);
     }
 }
 

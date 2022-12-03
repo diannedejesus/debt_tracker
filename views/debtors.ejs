@@ -12,7 +12,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="table-dark">
+                    <tr class="table-dark text-center">
                         <th>File Id</th>
                         <th>Name</th>
                         <th>Current Debt</th>
@@ -24,8 +24,8 @@
                     <tr>
                         <td><%= debts.fileId %></td>
                         <td><a href="cases/<%= debts.fileId %>"><%= debts.name %></a></td>
-                        <td><%= currencyFormat.format(debts.currentDebt) %></td>
-                        <td><%= Math.ceil(debts.currentDebt / debts.minPayment) %></td>
+                        <td class="text-center"><%= currencyFormat.format(debts.currentDebt) %></td>
+                        <td class="text-center"><%= Math.ceil(debts.currentDebt / debts.minPayment) %></td>
                         <td><%= debts.paymentLate %></td>
                     </tr>
                         <% } %>

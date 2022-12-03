@@ -6,7 +6,7 @@
             <form class="row g-3" action="/registerpayment" method="POST">
                     <div class="col-12">
                         <label class="form-label">File ID:</label>
-                        <input type="text" class="form-control" name="fileid" list="debtors">
+                        <input type="text" class="form-control" name="fileid" list="debtors" placeholder="Debtor" value="<%= typeof pagevalues !== 'undefined' ? pagevalues.fileid : '' %>">
                         <datalist id="debtors">
                             <% if (typeof debtorList !== 'undefined'){ %>
                                 <% for(let debtor of debtorList){ %>
@@ -16,14 +16,14 @@
                         </datalist>
                     </div>
                     <div class="col-6">
-                        <label class="form-label">Payment:</label> <input type="number" class="form-control" name="payment">
+                        <label class="form-label">Payment:</label> <input type="number" class="form-control" name="payment" placeholder="Amount Paid" value="<%= typeof pagevalues !== 'undefined' ? pagevalues.payment : '' %>">
                     </div>   
                     <div class="col-6">    
-                        <label class="form-label">Date:</label> <input type="date" class="form-control" name="date">
+                        <label class="form-label">Date:</label> <input type="date" class="form-control" name="date" value="<%= typeof pagevalues !== 'undefined' ? new Date(pagevalues.date).toJSON().slice(0,10) : '' %>">
                     </div>
                     <div class="col-12">
                         <label class="form-label">Comments:</label>
-                        <textarea type="text" class="form-control" name="comment"></textarea>
+                        <textarea type="text" class="form-control" name="comment"><%= typeof pagevalues !== 'undefined' ? pagevalues.comment : '' %></textarea>
                     </div>
                     <div class="col-12">
                         <input type="submit" class="btn btn-primary">

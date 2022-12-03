@@ -12,34 +12,25 @@
 <body class="d-flex flex-column">
     <header class="navbar navbar-expand-lg bg-light" style="border-top: 1em solid blue;">
         <section class="logo"><a class="nav-link" href="/dashboard"><span>&#128507;</span><span class="under">&#9889;</span></a></section>
+        
         <nav>
-            <ul class="nav justify-content-end">
+            <ul class="nav justify-content-end">  
+            <% if (typeof user !== 'undefined'){ %>
                 <li class="nav-item"><a class="nav-link" href="/debtors">Debts</a></li>
                 <li class="nav-item"><a class="nav-link" href="/registerpayment">Register Payment</a></li>
-                
-
-                <li class="nav-item dropdown">
-            <% if (typeof user !== 'undefined'){ %>
-                <% if (user.accountType === "Owner"){ %> 
-                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><%= user.name %> ✒</a>
+                <li class="nav-item dropdown"> 
+                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><%= user.name %> <% if (user.accountType === "Owner" || user.accountType === "App Manager"){ %>✒<% } %></a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                <% }else if(user.accountType === "App Manager"){ %>
-                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><%= user.name %> ✒</a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                <% }else{ %>
-                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><%= user.name %></a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                <% } %>
                         <li><a class="dropdown-item" href="/registerdebt">Register Debt</a></li>
                     <% if (typeof user !== 'undefined' && (user.accountType === "Owner" || user.accountType === "App Manager")){ %> 
                         <li><a class="dropdown-item" href="/auth/user">User Administration</a></li>
                     <% } %>
                         <li><a class="dropdown-item" href="/auth/logout">Logout</a>
-            <% }else{ %>
-                        <li><a class="dropdown-item" href="/auth/login">Login</a></li>
-            <% } %>
                     </ul>
                 </li>
+            <% }else{ %>
+                <li class="nav-item"><a class="nav-link" href="/auth/login">Login</a></li>
+            <% } %>   
             </ul>
         </nav>
     </header>

@@ -1,29 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Application Template</title>
-    <link rel="stylesheet" href="/css/normalize.css">
-    <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-    <header class="clearfix">
-        <section class="logo"><span>&#128507;</span><span class="under">&#9889;</span></section>
-        <nav>
-            <ul>
-                <li><a href="/login">Login</a></li>
-            </ul>
-        </nav>
-        <section class="account"></section>
-    </header>
-    
-    <% if (typeof messages !== 'undefined'){ %>
-        <% messages.forEach( (error)=> { %>
-            <p class='message'><%= error %></p>
-        <% }) %>
-    <% } %>
+<%- include('header.ejs') %>
     
     <main class='signin clearfix'>
         <h1>Reset Password</h1>

@@ -398,7 +398,7 @@ Funtionality
 - [X] merge view: edit so it displays all payments even if no more bills are due
 - verify if it should add future bills if payments exceed currently dued.
 - verify how secure a chosen password is.
-- set limits for dates that are entered
+- set limits for dates that are entered: payments/edit, debt/edit
 
 <!-- Secondary Goals, Wishlist Feature, Future -->
 
@@ -416,20 +416,24 @@ Funtionality
 ### Issues
 <!-- Things that should be looked into but an alternative solution was/can be implemented  -->
 - Fix the style sheet of pages
-    - create header for pages that are guest / not signed in users
+    - [X] create header for pages that are guest / not signed in users
     - Change page titles
 
 ### Brain Dump
+- Have insert/edit debt/payment return data on error for correction
+- excuse payment prefill
+
 - Verify render paths of insert debt/payment
-- Have insert debt/payment return data on error for correction
+- should extra payments in merge view have a running balance
+
 - Fix print view grey bg of header
-- Adjust views for distint screens
-- adjust login, manualcode, verifyaccount, administrator, index styles
-- debtor list modify debt as currency and possible center info
+- Adjust views for distint screens (https://stackoverflow.com/questions/47760132/any-way-to-get-breakpoint-specific-width-classes)
+- [X] adjust login, manualcode, verifyaccount, administrator, index styles
+
 - implement check for unicode icon for compatibility
 - test late payment verifier
-- excuse payment prefill
-- should extra payments in merge view have a running balance
+- [X] debtor list modify debt as currency and possible center info
+
 
 
 
@@ -459,16 +463,17 @@ Login Process additional features:
     - Sends a special link to a page that verifies newly created accounts. 
     - alternativly a process can be added to the login process for this.
 
-NOTE:: Check testing routes with postmen or similar app to ensure restrintion work. [research]
-NOTE:: Verify callback and awaits in same application. Is it ok?? [research]
-DONE:: Verify render vs redirect?? [research]
-NOTE:: How to validate a comment field
+NOTE:: Check testing routes with postmen or similar app to ensure restrictions work. [research]
 NOTE:: Revisit tests
 NOTE:: verify error handling, throw errors [research]
 NOTE:: submitting request for delete or others without forms [research]
 NOTE:: try consolidating views
 NOTE:: removing all saved session to prevent access to revoked user.
 NOTE:: verify changeing password hashing to data model
+
+DONE:: Verify callback and awaits in same application. Is it ok?? [research]
+DONE:: Verify render vs redirect?? [research]
+Done:: How to validate a comment field
  -->
 
 ### Completed
