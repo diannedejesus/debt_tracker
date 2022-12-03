@@ -6,7 +6,14 @@
             <form class="row g-3" action="/registerpayment" method="POST">
                     <div class="col-12">
                         <label class="form-label">File ID:</label>
-                        <input type="text" class="form-control" name="fileid">
+                        <input type="text" class="form-control" name="fileid" list="debtors">
+                        <datalist id="debtors">
+                            <% if (typeof debtorList !== 'undefined'){ %>
+                                <% for(let debtor of debtorList){ %>
+                            <option value="<%= debtor.fileId %>">(<%= debtor.name %>)</option>
+                                <% } %>
+                            <% } %>
+                        </datalist>
                     </div>
                     <div class="col-6">
                         <label class="form-label">Payment:</label> <input type="number" class="form-control" name="payment">
@@ -25,5 +32,7 @@
             </form>
         </section>
     </main>
+
+    
 
 <%- include('footer.ejs') %>

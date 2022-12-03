@@ -379,14 +379,14 @@ Once these wireframes are approved by the client, include them in the user inter
 ## Goals and milestones
 Fixes
 - [X] update the debt list and dashboard page with the new calculation for when a debt is late.
-- excused payment access
+- [X] excused payment access
 - [X] have edit payment check for duplicate values
     - [x] verify display of error
 - [X] verify how excused payments and late payments are calculated.
 
 Modifications
-- Either switch or include name for registering payment info or implement alternate method for doing
-    - possible have a look up in file id input
+- [X] Either switch or include name for registering payment info or implement alternate method for doing
+    - [X] possible have a look up in file id input
 - [X] place id on debt list view
 - [X] have identifier for admin account instead of name
 - [X] have user section of header display a name and not the whole email.
@@ -395,7 +395,7 @@ Modifications
 - [X] create a footer
 
 Funtionality
-- merge view: edit so it displays all payments even if no more bills are due
+- [X] merge view: edit so it displays all payments even if no more bills are due
 - verify if it should add future bills if payments exceed currently dued.
 - verify how secure a chosen password is.
 - set limits for dates that are entered
@@ -429,6 +429,7 @@ Funtionality
 - implement check for unicode icon for compatibility
 - test late payment verifier
 - excuse payment prefill
+- should extra payments in merge view have a running balance
 
 
 

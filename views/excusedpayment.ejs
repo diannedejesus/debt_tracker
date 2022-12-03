@@ -6,7 +6,14 @@
             <form class="col g-3" action="/excusepayment" method="POST">
                 <div class="row p-2">
                     <label>File ID:</label>
-                    <input type="text" name="fileid">
+                    <input type="text" name="fileid" list="debtors">
+                    <datalist id="debtors">
+                        <% if (typeof debtorList !== 'undefined'){ %>
+                            <% for(let debtor of debtorList){ %>
+                        <option value="<%= debtor.fileId %>">(<%= debtor.name %>)</option>
+                            <% } %>
+                        <% } %>
+                    </datalist>
                 </div>
                 <div class="row p-2">
                     <label>Date:</label>

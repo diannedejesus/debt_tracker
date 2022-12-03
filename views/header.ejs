@@ -22,13 +22,13 @@
             <% if (typeof user !== 'undefined'){ %>
                 <% if (user.accountType === "Owner"){ %> 
                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><%= user.name %> ✒</a>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu dropdown-menu-end">
                 <% }else if(user.accountType === "App Manager"){ %>
                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><%= user.name %> ✒</a>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu dropdown-menu-end">
                 <% }else{ %>
                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><%= user.name %></a>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu dropdown-menu-end">
                 <% } %>
                         <li><a class="dropdown-item" href="/registerdebt">Register Debt</a></li>
                     <% if (typeof user !== 'undefined' && (user.accountType === "Owner" || user.accountType === "App Manager")){ %> 

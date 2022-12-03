@@ -38,16 +38,18 @@
                     <th>Debt</th>
                 </tr>
                 <tr>     
-                    <td><select onchange="changeDebtor(event)">
-                        <option selected value="debtorInfo.fileId"><%= debtorInfo.name %></option>
-                        <% if (typeof debtorList !== 'undefined'){ %>
-                            <% for(let debtor of debtorList){ %>
-                                <% if (debtorInfo.name !== debtor.name){ %>
-                        <option value="<%= debtor.fileId %>"><%= debtor.name %></option>
+                    <td>
+                        <select onchange="changeDebtor(event)">
+                            <option selected value="debtorInfo.fileId"><%= debtorInfo.name %></option>
+                            <% if (typeof debtorList !== 'undefined'){ %>
+                                <% for(let debtor of debtorList){ %>
+                                    <% if (debtorInfo.name !== debtor.name){ %>
+                            <option value="<%= debtor.fileId %>"><%= debtor.name %></option>
+                                    <% } %>
                                 <% } %>
                             <% } %>
-                        <% } %>
-                    </select></td>
+                        </select>
+                    </td>
                     <td><%= debtorInfo.fileId %></td>
                     <% let formatDate = new Date(debtorInfo.startDate) %>
                     <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
@@ -70,7 +72,7 @@
                     <td><%= currentDate %></td>
                     <td><%= Math.ceil((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) %></td>
                     <td><%= debtorInfo.payments.length %></td>
-                    <td><%= debtorInfo.late %></td>
+                    <td><%= debtorInfo.late %> <a class="btn btn-primary btn-sm" href="/excusepayment">excuse</a></td>
                     
                 </tr>
                 <tr colspan="5"><td colspan="5">
@@ -95,7 +97,7 @@
                     <% let skipDebts = 0 %>
                     <% let i=0 %>
                     
-                    <% while(bills < debtorInfo.billed.length){ %>
+                    <% while(bills < debtorInfo.billed.length || payments < debtorInfo.payments.length){ %>
                         
                 <tr>
                         <% if(i === skipPays && payments < debtorInfo.payments.length){ %>
@@ -124,7 +126,8 @@
                     <td class="table-dark border-top" rowspan="0" colspan="2">End of Payments</td>
                             <% payments++ %>
                         <% } %>
-                    <% if(i === skipDebts || payments > debtorInfo.payments.length){ %>
+
+                    <% if(i === skipDebts && bills < debtorInfo.billed.length){ %>
                         <% let formatDate = new Date(debtorInfo.billed[bills].paymentDate) %>
                     <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
                     <td class="<%= bills % 2 === 0 ? 'table-active' : '' %> border-top border-secondary" rowspan="<%= debtorInfo.billed[bills].space == 0 ? 1 : debtorInfo.billed[bills].space %>" colspan="1"><%= formatDate %></td>

@@ -13,16 +13,22 @@ export async function index(req, res){
 }
 
 export async function getRegPayment(req, res){
+    const debtorList =  await DebtorsDB.find().select("name fileId")
+
     res.render('newpayment', {
         user: req.user,
+        debtorList,
         messages: [...req.flash('msg')],
         errors: [...req.flash('errors')],
     })
 }
 
 export async function getExcusedPayment(req, res){
+    const debtorList =  await DebtorsDB.find().select("name fileId")
+
     res.render('excusedpayment', {
         user: req.user,
+        debtorList,
         messages: [...req.flash('msg')],
         errors: [...req.flash('errors')],
     })
