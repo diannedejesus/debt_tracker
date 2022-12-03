@@ -72,7 +72,7 @@
                     <td><%= currentDate %></td>
                     <td><%= Math.ceil((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) %></td>
                     <td><%= debtorInfo.payments.length %></td>
-                    <td><%= (debtorInfo.totalPaid < (debtorInfo.elapsed * debtorInfo.minPayment)) ? 'Yes' : 'No' %></td>
+                    <td><%= debtorInfo.late %> <a class="btn btn-primary btn-sm" href="/excusepayment">excuse</a></td>
                 </tr>
         <tr colspan="5"><td colspan="5">
             <table class="table table-striped">
@@ -103,12 +103,14 @@
                         <td rowspan="1"><%= debtorInfo.payments[paymentCounter].paymentComment %></td>
                         <td><%= currencyFormat.format(runningBalance) %></td>
                         <td>
-                            <form class="button" action="/delPayment/<%= debtorInfo.payments[paymentCounter].id %>" method="POST">
-                                <input type="submit" value="X" class="btn btn-secondary btn-outline-light btn-sm">
-                            </form>
-                            <form class="button" action="/editPayment/<%= debtorInfo.fileId %>/<%= debtorInfo.payments[paymentCounter].id %>" method="GET">
-                                <input type="submit" value="Edit" class="btn btn-secondary btn-outline-light btn-sm">
-                            </form>
+                            <div class="d-flex">
+                                <form class="p-1" action="/delPayment/<%= debtorInfo.payments[paymentCounter].id %>" method="POST">
+                                    <input type="submit" value="X" class="btn btn-secondary btn-outline-light btn-sm">
+                                </form>
+                                <form class="p-1" action="/editPayment/<%= debtorInfo.fileId %>/<%= debtorInfo.payments[paymentCounter].id %>" method="GET">
+                                    <input type="submit" value="Edit" class="btn btn-secondary btn-outline-light btn-sm">
+                                </form>
+                            </div>
                         </td>
                         <% paymentCounter++ %>
                     </tr>
@@ -122,12 +124,15 @@
                             <td rowspan="1"><%= debtorInfo.payments[paymentCounter].paymentComment %></td>
                             <td><%= currencyFormat.format(runningBalance) %></td>
                             <td>
-                                <form class="button" action="/delPayment/<%= debtorInfo.payments[paymentCounter].id %>" method="POST">
-                                    <input type="submit" value="X" class="deleteBtn"> 
-                                </form>
-                                <form class="button" action="/editPayment/<%= debtorInfo.fileId %>/<%= debtorInfo.payments[paymentCounter].id %>" method="GET">
-                                    <input type="submit" value="edit" class="editBtn">
-                                </form>
+                                <div class="d-flex">
+                                    <form class="p-1" action="/delPayment/<%= debtorInfo.payments[paymentCounter].id %>" method="POST">
+                                        <input type="submit" value="X" class="btn btn-secondary btn-outline-light btn-sm"> 
+                                    </form>
+                                    
+                                    <form class="p-1" action="/editPayment/<%= debtorInfo.fileId %>/<%= debtorInfo.payments[paymentCounter].id %>" method="GET">
+                                        <input type="submit" value="edit" class="btn btn-secondary btn-outline-light btn-sm">
+                                    </form>
+                                </div>
                             </td>
                             <% paymentCounter++ %>
                         </tr>

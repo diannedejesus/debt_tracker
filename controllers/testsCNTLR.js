@@ -4,7 +4,7 @@ import DebtorsDB from '../models/Debtors.js';
 
 
 export function randomizedPayments(maxPayment, startDate){
-    const paymentAmounts = Math.floor(Math.random() * 30);
+    const paymentAmounts = Math.floor(Math.random() * 6);
     const randomPayments = []
     let totalPaid = 0
 
@@ -24,12 +24,12 @@ export function randomizedPayments(maxPayment, startDate){
 }
 
 function randomizedPaymentsZero(maxPayment, startDate){
-    const paymentAmounts = Math.floor(Math.random() * 15);
+    const paymentAmounts = Math.floor(Math.random() * 4);
     const randomPayments = []
     let totalPaid = 0
 
     while(randomPayments.length < paymentAmounts && totalPaid < maxPayment){
-        let currentPay = Math.floor(Math.random() * 30)
+        let currentPay = Math.floor(Math.random() * 20)
         totalPaid += currentPay
 
         randomPayments.push({

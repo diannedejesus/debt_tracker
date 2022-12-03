@@ -1,5 +1,7 @@
 <%- include('header.ejs') %>
 
+<% let currencyFormat = new Intl.NumberFormat("en-US", { style: "currency", "currency":"USD" }) %>
+
     <main class="d-flex justify-content-center container-fluid flex-fill">
         <section>
             <h1>Debts</h1>
@@ -22,9 +24,9 @@
                     <tr>
                         <td><%= debts.fileId %></td>
                         <td><a href="cases/<%= debts.fileId %>"><%= debts.name %></a></td>
-                        <td><%= debts.currentDebt %></td>
+                        <td><%= currencyFormat.format(debts.currentDebt) %></td>
                         <td><%= Math.ceil(debts.currentDebt / debts.minPayment) %></td>
-                        <td><%= debts.paymentLate ? 'Yes' : 'No' %></td>
+                        <td><%= debts.paymentLate %></td>
                     </tr>
                         <% } %>
                     <% } %>

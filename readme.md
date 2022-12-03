@@ -378,11 +378,11 @@ Once these wireframes are approved by the client, include them in the user inter
 
 ## Goals and milestones
 Fixes
-- update the debt list and dashboard page with the new calculation for when a debt is late.
+- [X] update the debt list and dashboard page with the new calculation for when a debt is late.
 - excused payment access
 - [X] have edit payment check for duplicate values
     - [x] verify display of error
-- verify how excused payments and late payments are calculated.
+- [X] verify how excused payments and late payments are calculated.
 
 Modifications
 - Either switch or include name for registering payment info or implement alternate method for doing
@@ -427,6 +427,8 @@ Funtionality
 - adjust login, manualcode, verifyaccount, administrator, index styles
 - debtor list modify debt as currency and possible center info
 - implement check for unicode icon for compatibility
+- test late payment verifier
+- excuse payment prefill
 
 
 

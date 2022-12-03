@@ -1,13 +1,26 @@
 <%- include('header.ejs') %>
 
-    <main class='signin clearfix container-fluid flex-fill'>
-        <h1>Excuse a Payment</h1>
-        <form action="/excusepayment" method="POST">
-            <label>File ID:</label> <input type="text" name="fileid">
-            <label>Date:</label> <input type="date" name="date">
-            <label>Comments:</label> <input type="text" name="comment">
-            <input type="submit" class="submitbutton">
-        </form>
+    <main class="d-flex justify-content-center container-fluid flex-fill">
+        <section class="w-75 d-grid gap-3">  
+            <h1>Excuse a Payment</h1>
+            <form class="col g-3" action="/excusepayment" method="POST">
+                <div class="row p-2">
+                    <label>File ID:</label>
+                    <input type="text" name="fileid">
+                </div>
+                <div class="row p-2">
+                    <label>Date:</label>
+                    <input type="date" name="date">
+                </div>
+                <div class="row p-2">
+                    <label>Comments:</label>
+                    <input type="text" name="comment">
+                </div>
+                <div class="row p-2">
+                    <input type="submit" class="submitbutton">
+                </div>
+            </form>
+        </section>
     </main>
 
 <%- include('footer.ejs') %>

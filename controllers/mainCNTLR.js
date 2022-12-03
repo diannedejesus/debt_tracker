@@ -161,11 +161,13 @@ async function buildDebtorInfo(caseFileId){
 
 
         const elapsed = monthElapsed(new Date(debtForSelected.startDate))
-        const payments = await PaymentDB.find({caseID: selectedDebtor._id}) //randomizedPayments(100, debtForSelected.startDate) 
+        const payments = randomizedPayments(100, debtForSelected.startDate) //await PaymentDB.find({caseID: selectedDebtor._id})
 
         if(excusedPayments.length <= 0){
             excusedPayments.date = debtForSelected.startDate
         }
+
+    verifyAccountStatus(debtForSelected, payments)
 
         //create information object
         const debtorInfo = {
@@ -174,7 +176,7 @@ async function buildDebtorInfo(caseFileId){
             startDate: debtForSelected.startDate.setDate(debtForSelected.startDate.getDate()+1),
             minPayment: Number(debtForSelected.minPayment),
             debt: debtForSelected.debtAmount,
-            elapsed: monthElapsed(new Date(excusedPayments.date)),
+            late: verifyAccountStatus(debtForSelected, payments),
             totalPaid: 0,
             payments: [],
             billed: [],
@@ -523,10 +525,10 @@ export async function getDashboard(req, res){
 
         for(let items of debtsInfo){
             const currentDate = new Date(Date.now())
-            const elapsed = monthElapsed(new Date(items.startDate), currentDate)
-            const payments = await PaymentDB.find({caseID: items._id}).count() //NOTE:: can slow things if dealing with bad connection or lots of items
-
-            if( elapsed-payments > 0){
+            const payments = await PaymentDB.find({caseID: items._id}) //NOTE:: can slow things if dealing with bad connection or lots of items
+            const latePayments = verifyAccountStatus(items, payments)
+            
+            if(latePayments === "late"){
                 debtorList['latePayments']++
             }else{
                 debtorList['currentPayments']++
@@ -555,8 +557,11 @@ export async function getDashboard(req, res){
 function monthElapsed(endDate, starterDater = new Date()) {
     let months;
     months = (starterDater.getFullYear() - endDate.getFullYear()) * 12;
-    months -= endDate.getMonth();
-    months += starterDater.getMonth();
+    months -= endDate.getUTCMonth();
+    months += starterDater.getUTCMonth();
+// console.log("start", endDate.getUTCMonth(), endDate)
+// console.log("end",starterDater.getUTCMonth(), starterDater)
+
     return months <= 0 ? 0 : months;
 }
 
@@ -569,21 +574,26 @@ function buildList(debtorInfo, debtInfo, paymentInfo){
         tempList[items._id]['name'] = items.name
         tempList[items._id]['fileid'] = items.fileId
         tempList[items._id]['payments'] = 0
+        tempList[items._id]['allpayments'] = []
     }
 
     for(let items of paymentInfo){
         tempList[items.caseID]['payments'] += Number(items.payment)
+        tempList[items.caseID]['allpayments'].push(items)
     }
 
     for(let items of debtInfo){
-        const owed = monthElapsed(new Date(items.startDate)) * items.minPayment
+        let owed = "late"
+        if(tempList[items._id]['allpayments']){
+            owed = verifyAccountStatus(items, tempList[items._id]['allpayments'])
+        }
 
         newList.push({ 
             name: tempList[items._id]['name'],
             fileId: tempList[items._id]['fileid'],
             currentDebt: items.debtAmount - tempList[items._id]['payments'],
             minPayment: items.minPayment,
-            paymentLate: owed >= tempList[items._id]['payments'],
+            paymentLate: owed,
         })
     }
 
@@ -819,5 +829,29 @@ export async function deletePayment(req, res){
         return res.redirect(req.headers.referer);
     } catch (error) {
         console.error(error)
+    }
+}
+
+function verifyAccountStatus(debtInfo, paymentInfo){
+    // const debtInfo = await DebtDB.find({fileId: accountId})
+    // const paymentInfo = await PaymentDB.find({clientId: accountId})
+    let paidAmount = 0
+    let excusedDate = debtInfo.startDate
+
+    for(let payments of paymentInfo){
+        if(payments.payment > 0){
+            paidAmount += Number(payments.payment)
+        }else{
+            paidAmount = 0
+            excusedDate = payments.date
+        }
+    }
+
+    const currentBills = monthElapsed(new Date(excusedDate)) * debtInfo.minPayment
+// console.log(currentBills, paidAmount)
+    if(currentBills > paidAmount){
+        return "late"
+    }else{
+        return "on time"
     }
 }

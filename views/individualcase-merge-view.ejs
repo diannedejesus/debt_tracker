@@ -70,7 +70,7 @@
                     <td><%= currentDate %></td>
                     <td><%= Math.ceil((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) %></td>
                     <td><%= debtorInfo.payments.length %></td>
-                    <td><%= (debtorInfo.totalPaid < (debtorInfo.elapsed * debtorInfo.minPayment)) ? 'Yes' : 'No' %></td>
+                    <td><%= debtorInfo.late %></td>
                     
                 </tr>
                 <tr colspan="5"><td colspan="5">
@@ -110,11 +110,11 @@
                             <span class="p-1"><%= currencyFormat.format(debtorInfo.payments[payments].paymentAmount) %></span>
 
                             <form class="p-1" action="/delPayment/<%= debtorInfo.payments[payments].id %>" method="POST">
-                                <input type="submit" value="X"> 
+                                <input type="submit" value="X" class="btn btn-secondary btn-outline-light btn-sm"> 
                             </form>
 
                             <form class="p-1" action="/editPayment/<%= debtorInfo.fileId %>/<%= debtorInfo.payments[payments].id %>" method="GET">
-                                <input type="submit" value="edit">
+                                <input type="submit" value="edit" class="btn btn-secondary btn-outline-light btn-sm">
                             </form>
                         </div>
                     </td>

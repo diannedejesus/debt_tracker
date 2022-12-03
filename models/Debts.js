@@ -19,6 +19,7 @@ const DebtSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+
 })
 
 // Getter
