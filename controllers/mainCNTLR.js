@@ -44,10 +44,15 @@ export async function getRegdebt(req, res){
 export async function getExcusedPayment(req, res){
     try {
         const debtorList =  await DebtorsDB.find().select("name fileId")
-
+        const dataInfo = {
+            fileid: req.params.id,
+            date: new Date(),
+        }
+// console.log(dataInfo)
         res.render('excusedpayment', {
             user: req.user,
             debtorList,
+            dataInfo,
             messages: [...req.flash('msg')],
             errors: [...req.flash('errors')],
         })
@@ -111,10 +116,17 @@ export async function getEditDebtor(req, res){
 
         if(!debtorData) req.flash('error', "No payment found");
 
+        const debtInfo = {
+            name: debtorData.name,
+            debtamount: debtData.debtAmount,
+            fileid: debtorData.fileId,
+            minpayment: debtData.minPayment,
+            startdate: debtData.startDate,
+        }
+
         res.render('editdebtor', {
             user: req.user,
-            debtorData,
-            debtData,
+            debtInfo,
             messages: [...req.flash('msg')],
             errors: [...req.flash('errors')],
         })
@@ -469,16 +481,25 @@ export async function insertNewPayment(req, res){
 }
 
 export async function excusedPayment(req, res){
-    let debtorRef = "" 
-    const errors = dataVerifier({ //validate user submitted info
+    const debtorList =  await DebtorsDB.find().select("name fileId")
+    const dataInfo = { //validate user submitted info
         date: req.body.date,
         fileid: req.body.fileid,
         comment: req.body.comment,
-    })
+    }
+    let debtorRef = "" 
+    const errors = dataVerifier(dataInfo)
 
     if(errors.length) {
         req.flash('errors', errors);
-        return res.render('excusedpayment', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
+
+        return res.render('excusedpayment', { 
+            user: req.user,
+            debtorList,
+            dataInfo,
+            messages: [...req.flash('msg')], 
+            errors: [...req.flash('errors')], 
+        });
     }
 
     //find id
@@ -502,7 +523,14 @@ export async function excusedPayment(req, res){
     //return errors
     if(errors.length) {
         req.flash('errors', errors);
-        return res.render('excusedpayment', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
+
+        return res.render('excusedpayment', { 
+            user: req.user, 
+            debtorList,
+            dataInfo,
+            messages: [...req.flash('msg')], 
+            errors: [...req.flash('errors')], 
+        });
     }
 
     //construct data object
@@ -513,13 +541,19 @@ export async function excusedPayment(req, res){
         comment: req.body.comment
     })
 
-//NOTE:: callback
+//NOTE:: verify
     //save to database
     excusedPayment.save((err) => {
         if(err){
             console.error(err._message)
             req.flash('errors', 'There was an error submitting the data to the database. #003');
-            return res.render('excusedpayment', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
+            return res.render('excusedpayment', { 
+                user: req.user, 
+                debtorList,
+                dataInfo, 
+                messages: [...req.flash('msg')], 
+                errors: [...req.flash('errors')], 
+            });
         }
 
         req.flash('msg', 'Successfully saved.');
@@ -795,19 +829,21 @@ export async function insertNewDebt(req, res){
 }
 
 export async function editDebt(req, res){
-    //validate submitted info
-    const errors = dataVerifier({
+    const debtInfo = {
         name: req.body.name,
         debtamount: req.body.debtamount,
         fileid: req.body.fileid,
         minpayment: req.body.minpayment,
         startdate: req.body.startdate,
-    })
+    }
+    //validate submitted info
+    const errors = dataVerifier(debtInfo)
 
     if(errors.length) {
         req.flash('errors', errors);
-        return res.render('newdebt', { 
-            user: req.user, 
+        return res.render('editdebtor', { 
+            user: req.user,
+            debtInfo,
             messages: [...req.flash('msg')], 
             errors: [...req.flash('errors')],
         });
@@ -848,7 +884,12 @@ export async function editDebt(req, res){
         if(error === 'debtor file id already exists'){req.flash('errors', 'The fileid already exists and must be unique');}
         if(error.codeName === 'DuplicateKey'){req.flash('errors', 'The fileid already exists and must be unique');}
         
-        return res.redirect(req.headers.referer);
+        return res.render('editdebtor', { 
+            user: req.user,
+            debtInfo,
+            messages: [...req.flash('msg')], 
+            errors: [...req.flash('errors')],
+        });
     }
 
 }
@@ -909,6 +950,8 @@ function dataVerifier(data){
             errors.push('Date cannot be empty');
         }else if(!validator.isDate(data.date)){
             errors.push('Date can only be a valid date format, dd/mm/yyyy.');
+        }else if(isAfter(data.date)){
+            errors.push('Date can not be after todays date.');
         }
     }
 

@@ -5,8 +5,8 @@
             <h1>Excuse a Payment</h1>
             <form class="col g-3" action="/excusepayment" method="POST">
                 <div class="row p-2">
-                    <label>File ID:</label>
-                    <input type="text" name="fileid" list="debtors">
+                    <label class="form-label">File ID:</label>
+                    <input type="text" name="fileid" class="form-control" list="debtors" placeholder="File ID" value="<%= typeof dataInfo !== 'undefined' ? dataInfo.fileid : '' %>">
                     <datalist id="debtors">
                         <% if (typeof debtorList !== 'undefined'){ %>
                             <% for(let debtor of debtorList){ %>
@@ -16,15 +16,15 @@
                     </datalist>
                 </div>
                 <div class="row p-2">
-                    <label>Date:</label>
-                    <input type="date" name="date">
+                    <label class="form-label">Date:</label>
+                    <input type="date" class="form-control" name="date" value="<% if(typeof dataInfo !== 'undefined' && dataInfo.date) { %><%= new Date(dataInfo.date).toJSON().slice(0,10) %><% } %>">
                 </div>
                 <div class="row p-2">
-                    <label>Comments:</label>
-                    <input type="text" name="comment">
+                    <label class="form-label">Comments:</label>
+                    <input type="text" class="form-control" name="comment" placeholder="Comments" value="<%= typeof dataInfo !== 'undefined' ? dataInfo.comment : '' %>">
                 </div>
                 <div class="row p-2">
-                    <input type="submit" class="submitbutton">
+                    <input type="submit" class="btn btn-primary">
                 </div>
             </form>
         </section>

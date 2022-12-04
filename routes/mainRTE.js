@@ -28,6 +28,7 @@ router.post('/editPayment', ensureAuth, mainController.editPayment)
 router.get('/editDebtor/:id', ensureAuth, mainController.getEditDebtor)
 router.post('/editDebt', ensureAuth, mainController.editDebt)
 
+router.get('/excusepayment/:id', ensureAuth, mainController.getExcusedPayment)
 router.get('/excusepayment', ensureAuth, mainController.getExcusedPayment)
 router.post('/excusepayment', ensureAuth, mainController.excusedPayment)
 

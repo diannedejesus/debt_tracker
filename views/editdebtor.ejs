@@ -6,25 +6,25 @@
             <form class="row g-3" action="/editdebt" method="POST">
                 <div class="col-8">
                     <label class="form-label">Name:</label>
-                    <input type="text" class="form-control" name="name" value="<%= debtorData.name %>">
+                    <input type="text" class="form-control" name="name" value="<%= debtInfo.name %>">
                 </div>
                 <div class="col">
                     <label class="form-label">File ID:</label>
-                    <input type="text" class="form-control" name="fileid" value="<%= debtorData.fileId %>">
+                    <input type="text" class="form-control" name="fileid" value="<%= debtInfo.fileid %>">
                 </div>
                 <div class="col-8">
                     <label class="form-label">Total Debt:</label>
-                    <input type="number" class="form-control" name="debtamount" value="<%= debtData.debtAmount %>">
+                    <input type="number" class="form-control" name="debtamount" value="<%= debtInfo.debtamount %>">
                 </div>
                 <div class="col">
                     <label class="form-label">Payment:</label>
-                    <input type="number" class="form-control" name="minpayment" value="<%= debtData.minPayment %>">
+                    <input type="number" class="form-control" name="minpayment" value="<%= debtInfo.minpayment %>">
                 </div>
                 <div class="col-12">
                     <label class="form-label">Start Date:</label>
-                    <input type="date" class="form-control" name="startdate" value="<%= new Date(debtData.startDate).toJSON().slice(0,10) %>">
+                    <input type="date" class="form-control" name="startdate" value="<%= new Date(debtInfo.startdate).toJSON().slice(0,10) %>">
                 </div>
-                <input type="hidden" name="id" value="<%= debtorData.fileId %>">
+                <input type="hidden" name="id" value="<%= debtInfo.fileId %>">
                 <div class="col-12">
                     <input type="submit" class="btn btn-primary">
                 </div>

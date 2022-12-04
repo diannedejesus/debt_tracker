@@ -72,7 +72,7 @@
                     <td><%= currentDate %></td>
                     <td><%= Math.ceil((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) %></td>
                     <td><%= debtorInfo.payments.length %></td>
-                    <td><%= debtorInfo.late %> <a class="btn btn-primary btn-sm" href="/excusepayment">excuse</a></td>
+                    <td><%= debtorInfo.late %> <a class="btn btn-primary btn-sm" href="/excusepayment/<%= debtorInfo.fileId %>">excuse</a></td>
                 </tr>
         <tr colspan="5"><td colspan="5">
             <table class="table table-striped">

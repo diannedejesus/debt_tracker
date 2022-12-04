@@ -396,9 +396,8 @@ Modifications
 
 Funtionality
 - [X] merge view: edit so it displays all payments even if no more bills are due
+- [X] set limits for dates that are entered: payments/edit, debt/edit
 - verify if it should add future bills if payments exceed currently dued.
-- verify how secure a chosen password is.
-- set limits for dates that are entered: payments/edit, debt/edit
 
 <!-- Secondary Goals, Wishlist Feature, Future -->
 
@@ -411,6 +410,7 @@ Funtionality
     - have payment deletion verify deletion.
 * Implement an email sender for verification codes
 * Edit an account to change type
+* Implement secure a chosen password verifier.
 * Review code / optimize
 
 ### Issues
@@ -420,20 +420,25 @@ Funtionality
     - Change page titles
 
 ### Brain Dump
-- Have insert/edit debt/payment return data on error for correction
-- excuse payment prefill
+- [X] Have insert/edit debt/payment return data on error for correction
+- [X] excuse payment prefill
+- payment button to cases?
 
-- Verify render paths of insert debt/payment
-- should extra payments in merge view have a running balance
+- [X] Verify render paths of insert debt/payment
+- [X] extra payments in merge view have a running balance
 
 - Fix print view grey bg of header
 - Adjust views for distint screens (https://stackoverflow.com/questions/47760132/any-way-to-get-breakpoint-specific-width-classes)
 - [X] adjust login, manualcode, verifyaccount, administrator, index styles
 
-- implement check for unicode icon for compatibility
+- [X] implement check for unicode icon for compatibility
 - test late payment verifier
 - [X] debtor list modify debt as currency and possible center info
 
+- have buttons disabled if that account cant do action in user management
+- maybe highlight excused payments
+- verify how or whether excused payment should be shown in print view
+- fix the small view for user administration
 
 
 
@@ -451,17 +456,6 @@ if the authentication code is not created and/or displayed the administrator can
 *This application is ment for small databases. If used with and extensive database then the way data is worked with should be reevaluated to avoid long loading times. You could cache the data locally to avoid calling to the database frequently and setting an interval for verifying for changes. Also modify calls the entire database for only a select amount of data to be displayed. Setting the display data to pages.
 
 ================
-Login Process additional features:
-- change password with initial login
-    - the idea behind this is to add to the registration process the autocreation of a password or have a blank password for a created user. Then send them a link informing them that an account has been created for them and that they need to confirm it through the link or code. When they confirm the email, they are prompted to change/create a password for the created account.
-- send secure reset link (for password reset)
-    - The idea is to confirm that it is really the user through there email by sending them a unique code/link.
-- creates temporary password (for user creation)
-    - The idea is when a new user is created a temporary password is created to secure the account and is sent to the user as a unique identifier to confirm the identify through email.
-    - alternativly the password can be left blank and unique code is sent to confirm the account through email.
-- sends initial login link (for user restration)
-    - Sends a special link to a page that verifies newly created accounts. 
-    - alternativly a process can be added to the login process for this.
 
 NOTE:: Check testing routes with postmen or similar app to ensure restrictions work. [research]
 NOTE:: Revisit tests
