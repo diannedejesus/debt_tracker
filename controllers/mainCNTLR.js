@@ -473,6 +473,7 @@ export async function insertNewPayment(req, res){
         req.flash('msg', 'Successfully saved.');
         res.render('newpayment', {
             user: req.user,
+            debtorList,
             messages: [...req.flash('msg')], 
             errors: [...req.flash('errors')],
         })
@@ -950,12 +951,12 @@ function dataVerifier(data){
             errors.push('Date cannot be empty');
         }else if(!validator.isDate(data.date)){
             errors.push('Date can only be a valid date format, dd/mm/yyyy.');
-        }else if(isAfter(data.date)){
+        }else if(validator.isAfter(data.date)){
             errors.push('Date can not be after todays date.');
         }
     }
 
-    if(data.comment !== undefined){
+    if(data.comment !== undefined && data.payment === undefined){
         if(!validator.isLength(data.comment, {min: 8})){
             errors.push('An reason must be present for excused payments.');
         }

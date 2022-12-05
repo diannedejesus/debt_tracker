@@ -439,6 +439,8 @@ Funtionality
 - maybe highlight excused payments
 - verify how or whether excused payment should be shown in print view
 - fix the small view for user administration
+- verify if expired reset keys still show up as pending.
+- verify how password reset and initial creation should be displayed and handled. since we need to know whether it was successful but dont want it stuck in pending if password was recovered and reset is not needed.
 
 
 

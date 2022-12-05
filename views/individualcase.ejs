@@ -31,7 +31,7 @@
                 </tr>
             </thead>
             <tbody class="table-group-divider">
-                <tr class="table-light">
+                <tr class="table-light text-center">
                     <th>Name</th>
                     <th>File Id</th>
                     <th>Started</th>
@@ -50,14 +50,14 @@
                             <% } %>
                         <% } %>
                     </select></td>
-                    <td><%= debtorInfo.fileId %></td>
+                    <td class="text-center"><%= debtorInfo.fileId %></td>
                     <% let formatDate = new Date(debtorInfo.startDate) %>
                     <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
                     <td><%= formatDate %></td>
-                    <td><%= currencyFormat.format(debtorInfo.minPayment) %></td>
-                    <td><%= currencyFormat.format(debtorInfo.debt) %></td>
+                    <td class="text-center"><%= currencyFormat.format(debtorInfo.minPayment) %></td>
+                    <td class="text-center"><%= currencyFormat.format(debtorInfo.debt) %></td>
                 </tr>
-                <tr class="table-light">
+                <tr class="table-light text-center">
                     <th>Current Debt</th>
                     <th>End Date</th>
                     <th>Payments Left</th>
@@ -65,13 +65,13 @@
                     <th>Payments Late</th>
                 </tr>
                 <tr>
-                    <td><%= currencyFormat.format(debtorInfo.debt - debtorInfo.totalPaid) %></td>
+                    <td class="text-center"><%= currencyFormat.format(debtorInfo.debt - debtorInfo.totalPaid) %></td>
                     <% let currentDate = new Date() %>
                     <!-- <%= currentDate.setMonth(currentDate.getMonth()+(Math.trunc((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) + 1)) %> -->
                     <!-- <%= currentDate = currentDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
                     <td><%= currentDate %></td>
-                    <td><%= Math.ceil((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) %></td>
-                    <td><%= debtorInfo.payments.length %></td>
+                    <td class="text-center"><%= Math.ceil((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) %></td>
+                    <td class="text-center"><%= debtorInfo.payments.length %></td>
                     <td><%= debtorInfo.late %> <a class="btn btn-primary btn-sm" href="/excusepayment/<%= debtorInfo.fileId %>">excuse</a></td>
                 </tr>
         <tr colspan="5"><td colspan="5">
