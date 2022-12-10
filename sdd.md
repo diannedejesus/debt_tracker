@@ -378,26 +378,22 @@ Once these wireframes are approved by the client, include them in the user inter
 
 ## Goals and milestones
 Fixes
-- [X] update the debt list and dashboard page with the new calculation for when a debt is late.
-- [X] excused payment access
-- [X] have edit payment check for duplicate values
-    - [x] verify display of error
-- [X] verify how excused payments and late payments are calculated.
+- fix the small view for user administration
+- Fix grey bg of header when printing
+- Adjust views for distint screens (https://stackoverflow.com/questions/47760132/any-way-to-get-breakpoint-specific-width-classes)
 
 Modifications
-- [X] Either switch or include name for registering payment info or implement alternate method for doing
-    - [X] possible have a look up in file id input
-- [X] place id on debt list view
-- [X] have identifier for admin account instead of name
-- [X] have user section of header display a name and not the whole email.
-- [X] include payment info (date, comments) for merge view.
-- [X] change the way info is displayed in merge view. Have rolling balance.
-- [X] create a footer
+- have buttons disabled if that account cant do action in user management
+- maybe highlight excused payments
+- add payment button to cases
+    - one at the top of payment and another at the bottom if a certain number of payments/bills have been added.
+- modify how excused payment are shown in print view
+    - the excused payment should show the bills that where excused
+- in prent view if an amount is owed then print the bills owed and the amount for each bill.
 
 Funtionality
-- [X] merge view: edit so it displays all payments even if no more bills are due
-- [X] set limits for dates that are entered: payments/edit, debt/edit
-- verify if it should add future bills if payments exceed currently dued.
+- add future bills if payments exceed currently dued.
+    - Change how these look to distinguish them
 
 <!-- Secondary Goals, Wishlist Feature, Future -->
 
@@ -420,27 +416,11 @@ Funtionality
     - Change page titles
 
 ### Brain Dump
-- [X] Have insert/edit debt/payment return data on error for correction
-- [X] excuse payment prefill
-- payment button to cases?
-
-- [X] Verify render paths of insert debt/payment
-- [X] extra payments in merge view have a running balance
-
-- Fix print view grey bg of header
-- Adjust views for distint screens (https://stackoverflow.com/questions/47760132/any-way-to-get-breakpoint-specific-width-classes)
-- [X] adjust login, manualcode, verifyaccount, administrator, index styles
-
-- [X] implement check for unicode icon for compatibility
-- test late payment verifier
-- [X] debtor list modify debt as currency and possible center info
-
-- have buttons disabled if that account cant do action in user management
-- maybe highlight excused payments
-- verify how or whether excused payment should be shown in print view
-- fix the small view for user administration
+- verify how password reset and initial creation should be displayed and handled. since we need to know whether it was successful but dont want it stuck in pending if password was recovered and reset is not needed. 
 - verify if expired reset keys still show up as pending.
-- verify how password reset and initial creation should be displayed and handled. since we need to know whether it was successful but dont want it stuck in pending if password was recovered and reset is not needed.
+
+- test late payment verifier
+
 
 
 
@@ -555,7 +535,34 @@ Done:: How to validate a comment field
 - [X] verify how other routes need to handle revoked access [research]
     - [X] Implement warning about revoking access, saying it only stop the user from logging in at their next attempt.
     - [-] how to remove the current session of a user?
+Fixes
+- [X] update the debt list and dashboard page with the new calculation for when a debt is late.
+- [X] excused payment access
+- [X] have edit payment check for duplicate values
+    - [x] verify display of error
+- [X] verify how excused payments and late payments are calculated.
 
+Modifications
+- [X] Either switch or include name for registering payment info or implement alternate method for doing
+    - [X] possible have a look up in file id input
+- [X] place id on debt list view
+- [X] have identifier for admin account instead of name
+- [X] have user section of header display a name and not the whole email.
+- [X] include payment info (date, comments) for merge view.
+- [X] change the way info is displayed in merge view. Have rolling balance.
+- [X] create a footer
+
+Funtionality
+- [X] merge view: edit so it displays all payments even if no more bills are due
+- [X] set limits for dates that are entered: payments/edit, debt/edit
+
+- [X] Have insert/edit debt/payment return data on error for correction
+- [X] excuse payment prefill
+- [X] Verify render paths of insert debt/payment
+- [X] extra payments in merge view have a running balance
+- [X] adjust login, manualcode, verifyaccount, administrator, index styles
+- [X] implement check for unicode icon for compatibility
+- [X] debtor list modify debt as currency and possible center info
 
 
 <!-- Break it down
