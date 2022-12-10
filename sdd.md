@@ -378,18 +378,18 @@ Once these wireframes are approved by the client, include them in the user inter
 
 ## Goals and milestones
 Fixes
-- fix the small view for user administration
-- Fix grey bg of header when printing
+- [~] fix the small view for user administration (not cutting off anymore but still distorting page a bit.)
+- [X] Fix grey bg of header when printing
 - Adjust views for distint screens (https://stackoverflow.com/questions/47760132/any-way-to-get-breakpoint-specific-width-classes)
 
 Modifications
-- have buttons disabled if that account cant do action in user management
-- maybe highlight excused payments
+- [X] have buttons disabled if that account cant do action in user management
+- highlight excused payments
 - add payment button to cases
     - one at the top of payment and another at the bottom if a certain number of payments/bills have been added.
 - modify how excused payment are shown in print view
     - the excused payment should show the bills that where excused
-- in prent view if an amount is owed then print the bills owed and the amount for each bill.
+- in print view if an amount is owed then print the bills owed and the amount for each bill.
 
 Funtionality
 - add future bills if payments exceed currently dued.

@@ -39,13 +39,6 @@ main{
 /* LAYOUT
 /*******************************************/
 
-/*---------------- Header ----------------*/
-/* header {
-     padding: 1em;
-     padding-top: 2em;
-     display: flex;
-     font-size: 1rem;
-} */
 .logo{
      flex-grow: 1;
      line-height: 100%;
@@ -59,34 +52,6 @@ main{
      margin-left: -5rem;
 }
 
-/* nav li{
-     display: inline-block;
-     padding-left: 1em;
-     list-style: none;
-}
-nav ul{
-     margin: 0;
-     padding: 0;
-}
-nav a{
-     text-decoration: none;
-}
-nav{
-     flex-grow: 2;
-     text-align: center;
-} */
-
-/* .account{
-     text-align: right;
-     line-height: 100%;
-} */
-
-
-/*---------------- Footer ----------------*/
-/* footer {
-
-} */
-
 /******************************************
 /* ADDITIONAL STYLES
 /*******************************************/
@@ -98,82 +63,12 @@ h1{
      font-style: italic;
      font-size: smaller;
 }
-/* form.button{
-     float: right;
-} */
-/* form, table{
-     width: fit-content;
-     margin: 0 auto;
-}
-form{
-     display: flex;
-     flex-direction: column;
-}
-input{
-     margin-bottom: .5rem;
-}
-.submitbutton{
-     margin-top: 1rem;
-} */
 
-
-/* table{
-     border-bottom: 5px solid black;
-     padding: 1em;
-     border-collapse: collapse;
-}
-thead th{
-     border-top: 5px solid black;
-     border-left: 5px solid black;
-     border-right: 5px solid black;
-}
-tbody tr{
-     border-left: 5px solid black;
-     border-right: 5px solid black;
-}
-
-td, th{
-     border: 1px solid lightgray;
-     text-align: center;
-     padding: .5rem 1rem;
-}
-th{
-     background-color: lightgray;
-}
-thead th{
-     background-color:azure;
-} */
-
-/* label{
-     display: inline-block;
-     width: fit-content;
-} */
+/* ------------------------ */
 
 .printview, .printview tr, .printview th, .printview td{
      border: none;
 }
-
-/* .printview th{
-     color: white;
-     background-color: rgb(78, 78, 78);
-} */
-/* .printview td{
-     text-align: left;
-} */
-
-/* .printview .highlight{
-     background-color: lightgrey;
-     text-align: right;
-}
-
-.printview .thickline{
-     border-bottom: 5px solid black;
-}
-
-.printview .thinline{
-     border-bottom: 1px solid black;
-}
-*/
 .printview .left{
      text-align: left;
 }
@@ -181,22 +76,15 @@ thead th{
      text-align: right;
 } 
 
-/* .highlight{
-     background-color: black;
-     color: yellow;
-     font-style: italic;
-     font-weight: bold;
-     font-size: 1.2rem;
-} */
-
 
 @media print {
-     .message, header *{
+     .message, header *, footer *{
           display: none !important;
      }
 
      header{
           border: none !important;
+          opacity: 0;
      }
 
      select{

@@ -1,6 +1,6 @@
 <%- include('header.ejs') %>
-    
-    <main class="justify-content-center d-grid gap-3 container-fluid flex-fill">
+
+    <main class="justify-content-center container-fluid flex-fill">
         <seccion>
             <h2>User Accounts</h2>
             <table class="table table-striped">
@@ -9,6 +9,7 @@
                         <th colspan="6"></th>
                     </tr>
                 </thead>
+                <tbody>
                     <tr class="table-dark">
                         <th>User</th>
                         <th>User Type</th>
@@ -18,30 +19,30 @@
                         <th>Revoke</th>
                     </tr>
         
-                
+                    <!-- user. -->
                 <% if (typeof userList !== 'undefined'){ %> 
-                    <% userList.forEach( (user)=> { %>
+                    <% userList.forEach( (currentAccount)=> { %>
                     <tr>        
-                        <td><%= user.email %></td>
-                        <td><%= user.accountType %></td>
-                        <td> <%= user.verifying ? "Pending" : "Completed" %></td>
+                        <td><%= currentAccount.email %></td>
+                        <td><%= currentAccount.accountType %></td>
+                        <td> <%= currentAccount.verifying ? "Pending" : "Completed" %></td>
                         <td>
                             <form class="login-form" action="/auth/reset" method="POST">
-                                <input type="hidden" name="email" value="<%= user.email %>">
+                                <input type="hidden" name="email" value="<%= currentAccount.email %>">
                                 <input type="submit" value='Reset'>
                             </form>
                         </td>
-                        <td><%= user.revoked ? "Yes" : "No" %></td>
+                        <td><%= currentAccount.revoked ? "Yes" : "No" %></td>
                         <td>
                             <form class="login-form" action="/auth/revoke" method="POST">
-                                <input type="hidden" name="email" value="<%= user.email %>">
-                                <input type="submit" value='<%= user.revoked ? "Reinstate" : "Revoke" %>'>
+                                <input type="hidden" name="email" value="<%= currentAccount.email %>">
+                                <input type="submit" <%= currentAccount.accountType.toLowerCase() === 'owner' || currentAccount.email.toLowerCase() === user.email.toLowerCase() ? 'disabled' : '' %> value='<%= currentAccount.revoked ? "Reinstate" : "Revoke" %>'>
                             </form>
                         </td>
                     </tr>
                     <% }) %>
                 <% } %>
-                
+                </tbody>
             </table>
         </seccion>
         <section>
