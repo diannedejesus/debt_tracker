@@ -660,8 +660,8 @@ export async function getDashboard(req, res){
         for(let items of debtsInfo){
             const payments = await PaymentDB.find({caseID: items._id}) //NOTE:: can slow things if dealing with bad connection or lots of items
             const latePayments = verifyAccountStatus(items, payments)
-            
-            if(latePayments === "late"){
+     
+            if(latePayments){
                 debtorList['latePayments']++
             }else{
                 debtorList['currentPayments']++

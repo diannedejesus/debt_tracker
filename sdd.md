@@ -389,7 +389,7 @@ Modifications
     - [X] one at the top of payment and another at the bottom if a certain number of payments/bills have been added.
 -  [X] modify how excused payment are shown in print view
     - the excused payment should show the bills that where excused
-- [X] in print view if an amount is owed then print the bills owed and the amount for each bill.
+- [X] gitin print view if an amount is owed then print the bills owed and the amount for each bill.
 
 Funtionality
 - add future bills if payments exceed currently dued.

@@ -26,7 +26,7 @@
                         <td><a href="cases/<%= debts.fileId %>"><%= debts.name %></a></td>
                         <td class="text-center"><%= currencyFormat.format(debts.currentDebt) %></td>
                         <td class="text-center"><%= Math.ceil(debts.currentDebt / debts.minPayment) %></td>
-                        <td><%= debts.paymentLate %></td>
+                        <td><%= debts.paymentLate ? "Late" : "On Time" %></td>
                     </tr>
                         <% } %>
                     <% } %>
