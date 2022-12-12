@@ -98,10 +98,46 @@
                     <td colspan="2"><%= payment.paymentComment ? payment.paymentComment : "" %></td>
                     <td class="table-active"><%= payment.paymentAmount === 0 ? '' : currencyFormat.format(runningBalance) %></td>
                 </tr>
-                        <!-- <%= counter++ %> -->
+                        <!-- <% counter++ %> -->
                     <% } %>
                 <% } %>
+
+                <% let totalPaid = debtorInfo.totalPaid %>
+                <% for(let bill of debtorInfo.billed){ %>
+                    <% if(totalPaid > 0){ %>
+                        <% totalPaid -= bill.paymentAmount %>
+                        <% if(totalPaid < 0){ %>
+                            <tr>
+                                <td>#<%= counter %></td>
+                                <% let formatDate = new Date(bill.paymentDate) %>
+                                    <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric' }) %> -->
+                                <td><%= formatDate %></td>
+                                <td></td>
+                                <td><%= currencyFormat.format(totalPaid) %></td>
+                                <td colspan="2">Bill Owed</td>
+                                <td class="table-active"></td>
+                            </tr>
+                            <!-- <% counter++ %> -->
+                        <% } %>
+                    <% }else{ %>
+                        <tr>
+                            <td>#<%= counter %></td>
+                            <% let formatDate = new Date(bill.paymentDate) %>
+                                <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric' }) %> -->
+                            <td><%= formatDate %></td>
+                            <td></td>
+                            <td>-<%= bill.paymentAmount %></td>
+                            <td colspan="2">Bill Owed</td>
+                            <td class="table-active"></td>
+                        </tr>
+                        <!-- <% counter++ %> -->
+                    <% } %>
+                <% } %>
+
+
             <% } %>
+            
+             <%= console.table(debtorInfo.billed) %>
         </table>
     </main>
 
