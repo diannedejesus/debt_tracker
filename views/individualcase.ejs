@@ -72,9 +72,15 @@
                     <td><%= currentDate %></td>
                     <td class="text-center"><%= Math.ceil((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) %></td>
                     <td class="text-center"><%= debtorInfo.payments.length %></td>
-                    <td><%= debtorInfo.late %> <a class="btn btn-primary btn-sm" href="/excusepayment/<%= debtorInfo.fileId %>">excuse</a></td>
+                    <td class="text-center"><%= debtorInfo.late ? "Late" : "On Time" %></td>
+                </tr>
+                <tr>
+                    <td colspan="5" style="text-align:right">
+                        <% if(debtorInfo.late) { %><a class="btn btn-primary btn-sm" href="/excusepayment/<%= debtorInfo.fileId %>">Excuse</a><% } %> <a class="btn btn-primary btn-sm" href="#<%= debtorInfo.fileId %>">Payment</a>
+                    </td>
                 </tr>
         <tr colspan="5"><td colspan="5">
+            
             <table class="table table-striped">
                 <thead>
                     <tr class="table-dark">
@@ -86,7 +92,7 @@
                     </tr>
                 </thead>
                 <tbody>
-
+                    
     <!-- Payments -->
                 <% let billedCounter = 0 %>
                 <% let paymentCounter = 0 %>
@@ -94,7 +100,7 @@
 
                 <% while(billedCounter < debtorInfo.billed.length || paymentCounter < debtorInfo.payments.length){ %>
                     <% if(paymentCounter < debtorInfo.payments.length && runningBalance <= 0){ %>
-                    <tr class="">
+                    <tr class="<%= debtorInfo.payments[paymentCounter].paymentAmount === 0 ? 'highlight' : '' %>">
                         <% let formatDate = new Date(debtorInfo.payments[paymentCounter].paymentDate) %>
                         <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
                         <td rowspan="1" colspan="1"><%= formatDate %></td>
@@ -162,8 +168,14 @@
                             <% billedCounter++ %>
                         </tr>
                     <% } %>
-                <% } %>      
-            <% } %>   
+                <% } %>
+                        <tr>
+                            <td colspan="5" style="text-align:right">
+                                <% if(billedCounter + paymentCounter > 15){ %> <a class="btn btn-primary btn-sm" href="#<%= debtorInfo.fileId %>">Payment</a> <% } %>
+                            </td>
+                        </tr>
+            <% } %> 
+             
                 </tbody>
             </table>
         </td></tr>

@@ -64,6 +64,11 @@ h1{
      font-size: smaller;
 }
 
+.highlight{
+     background-color: lightgoldenrodyellow;
+     font-style: italic;
+}
+
 /* ------------------------ */
 
 .printview, .printview tr, .printview th, .printview td{

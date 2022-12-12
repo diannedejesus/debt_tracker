@@ -1013,8 +1013,8 @@ function verifyAccountStatus(debtInfo, paymentInfo){
     const currentBills = monthElapsed(new Date(excusedDate)) * debtInfo.minPayment
 // console.log(currentBills, paidAmount)
     if(currentBills > paidAmount){
-        return "late"
+        return true
     }else{
-        return "on time"
+        return false
     }
 }
