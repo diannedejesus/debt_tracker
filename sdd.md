@@ -387,7 +387,7 @@ Modifications
 - [X] highlight excused payments
 - [X] add payment button to cases
     - [X] one at the top of payment and another at the bottom if a certain number of payments/bills have been added.
-- modify how excused payment are shown in print view
+-  [X] modify how excused payment are shown in print view
     - the excused payment should show the bills that where excused
 - in print view if an amount is owed then print the bills owed and the amount for each bill.
 
@@ -421,7 +421,7 @@ Funtionality
 
 - test late payment verifier
 
-
+- change look of highlighted excused payment
 
 
 <!-- NOTES

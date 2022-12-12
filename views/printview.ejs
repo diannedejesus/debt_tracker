@@ -87,16 +87,16 @@
                 <% let counter = 1 %>
                 <% if (typeof debtorInfo.payments !== 'undefined'){ %>
                     <% for(let payment of debtorInfo.payments){ %>
-                <tr>
+                <tr class="<%= payment.paymentAmount === 0 ? 'highlight' : '' %>">
                     <td>#<%= counter %></td>
                     <% let formatDate = new Date(payment.paymentDate) %>
                         <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric' }) %> -->
                     <td><%= formatDate %></td>
-                    <td><%= currencyFormat.format(runningBalance) %></td>
-                    <td><%= currencyFormat.format(payment.paymentAmount) %></td>
+                    <td><%= payment.paymentAmount === 0 ? '' : currencyFormat.format(runningBalance) %></td>
+                    <td><%= payment.paymentAmount === 0 ? "Excused": currencyFormat.format(payment.paymentAmount) %></td>
                     <!-- <%= runningBalance -= payment.paymentAmount %> -->
                     <td colspan="2"><%= payment.paymentComment ? payment.paymentComment : "" %></td>
-                    <td class="table-active"><%= currencyFormat.format(runningBalance) %></td>
+                    <td class="table-active"><%= payment.paymentAmount === 0 ? '' : currencyFormat.format(runningBalance) %></td>
                 </tr>
                         <!-- <%= counter++ %> -->
                     <% } %>
