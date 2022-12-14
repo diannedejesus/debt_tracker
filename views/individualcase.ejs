@@ -2,7 +2,7 @@
 
 <% let currencyFormat = new Intl.NumberFormat("en-US", { style: "currency", "currency":"USD" }) %>
 
-    <main class="justify-content-center gap-3 container-fluid flex-fill">
+    <main class="justify-content-center gap-3 container-md flex-fill">
         <h1>Case Review</h1>
 
         <% if (typeof debtorInfo !== 'undefined'){ %>
@@ -85,7 +85,7 @@
                 <thead>
                     <tr class="table-dark">
                         <th colspan="1">Payment Date</th>
-                        <th colspan="1">Payment</th>
+                        <th colspan="1">Payment / Bill</th>
                         <th colspan="1">Comments</th>
                         <th colspan="1">Balance</th>
                         <th colspan="1">Actions</th>

@@ -414,6 +414,8 @@ Funtionality
 - verify how password reset and initial creation should be displayed and handled. since we need to know whether it was successful but dont want it stuck in pending if password was recovered and reset is not needed. 
 - [X] verify if expired reset keys still show up as pending.
 
+
+- payment button on page should prefill some information
 - test late payment verifier
 
 
@@ -440,6 +442,8 @@ NOTE:: try consolidating views
 NOTE:: removing all saved session to prevent access to revoked user.
 NOTE:: verify changeing password hashing to data model
 NOTE:: status codes
+
+NOTE:: Fix style, so on large screen it does not stretch completely but d-grid makes small its float to bottom of page
 
 DONE:: Verify callback and awaits in same application. Is it ok?? [research]
 DONE:: Verify render vs redirect?? [research]

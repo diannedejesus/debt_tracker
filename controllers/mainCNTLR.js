@@ -244,7 +244,6 @@ export async function getPrintView(req, res){
 async function buildDebtorInfo(caseFileId){
     try {
         const selectedDebtor = await DebtorsDB.findOne(caseFileId)
-        let excusedPayments = await PaymentDB.find({caseID: selectedDebtor._id, payment: 0}).limit(1).sort({date:-1})
 
         if(!selectedDebtor){
             req.flash('errors', req.params.id + ' is not a valid file id');
@@ -260,12 +259,6 @@ async function buildDebtorInfo(caseFileId){
 
         const elapsed = monthElapsed(new Date(debtForSelected.startDate))
         const payments = await PaymentDB.find({caseID: selectedDebtor._id}) //randomizedPayments(100, debtForSelected.startDate)
-
-        if(excusedPayments.length <= 0){
-            excusedPayments.date = debtForSelected.startDate
-        }
-
-        verifyAccountStatus(debtForSelected, payments)
 
         //create information object
         const debtorInfo = {
@@ -693,8 +686,6 @@ function monthElapsed(endDate, starterDater = new Date()) {
     months = (starterDater.getFullYear() - endDate.getFullYear()) * 12;
     months -= endDate.getUTCMonth();
     months += starterDater.getUTCMonth();
-// console.log("start", endDate.getUTCMonth(), endDate)
-// console.log("end",starterDater.getUTCMonth(), starterDater)
 
     return months <= 0 ? 0 : months;
 }
@@ -1016,5 +1007,128 @@ function verifyAccountStatus(debtInfo, paymentInfo){
         return true
     }else{
         return false
+    }
+}
+
+//-----------------------------------------------------------------
+
+function buildBillList(startDate, minPayment){
+    const elapsed = monthElapsed(new Date(debtForSelected.startDate))
+    const billed = []
+
+    //format bill date to the 1st
+    let owedPaymentsDate = new Date(startDate)
+        owedPaymentsDate.setDate(1)
+
+    //adding payments due/billed
+    for(let i = 0; i<elapsed; i++){
+       billed.push({
+            paymentDate: new Date(owedPaymentsDate.setMonth(owedPaymentsDate.getMonth()+1)),
+            paymentAmount: minPayment,
+        })
+    }
+
+    return billed
+}
+
+function sumOwedBills(){
+    //add bills
+    //bills - payments 
+    //if bills owed return amount
+    //if not return 0
+}
+
+async function sumPayments(caseFileId){
+    try {
+        const payments = await PaymentDB.find({caseID: selectedDebtor._id}) //randomizedPayments(100, debtForSelected.startDate)
+        let paymentSum = 0
+
+        for(let items of payments){
+            paymentSum += Number(items.payment)
+        }
+
+        return paymentSum
+
+    } catch (error) {
+        console.error(error);
+        //req.flash('errors', 'An error occured with the database. #004');
+        //return res.redirect(req.headers.referer);
+    }
+}
+
+async function build(caseFileId){
+    try {
+        const selectedDebtor = await DebtorsDB.findOne(caseFileId)
+        // let excusedPayments = await PaymentDB.find({caseID: selectedDebtor._id, payment: 0}).limit(1).sort({date:-1})
+
+        if(!selectedDebtor){
+            req.flash('errors', req.params.id + ' is not a valid file id');
+            return res.redirect(req.headers.referer);
+        }
+        
+        const debtForSelected = await DebtDB.findOne({_id: selectedDebtor._id})
+        if(!debtForSelected){
+            req.flash('errors', 'Error debt information not found: ' + req.params.id);
+            return res.redirect(req.headers.referer);
+        }
+
+
+        const elapsed = monthElapsed(new Date(debtForSelected.startDate))
+        const payments = await PaymentDB.find({caseID: selectedDebtor._id}) //randomizedPayments(100, debtForSelected.startDate)
+
+        // if(excusedPayments.length <= 0){
+        //     excusedPayments.date = debtForSelected.startDate
+        // }
+
+        verifyAccountStatus(debtForSelected, payments)
+
+        //create information object
+        const debtorInfo = {
+            name: selectedDebtor.name,
+            fileId: selectedDebtor.fileId,
+            startDate: debtForSelected.startDate.setDate(debtForSelected.startDate.getDate()+1),
+            minPayment: Number(debtForSelected.minPayment),
+            debt: debtForSelected.debtAmount,
+            late: verifyAccountStatus(debtForSelected, payments),
+            totalPaid: 0,
+            payments: [],
+            billed: [],
+        }
+
+        //format bill date to the 1st
+        let owedPaymentsDate = new Date(debtorInfo.startDate)
+            owedPaymentsDate.setDate(1)
+
+        //adding payments due/billed
+        for(let i = 0; i<elapsed; i++){
+            debtorInfo.billed.push({
+                paymentDate: new Date(owedPaymentsDate.setMonth(owedPaymentsDate.getMonth()+1)),
+                paymentAmount: debtForSelected.minPayment,
+            })
+        }
+
+        if(!payments){ return debtorInfo }
+
+        for(let items of payments){
+            debtorInfo['totalPaid'] += Number(items.payment)
+
+            debtorInfo.payments.push({
+                id: items._id,
+                paymentDate: items.date.setDate(items.date.getDate()+1), 
+                paymentAmount: Number(items.payment),
+                paymentComment: items.comment,
+            })
+        }
+
+        debtorInfo.payments.sort(function(a,b){
+            return a.paymentDate - b.paymentDate;
+        });
+
+        return debtorInfo
+
+    } catch (error) {
+        console.error(error);
+        //req.flash('errors', 'An error occured with the database. #004');
+        //return res.redirect(req.headers.referer);
     }
 }
