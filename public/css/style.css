@@ -64,7 +64,7 @@ h1{
      font-size: smaller;
 }
 
-.highlight{
+.highlight, .table .highlight{
      background-color: lightgoldenrodyellow;
      font-style: italic;
 }

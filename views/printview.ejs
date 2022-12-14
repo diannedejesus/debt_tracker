@@ -2,7 +2,7 @@
 
 <% let currencyFormat = new Intl.NumberFormat("en-US", { style: "currency", "currency":"USD" }) %>
 
-    <main class="justify-content-center d-grid gap-3 container-fluid flex-fill">
+    <main class="justify-content-center gap-3 container-fluid flex-fill">
         <table class="table printview">
                     <tr class="border-bottom border-dark border-5">
                         <td colspan="7"><h1 class="left">Summary of Payment Plan</h1></td>
@@ -75,6 +75,7 @@
                     <td colspan="1"></td>
                 </tr>
 
+<!-- Payments -->
                 <tr class="table-dark"> 
                     <th>#</th>
                     <th>Date</th>
@@ -92,8 +93,8 @@
                     <% let formatDate = new Date(payment.paymentDate) %>
                         <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric' }) %> -->
                     <td><%= formatDate %></td>
-                    <td><%= payment.paymentAmount === 0 ? '' : currencyFormat.format(runningBalance) %></td>
-                    <td><%= payment.paymentAmount === 0 ? "Excused": currencyFormat.format(payment.paymentAmount) %></td>
+                    <td><%= payment.paymentAmount === 0 ? 'Excused' : currencyFormat.format(runningBalance) %></td>
+                    <td><%= payment.paymentAmount === 0 ? '': currencyFormat.format(payment.paymentAmount) %></td>
                     <!-- <%= runningBalance -= payment.paymentAmount %> -->
                     <td colspan="2"><%= payment.paymentComment ? payment.paymentComment : "" %></td>
                     <td class="table-active"><%= payment.paymentAmount === 0 ? '' : currencyFormat.format(runningBalance) %></td>

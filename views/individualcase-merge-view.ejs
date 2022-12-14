@@ -2,7 +2,8 @@
 
 <% let currencyFormat = new Intl.NumberFormat("en-US", { style: "currency", "currency":"USD" }) %>
 
-    <main class="justify-content-center d-grid gap-3 container-fluid flex-fill">
+    <main class="justify-content-center gap-3 container-fluid flex-fill">
+
         <h1>Case Review</h1>
 
         <% if (typeof debtorInfo !== 'undefined'){ %>
@@ -105,15 +106,15 @@
                         
                             <tr>
                         <% if(i === skipPays && payments < debtorInfo.payments.length){ %>
-                                <td class="<%= debtorInfo.payments[payments].paymentAmount === 0 ? 'bg-warning' : payments % 2 === 0 ? 'table-active' : '' %> border-top border-secondary" rowspan="<%= debtorInfo.payments[payments].space %>">
+                                <td class="<%= debtorInfo.payments[payments].paymentAmount === 0 ? 'highlight' : payments % 2 === 0 ? 'table-active' : '' %> border-top border-secondary" rowspan="<%= debtorInfo.payments[payments].space %>">
                         <% let formatDate = new Date(debtorInfo.payments[payments].paymentDate) %>
                     <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
                     <%= formatDate %>
                                     <p class="comment"><%= debtorInfo.payments[payments].paymentComment %></p>
                                 </td>  
-                                <td class="<%= debtorInfo.payments[payments].paymentAmount === 0 ? 'bg-warning' : payments % 2 === 0 ? 'table-active' : '' %> border-top border-secondary" rowspan="<%= debtorInfo.payments[payments].space %>">
-                                    <div class="d-flex">
-                                        <span class="p-1"><%= currencyFormat.format(debtorInfo.payments[payments].paymentAmount) %></span>
+                                <td class="<%= debtorInfo.payments[payments].paymentAmount === 0 ? 'highlight' : payments % 2 === 0 ? 'table-active' : '' %> border-top border-secondary" rowspan="<%= debtorInfo.payments[payments].space %>">
+                                    <div class="d-flex justify-content-end">
+                                        <% if(debtorInfo.payments[payments].paymentAmount !== 0) { %><span class="p-1"><%= currencyFormat.format(debtorInfo.payments[payments].paymentAmount) %></span><% } %>
 
                                         <form class="p-1" action="/delPayment/<%= debtorInfo.payments[payments].id %>" method="POST">
                                             <input type="submit" value="X" class="btn btn-secondary btn-outline-light btn-sm"> 

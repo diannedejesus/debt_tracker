@@ -378,22 +378,17 @@ Once these wireframes are approved by the client, include them in the user inter
 
 ## Goals and milestones
 Fixes
-- [~] fix the small view for user administration (not cutting off anymore but still distorting page a bit.)
-- [X] Fix grey bg of header when printing
+- change look of highlighted excused payment
 - Adjust views for distint screens (https://stackoverflow.com/questions/47760132/any-way-to-get-breakpoint-specific-width-classes)
 
 Modifications
-- [X] have buttons disabled if that account cant do action in user management
-- [X] highlight excused payments
-- [X] add payment button to cases
-    - [X] one at the top of payment and another at the bottom if a certain number of payments/bills have been added.
--  [X] modify how excused payment are shown in print view
-    - the excused payment should show the bills that where excused
-- [X] gitin print view if an amount is owed then print the bills owed and the amount for each bill.
+- the excused payment should show the bills that where excused (requieres rewriting print view payments)
+- editing excused payments
 
 Funtionality
 - add future bills if payments exceed currently dued.
     - Change how these look to distinguish them
+
 
 <!-- Secondary Goals, Wishlist Feature, Future -->
 
@@ -417,11 +412,9 @@ Funtionality
 
 ### Brain Dump
 - verify how password reset and initial creation should be displayed and handled. since we need to know whether it was successful but dont want it stuck in pending if password was recovered and reset is not needed. 
-- verify if expired reset keys still show up as pending.
+- [X] verify if expired reset keys still show up as pending.
 
 - test late payment verifier
-
-- change look of highlighted excused payment
 
 
 <!-- NOTES
@@ -446,6 +439,7 @@ NOTE:: submitting request for delete or others without forms [research]
 NOTE:: try consolidating views
 NOTE:: removing all saved session to prevent access to revoked user.
 NOTE:: verify changeing password hashing to data model
+NOTE:: status codes
 
 DONE:: Verify callback and awaits in same application. Is it ok?? [research]
 DONE:: Verify render vs redirect?? [research]
@@ -541,6 +535,8 @@ Fixes
 - [X] have edit payment check for duplicate values
     - [x] verify display of error
 - [X] verify how excused payments and late payments are calculated.
+- [~] fix the small view for user administration (not cutting off anymore but still distorting page a bit.)
+- [X] Fix grey bg of header when printing
 
 Modifications
 - [X] Either switch or include name for registering payment info or implement alternate method for doing
@@ -551,6 +547,13 @@ Modifications
 - [X] include payment info (date, comments) for merge view.
 - [X] change the way info is displayed in merge view. Have rolling balance.
 - [X] create a footer
+- [X] have buttons disabled if that account cant do action in user management
+- [X] highlight excused payments
+- [X] add payment button to cases
+    - [X] one at the top of payment and another at the bottom if a certain number of payments/bills have been added.
+-  [X] modify how excused payment are shown in print view
+    
+- [X] in print view if an amount is owed then print the bills owed and the amount for each bill.
 
 Funtionality
 - [X] merge view: edit so it displays all payments even if no more bills are due
