@@ -256,8 +256,6 @@ async function buildDebtorInfo(caseFileId){
             return res.redirect(req.headers.referer);
         }
 
-
-        const elapsed = monthElapsed(new Date(debtForSelected.startDate))
         const payments = await PaymentDB.find({caseID: selectedDebtor._id}) //randomizedPayments(100, debtForSelected.startDate)
 
         //create information object
@@ -268,35 +266,12 @@ async function buildDebtorInfo(caseFileId){
             minPayment: Number(debtForSelected.minPayment),
             debt: debtForSelected.debtAmount,
             late: verifyAccountStatus(debtForSelected, payments),
-            totalPaid: 0,
-            payments: [],
-            billed: [],
-        }
-
-        //format bill date to the 1st
-        let owedPaymentsDate = new Date(debtorInfo.startDate)
-            owedPaymentsDate.setDate(1)
-
-        //adding payments due/billed
-        for(let i = 0; i<elapsed; i++){
-            debtorInfo.billed.push({
-                paymentDate: new Date(owedPaymentsDate.setMonth(owedPaymentsDate.getMonth()+1)),
-                paymentAmount: debtForSelected.minPayment,
-            })
+            totalPaid: payments.reduce((sum, current) => sum + Number(current.payment), 0),
+            payments: removeCaseAndVersion(payments),
+            billed: buildBillList(debtForSelected.startDate.setDate(debtForSelected.startDate.getDate()+1)),
         }
 
         if(!payments){ return debtorInfo }
-
-        for(let items of payments){
-            debtorInfo['totalPaid'] += Number(items.payment)
-
-            debtorInfo.payments.push({
-                id: items._id,
-                paymentDate: items.date.setDate(items.date.getDate()+1), 
-                paymentAmount: Number(items.payment),
-                paymentComment: items.comment,
-            })
-        }
 
         debtorInfo.payments.sort(function(a,b){
             return a.paymentDate - b.paymentDate;
@@ -1012,123 +987,36 @@ function verifyAccountStatus(debtInfo, paymentInfo){
 
 //-----------------------------------------------------------------
 
-function buildBillList(startDate, minPayment){
-    const elapsed = monthElapsed(new Date(debtForSelected.startDate))
+function buildBillList(startDate){
+    const elapsed = monthElapsed(new Date(startDate))
     const billed = []
 
     //format bill date to the 1st
-    let owedPaymentsDate = new Date(startDate)
-        owedPaymentsDate.setDate(1)
+    let billDate = new Date(startDate)
+        billDate.setDate(1)
 
-    //adding payments due/billed
+    //adding bills
     for(let i = 0; i<elapsed; i++){
        billed.push({
-            paymentDate: new Date(owedPaymentsDate.setMonth(owedPaymentsDate.getMonth()+1)),
-            paymentAmount: minPayment,
+            paymentDate: new Date(billDate.setMonth(billDate.getMonth()+1)),
+            //paymentAmount: minPayment,
         })
     }
 
     return billed
 }
 
-function sumOwedBills(){
-    //add bills
-    //bills - payments 
-    //if bills owed return amount
-    //if not return 0
-}
+function removeCaseAndVersion(payments){
+    let modifiedPayments = []
 
-async function sumPayments(caseFileId){
-    try {
-        const payments = await PaymentDB.find({caseID: selectedDebtor._id}) //randomizedPayments(100, debtForSelected.startDate)
-        let paymentSum = 0
-
-        for(let items of payments){
-            paymentSum += Number(items.payment)
-        }
-
-        return paymentSum
-
-    } catch (error) {
-        console.error(error);
-        //req.flash('errors', 'An error occured with the database. #004');
-        //return res.redirect(req.headers.referer);
+    for(let items of payments){
+        modifiedPayments.push({
+            id: items._id,
+            paymentDate: items.date.setDate(items.date.getDate()+1), 
+            paymentAmount: Number(items.payment),
+            paymentComment: items.comment,
+        })
     }
-}
 
-async function build(caseFileId){
-    try {
-        const selectedDebtor = await DebtorsDB.findOne(caseFileId)
-        // let excusedPayments = await PaymentDB.find({caseID: selectedDebtor._id, payment: 0}).limit(1).sort({date:-1})
-
-        if(!selectedDebtor){
-            req.flash('errors', req.params.id + ' is not a valid file id');
-            return res.redirect(req.headers.referer);
-        }
-        
-        const debtForSelected = await DebtDB.findOne({_id: selectedDebtor._id})
-        if(!debtForSelected){
-            req.flash('errors', 'Error debt information not found: ' + req.params.id);
-            return res.redirect(req.headers.referer);
-        }
-
-
-        const elapsed = monthElapsed(new Date(debtForSelected.startDate))
-        const payments = await PaymentDB.find({caseID: selectedDebtor._id}) //randomizedPayments(100, debtForSelected.startDate)
-
-        // if(excusedPayments.length <= 0){
-        //     excusedPayments.date = debtForSelected.startDate
-        // }
-
-        verifyAccountStatus(debtForSelected, payments)
-
-        //create information object
-        const debtorInfo = {
-            name: selectedDebtor.name,
-            fileId: selectedDebtor.fileId,
-            startDate: debtForSelected.startDate.setDate(debtForSelected.startDate.getDate()+1),
-            minPayment: Number(debtForSelected.minPayment),
-            debt: debtForSelected.debtAmount,
-            late: verifyAccountStatus(debtForSelected, payments),
-            totalPaid: 0,
-            payments: [],
-            billed: [],
-        }
-
-        //format bill date to the 1st
-        let owedPaymentsDate = new Date(debtorInfo.startDate)
-            owedPaymentsDate.setDate(1)
-
-        //adding payments due/billed
-        for(let i = 0; i<elapsed; i++){
-            debtorInfo.billed.push({
-                paymentDate: new Date(owedPaymentsDate.setMonth(owedPaymentsDate.getMonth()+1)),
-                paymentAmount: debtForSelected.minPayment,
-            })
-        }
-
-        if(!payments){ return debtorInfo }
-
-        for(let items of payments){
-            debtorInfo['totalPaid'] += Number(items.payment)
-
-            debtorInfo.payments.push({
-                id: items._id,
-                paymentDate: items.date.setDate(items.date.getDate()+1), 
-                paymentAmount: Number(items.payment),
-                paymentComment: items.comment,
-            })
-        }
-
-        debtorInfo.payments.sort(function(a,b){
-            return a.paymentDate - b.paymentDate;
-        });
-
-        return debtorInfo
-
-    } catch (error) {
-        console.error(error);
-        //req.flash('errors', 'An error occured with the database. #004');
-        //return res.redirect(req.headers.referer);
-    }
+    return modifiedPayments
 }
