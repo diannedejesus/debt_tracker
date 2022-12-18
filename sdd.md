@@ -417,7 +417,7 @@ Funtionality
 
 - payment button on page should prefill some information
 - test late payment verifier
-
+- verify if checking for duplicate excused payments
 
 <!-- NOTES
 Account Creation & Login

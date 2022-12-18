@@ -271,6 +271,11 @@ async function buildDebtorInfo(caseFileId){
             billed: buildBillList(debtForSelected.startDate.setDate(debtForSelected.startDate.getDate()+1)),
         }
 
+        debtorInfo["transactions"] = [...debtorInfo.payments, ...debtorInfo.billed]
+        debtorInfo.transactions.sort(function(a,b){
+            return a.paymentDate - b.paymentDate;
+        });
+        
 
         if(!payments){ return debtorInfo }
 

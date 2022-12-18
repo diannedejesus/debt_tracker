@@ -79,108 +79,68 @@
                         <% if(debtorInfo.late) { %><a class="btn btn-primary btn-sm" href="/excusepayment/<%= debtorInfo.fileId %>">Excuse</a><% } %> <a class="btn btn-primary btn-sm" href="#<%= debtorInfo.fileId %>">Payment</a>
                     </td>
                 </tr>
-        <tr colspan="5"><td colspan="5">
-            
-            <table class="table table-striped">
-                <thead>
-                    <tr class="table-dark">
-                        <th colspan="1">Payment Date</th>
-                        <th colspan="1">Payment / Bill</th>
-                        <th colspan="1">Comments</th>
-                        <th colspan="1">Balance</th>
-                        <th colspan="1">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    
-    <!-- Payments -->
-                <% let billedCounter = 0 %>
-                <% let paymentCounter = 0 %>
-                <% let runningBalance = 0 %>
- 
-                <% while(billedCounter < debtorInfo.billed.length || paymentCounter < debtorInfo.payments.length){ %>
-                    <% if(paymentCounter < debtorInfo.payments.length && runningBalance <= 0){ %>
-                    <tr class="<%= debtorInfo.payments[paymentCounter].paymentAmount === 0 ? 'highlight' : '' %>">
-                        <% let formatDate = new Date(debtorInfo.payments[paymentCounter].paymentDate) %>
-                        <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
-                        <td rowspan="1" colspan="1"><%= formatDate %></td>
-                        <td rowspan="1"><%= currencyFormat.format(debtorInfo.payments[paymentCounter].paymentAmount) %></td>
-                        <% runningBalance += debtorInfo.payments[paymentCounter].paymentAmount %>
-                        <td rowspan="1"><%= debtorInfo.payments[paymentCounter].paymentComment %></td>
-                        <td><%= currencyFormat.format(runningBalance) %></td>
-                        <td>
-                            <div class="d-flex">
-                                <form class="p-1" action="/delPayment/<%= debtorInfo.payments[paymentCounter].id %>" method="POST">
-                                    <input type="submit" value="X" class="btn btn-secondary btn-outline-light btn-sm">
-                                </form>
-                                <form class="p-1" action="/editPayment/<%= debtorInfo.fileId %>/<%= debtorInfo.payments[paymentCounter].id %>" method="GET">
-                                    <input type="submit" value="Edit" class="btn btn-secondary btn-outline-light btn-sm">
-                                </form>
-                            </div>
-                        </td>
-                        <% paymentCounter++ %>
-                    </tr>
-                    <% }else if(billedCounter >= debtorInfo.billed.length && paymentCounter < debtorInfo.payments.length){ %>
-                        <tr class="highlight">
-                            <% let formatDate = new Date(debtorInfo.payments[paymentCounter].paymentDate) %>
-                            <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
-                            <td rowspan="1" colspan="1"><%= formatDate %></td>
-                            <td rowspan="1"><%= currencyFormat.format(debtorInfo.payments[paymentCounter].paymentAmount) %></td>
-                            <% runningBalance += debtorInfo.payments[paymentCounter].paymentAmount %>
-                            <td rowspan="1"><%= debtorInfo.payments[paymentCounter].paymentComment %></td>
-                            <td><%= currencyFormat.format(runningBalance) %></td>
-                            <td>
-                                <div class="d-flex">
-                                    <form class="p-1" action="/delPayment/<%= debtorInfo.payments[paymentCounter].id %>" method="POST">
-                                        <input type="submit" value="X" class="btn btn-secondary btn-outline-light btn-sm"> 
-                                    </form>
-                                    
-                                    <form class="p-1" action="/editPayment/<%= debtorInfo.fileId %>/<%= debtorInfo.payments[paymentCounter].id %>" method="GET">
-                                        <input type="submit" value="edit" class="btn btn-secondary btn-outline-light btn-sm">
-                                    </form>
-                                </div>
-                            </td>
-                            <% paymentCounter++ %>
-                        </tr>
-                    <% } %>
-                    <% if(billedCounter < debtorInfo.billed.length && runningBalance > 0){ %>
-                        <tr>
-                            <% let formatDate = new Date(debtorInfo.billed[billedCounter].paymentDate) %>
-                            <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
-                            <td rowspan="1" colspan="1"><%= formatDate %></td>
-                            <td rowspan="1">-<%= currencyFormat.format(debtorInfo.minPayment) %></td>
-                            <% runningBalance -= +debtorInfo.minPayment %>
-                            <td rowspan="1"><%= debtorInfo.billed[billedCounter].paymentComment %></td>
-                            <td><%= currencyFormat.format(runningBalance) %></td>
-                            <td></td>
-                            <% billedCounter++ %>
-                        </tr>
-                    <% }else if(billedCounter < debtorInfo.billed.length && paymentCounter >= debtorInfo.payments.length){ %>
-                        <tr>
-                            <% let formatDate = new Date(debtorInfo.billed[billedCounter].paymentDate) %>
-                            <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
-                            <td rowspan="1"><%= formatDate %></td>
-                            <td rowspan="1">-<%= currencyFormat.format(debtorInfo.minPayment) %></td>
-                            <% runningBalance -= +debtorInfo.minPayment %>
-                            <td rowspan="1"><%= debtorInfo.billed[billedCounter].paymentComment %></td>
-                            <td><%= currencyFormat.format(runningBalance) %></td>
-                            <td></td>
-                            <% billedCounter++ %>
-                        </tr>
-                    <% } %>
-                <% } %>
-                        <tr>
-                            <td colspan="5" style="text-align:right">
-                                <% if(billedCounter + paymentCounter > 15){ %> <a class="btn btn-primary btn-sm" href="#<%= debtorInfo.fileId %>">Payment</a> <% } %>
-                            </td>
-                        </tr>
-            <% } %> 
-             
-                </tbody>
-            </table>
-        </td></tr>
+                <tr colspan="5">
+                    <td colspan="5">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr class="table-dark">
+                                    <th colspan="1">Payment Date</th>
+                                    <th colspan="1">Payment / Bill</th>
+                                    <th colspan="1">Comments</th>
+                                    <th colspan="1">Balance</th>
+                                    <th colspan="1">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                <!-- Payments -->
+                            <% let runningBalance = 0 %> 
+                            <% debtorInfo.transactions.forEach(item => { %>
+                                <tr class="<%= item.paymentAmount === 0 ? 'highlight' : '' %>">
+                                    <% let formatDate = new Date(item.paymentDate) %>
+                                    <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
+                                    <td><%= formatDate %> </td>
+                                    <td>
+                                        <% if (item.paymentAmount === undefined) { %>
+                                            <%= `-${currencyFormat.format(debtorInfo.minPayment)}` %> 
+                                        <% } else if (item.paymentAmount === 0) { %>
+                                            <%= "" %> 
+                                        <% } else { %>
+                                            <%= currencyFormat.format(item.paymentAmount) %> 
+                                        <% } %> 
+                                    </td>
+                                    <td><%= item.paymentComment %> </td>
+                                    <% if (item.paymentAmount === undefined) { %>
+                                        <% runningBalance += -debtorInfo.minPayment %> 
+                                    <% } else if (item.paymentAmount === 0) { %>
+                                        <% runningBalance = 0 %> 
+                                    <% } else { %>
+                                        <% runningBalance += item.paymentAmount %> 
+                                    <% } %> 
+                                    <td><%= currencyFormat.format(runningBalance) %> </td>
+                                    <td>
+                                        <% if (item.paymentAmount !== undefined) { %>
+                                            <div class="d-flex">
+                                                <form class="p-1" action="/delPayment/<%= item.id %>" method="POST">
+                                                    <input type="submit" value="X" class="btn btn-secondary btn-outline-light btn-sm"> 
+                                                </form>
+                                                
+                                                <form class="p-1" action="/editPayment/<%= debtorInfo.fileId %>/<%= item.id %>" method="GET">
+                                                    <input type="submit" value="edit" class="btn btn-secondary btn-outline-light btn-sm">
+                                                </form>
+                                            </div>
+                                        <% } %>
+                                    </td>
+                                </tr>
+
+                            <% }) %>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
             </tbody>
         </table>
+        <% } //end if debtorInfo %> 
     </main>
 
 <%- include('footer.ejs') %>
