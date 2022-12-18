@@ -97,7 +97,7 @@
                 <% let billedCounter = 0 %>
                 <% let paymentCounter = 0 %>
                 <% let runningBalance = 0 %>
-
+ 
                 <% while(billedCounter < debtorInfo.billed.length || paymentCounter < debtorInfo.payments.length){ %>
                     <% if(paymentCounter < debtorInfo.payments.length && runningBalance <= 0){ %>
                     <tr class="<%= debtorInfo.payments[paymentCounter].paymentAmount === 0 ? 'highlight' : '' %>">

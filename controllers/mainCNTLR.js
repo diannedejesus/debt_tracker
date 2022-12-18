@@ -271,6 +271,7 @@ async function buildDebtorInfo(caseFileId){
             billed: buildBillList(debtForSelected.startDate.setDate(debtForSelected.startDate.getDate()+1)),
         }
 
+
         if(!payments){ return debtorInfo }
 
         debtorInfo.payments.sort(function(a,b){
@@ -962,8 +963,6 @@ export async function deletePayment(req, res){
 }
 
 function verifyAccountStatus(debtInfo, paymentInfo){
-    // const debtInfo = await DebtDB.find({fileId: accountId})
-    // const paymentInfo = await PaymentDB.find({clientId: accountId})
     let paidAmount = 0
     let excusedDate = debtInfo.startDate
 
@@ -977,7 +976,7 @@ function verifyAccountStatus(debtInfo, paymentInfo){
     }
 
     const currentBills = monthElapsed(new Date(excusedDate)) * debtInfo.minPayment
-// console.log(currentBills, paidAmount)
+
     if(currentBills > paidAmount){
         return true
     }else{
