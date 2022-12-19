@@ -152,7 +152,6 @@ export async function getCaseInfo(req, res){
             return res.redirect(req.headers.referer);
         }
 
-        // const debtorInfo = await buildDebtorInfo(caseFileId)
         let debtorInfo = await createDebtorInfo(caseFileId)
         debtorInfo = await createTransactions(debtorInfo)
         
@@ -161,7 +160,7 @@ export async function getCaseInfo(req, res){
             return sum + currentNum;
         }, 0);
        
-        debtorData.late = verifyAccountStatus(debtorInfo, debtorInfo.transactions);
+        debtorInfo.late = verifyAccountStatus(debtorInfo, debtorInfo.transactions);
 
         res.render('individualcase', {
             user: req.user,
