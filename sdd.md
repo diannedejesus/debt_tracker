@@ -418,6 +418,7 @@ Funtionality
 - payment button on page should prefill some information
 - test late payment verifier
 - verify if checking for duplicate excused payments
+- dont permit excused payments if there is no debt
 
 <!-- NOTES
 Account Creation & Login

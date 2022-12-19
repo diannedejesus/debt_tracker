@@ -71,7 +71,7 @@
                     <!-- <%= currentDate = currentDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
                     <td><%= currentDate %></td>
                     <td class="text-center"><%= Math.ceil((debtorInfo.debt - debtorInfo.totalPaid) / debtorInfo.minPayment) %></td>
-                    <td class="text-center"><%= debtorInfo.payments.length %></td>
+                    <td class="text-center"><%= debtorInfo.transactions.filter(item => item.payment !== undefined && item.payment !== 0).length %></td>
                     <td class="text-center"><%= debtorInfo.late ? "Late" : "On Time" %></td>
                 </tr>
                 <tr>
@@ -96,30 +96,30 @@
                 <!-- Payments -->
                             <% let runningBalance = 0 %> 
                             <% debtorInfo.transactions.forEach(item => { %>
-                                <tr class="<%= item.paymentAmount === 0 ? 'highlight' : '' %>">
-                                    <% let formatDate = new Date(item.paymentDate) %>
+                                <tr class="<%= item.payment === 0 ? 'highlight' : '' %>">
+                                    <% let formatDate = new Date(item.date) %>
                                     <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
                                     <td><%= formatDate %> </td>
                                     <td>
-                                        <% if (item.paymentAmount === undefined) { %>
+                                        <% if (item.payment === undefined) { %>
                                             <%= `-${currencyFormat.format(debtorInfo.minPayment)}` %> 
-                                        <% } else if (item.paymentAmount === 0) { %>
+                                        <% } else if (item.payment === 0) { %>
                                             <%= "" %> 
                                         <% } else { %>
-                                            <%= currencyFormat.format(item.paymentAmount) %> 
+                                            <%= currencyFormat.format(item.payment) %> 
                                         <% } %> 
                                     </td>
-                                    <td><%= item.paymentComment %> </td>
-                                    <% if (item.paymentAmount === undefined) { %>
-                                        <% runningBalance += -debtorInfo.minPayment %> 
-                                    <% } else if (item.paymentAmount === 0) { %>
-                                        <% runningBalance = 0 %> 
+                                    <td><%= item.comment %></td>
+                                    <% if (item.payment === undefined) { %>
+                                        <% runningBalance += -debtorInfo.minPayment %>
+                                    <% } else if (item.payment === 0) { %>
+                                        <% if(runningBalance < 0) runningBalance = 0 %>  
                                     <% } else { %>
-                                        <% runningBalance += item.paymentAmount %> 
+                                        <% runningBalance += item.payment %> 
                                     <% } %> 
                                     <td><%= currencyFormat.format(runningBalance) %> </td>
                                     <td>
-                                        <% if (item.paymentAmount !== undefined) { %>
+                                        <% if (item.payment !== undefined) { %>
                                             <div class="d-flex">
                                                 <form class="p-1" action="/delPayment/<%= item.id %>" method="POST">
                                                     <input type="submit" value="X" class="btn btn-secondary btn-outline-light btn-sm"> 
