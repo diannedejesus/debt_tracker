@@ -8,7 +8,7 @@ import loginRoutes from './routes/authRTE.js'
 import testRoutes from './routes/testsRTE.js'
 
 
-import mongoose from 'mongoose' //mongoose handles the structure for our mongodb data. It will assure that the data in our database matches the definition we created for it.
+//import mongoose from 'mongoose' //mongoose handles the structure for our mongodb data. It will assure that the data in our database matches the definition we created for it.
 import passport from 'passport' // handle authentication (logins) for this application
 import session from 'express-session' // Keeps track of session data. Meaning data that you need to pass around your application.
 import MongoStore from 'connect-mongo' //saving session data in the db

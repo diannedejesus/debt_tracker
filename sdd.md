@@ -419,6 +419,7 @@ Funtionality
 - test late payment verifier
 - verify if checking for duplicate excused payments
 - dont permit excused payments if there is no debt
+- catch errors produced by database in config/database
 
 <!-- NOTES
 Account Creation & Login

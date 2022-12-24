@@ -48,7 +48,7 @@ export async function getExcusedPayment(req, res){
             fileid: req.params.id,
             date: new Date(),
         }
-// console.log(dataInfo)
+
         res.render('excusedpayment', {
             user: req.user,
             debtorList,
@@ -102,7 +102,6 @@ export async function getEditPayment(req, res){
         })
     }
 }
-
 
 export async function getEditDebtor(req, res){
     if(!req.params.id){
@@ -197,11 +196,21 @@ export async function getCaseInfoMerge(req, res){
             }
         }
 
-        const debtorInfo = await buildDebtorInfoMerge(selectedDebtor)
+        let createMergeInfo = await createDebtorInfo(selectedDebtor)
+        const payments = await PaymentDB.find({caseID: createMergeInfo.id}) //randomizedPayments(100, debtForSelected.startDate)
+        
+        createMergeInfo.billed = createListOfBills(createMergeInfo.startDate)
+        createMergeInfo.payments = removeCaseAndVersion(payments),
+        createMergeInfo.totalPaid = createMergeInfo.payments.reduce((sum, current) => {
+            let currentNum = current.payment === undefined ? 0 : Number(current.payment);
+            return sum + currentNum;
+        }, 0);
+        createMergeInfo = calcPaidStatus(createMergeInfo)
+        createMergeInfo = calcMerge(createMergeInfo)
 
         res.render('individualcase-merge-view', {
             user: req.user,
-            debtorInfo,
+            debtorInfo: createMergeInfo,
             debtorList,
             messages: [...req.flash('msg')],
             errors: [...req.flash('errors')],
@@ -249,9 +258,74 @@ export async function getPrintView(req, res){
     }
 }
 
+export async function getDebtorList(req, res){
+    try {
+        const debtsInfo = await DebtDB.find({})
+        const debtorsInfo = await DebtorsDB.find({})
+        const paymentInfo = await PaymentDB.find({})
+        let debtorList = []
 
+        if(debtsInfo && debtorsInfo){ 
+            debtorList = buildList(debtorsInfo, debtsInfo, paymentInfo)
+        }
+        
+        res.render('debtors', {
+            user: req.user,
+            debtors: debtorList,
+            messages: [...req.flash('msg')], 
+            errors: [...req.flash('errors')],
+        })
 
+    } catch (error) {
+        console.error(error);
+        req.flash('errors', 'Error submitting data to database. #006');
 
+        res.render('debtors', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], })
+    }
+}
+
+export async function getDashboard(req, res){
+    try {
+        const debtsInfo = await DebtDB.find({})
+
+        let debtorList = {
+            'latePayments': 0,
+            'currentPayments': 0,
+            'debtsCount': debtsInfo ? debtsInfo.length : 0,
+        }
+
+        for(let items of debtsInfo){
+            const payments = await PaymentDB.find({caseID: items._id}) //NOTE:: can slow things if dealing with bad connection or lots of items
+            const latePayments = verifyAccountStatus(items, payments)
+     
+            if(latePayments){
+                debtorList['latePayments']++
+            }else{
+                debtorList['currentPayments']++
+            }
+        }
+        
+        res.render('dashboard', {
+            user: req.user,
+            debtors: debtorList,
+            messages: [...req.flash('msg')], 
+            errors: [...req.flash('errors')],
+        })
+
+    } catch (error) {
+        console.error(error.message);
+        req.flash('errors', 'There was an error submitting the data to the database. #007');
+
+        res.render('dashboard', {
+            user: req.user,
+            debtors: '',
+            messages: [...req.flash('msg')], 
+            errors: [...req.flash('errors')],
+        })
+    }
+}
+
+//-----------------------------------------------------
 
 async function buildDebtorInfo(caseFileId){
     try {
@@ -280,19 +354,20 @@ async function buildDebtorInfo(caseFileId){
             late: verifyAccountStatus(debtForSelected, payments),
             totalPaid: payments.reduce((sum, current) => sum + Number(current.payment), 0),
             payments: removeCaseAndVersion(payments),
-            billed: buildBillList(debtForSelected.startDate.setDate(debtForSelected.startDate.getDate()+1)),
+            billed: createListOfBills(debtForSelected.startDate.setDate(debtForSelected.startDate.getDate()+1)),
         }
 
         debtorInfo["transactions"] = [...debtorInfo.payments, ...debtorInfo.billed]
         debtorInfo.transactions.sort(function(a,b){
-            return a.paymentDate - b.paymentDate;
+            console.log(a.date)
+            return a.date - b.date;
         });
         
 
         if(!payments){ return debtorInfo }
 
         debtorInfo.payments.sort(function(a,b){
-            return a.paymentDate - b.paymentDate;
+            return a.date - b.date;
         });
 
         return debtorInfo
@@ -303,83 +378,6 @@ async function buildDebtorInfo(caseFileId){
         //return res.redirect(req.headers.referer);
     }
 }
-
-async function buildDebtorInfoMerge(caseFileId){
-    try {
-        const debtorInfo = await buildDebtorInfo(caseFileId)
-
-        if(!debtorInfo.billed || !debtorInfo.payments){ return debtorInfo }
-
-        //initializing bills
-        for(let bill of debtorInfo.billed){
-            bill.space = 1
-        }
-
-        //initializing payments
-        for(let payment of debtorInfo.payments){
-            payment.space = 1
-        }
-
-        //setting payment status of bills
-        let totalPaid = debtorInfo.totalPaid
-        for(let items of debtorInfo.billed){
-            if(totalPaid >= debtorInfo.minPayment){
-                items.paymentAmount = "paid"
-                totalPaid -= debtorInfo.minPayment
-            }else if(totalPaid >= 0){
-                items.paymentAmount = totalPaid - debtorInfo.minPayment
-                totalPaid = 0
-            }
-        }
-
-        if(debtorInfo.payments.length <= 0 || !debtorInfo.payments.length) return debtorInfo
-
-       //-----------------
-       //calcuting space need for payment and bills
-       let bill = 0
-       let payment = 0
-       let balance = -debtorInfo.minPayment + Number(debtorInfo.payments[payment].paymentAmount)
-       let billContinue = () => {
-           balance += Number(debtorInfo.payments[payment].paymentAmount)
-       }
-       let paymentContinue = () => {
-           balance += -debtorInfo.minPayment
-       }
-       let zeroStart = () => {
-           if(payment >= debtorInfo.payments.length) return
-           balance = -debtorInfo.minPayment + Number(debtorInfo.payments[payment].paymentAmount)
-       }
-      
-       while((balance > 0 || payment < debtorInfo.payments.length-1) && bill < debtorInfo.billed.length){
-           if(balance < 0 && bill < debtorInfo.billed.length) {
-               payment++ //payment ends
-               debtorInfo.billed[bill].space++ //bill continues
-               billContinue()
-           }
-
-           if(balance > 0 && payment < debtorInfo.payments.length){
-               debtorInfo.payments[payment].space++ //payment continues
-               bill++ //bill ends
-               paymentContinue()
-           }
-
-           if(balance === 0){
-               bill++ //bill ends
-               payment++ //pay ends
-               zeroStart()
-           }
-       }
-
-        return debtorInfo
-
-    } catch (error) {
-        throw error 
-        //req.flash('errors', 'An error occured with the database. #004');
-        //return res.redirect(req.headers.referer);
-    }
-}
-
-
 
 export async function insertNewPayment(req, res){
 //NOTE:: Rework
@@ -607,119 +605,6 @@ export async function editPayment(req, res){
 
 }
 
-
-export async function getDebtorList(req, res){
-    try {
-        const debtsInfo = await DebtDB.find({})
-        const debtorsInfo = await DebtorsDB.find({})
-        const paymentInfo = await PaymentDB.find({})
-        let debtorList = []
-
-        if(debtsInfo && debtorsInfo){ 
-            debtorList = buildList(debtorsInfo, debtsInfo, paymentInfo)
-        }
-        
-        res.render('debtors', {
-            user: req.user,
-            debtors: debtorList,
-            messages: [...req.flash('msg')], 
-            errors: [...req.flash('errors')],
-        })
-
-    } catch (error) {
-        console.error(error);
-        req.flash('errors', 'Error submitting data to database. #006');
-
-        res.render('debtors', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], })
-    }
-}
-
-export async function getDashboard(req, res){
-    try {
-        const debtsInfo = await DebtDB.find({})
-
-        let debtorList = {
-            'latePayments': 0,
-            'currentPayments': 0,
-            'debtsCount': debtsInfo ? debtsInfo.length : 0,
-        }
-
-        for(let items of debtsInfo){
-            const payments = await PaymentDB.find({caseID: items._id}) //NOTE:: can slow things if dealing with bad connection or lots of items
-            const latePayments = verifyAccountStatus(items, payments)
-     
-            if(latePayments){
-                debtorList['latePayments']++
-            }else{
-                debtorList['currentPayments']++
-            }
-        }
-        
-        res.render('dashboard', {
-            user: req.user,
-            debtors: debtorList,
-            messages: [...req.flash('msg')], 
-            errors: [...req.flash('errors')],
-        })
-
-    } catch (error) {
-        console.error(error.message);
-        req.flash('errors', 'There was an error submitting the data to the database. #007');
-
-        res.render('dashboard', {
-            user: req.user,
-            debtors: '',
-            messages: [...req.flash('msg')], 
-            errors: [...req.flash('errors')],
-        })
-    }
-}
-
-function monthElapsed(endDate, starterDater = new Date()) {
-    let months;
-    months = (starterDater.getFullYear() - endDate.getFullYear()) * 12;
-    months -= endDate.getUTCMonth();
-    months += starterDater.getUTCMonth();
-
-    return months <= 0 ? 0 : months;
-}
-
-function buildList(debtorInfo, debtInfo, paymentInfo){
-    const tempList = {}
-    const newList = []
-
-    for(let items of debtorInfo){
-        tempList[items._id] = {}
-        tempList[items._id]['name'] = items.name
-        tempList[items._id]['fileid'] = items.fileId
-        tempList[items._id]['payments'] = 0
-        tempList[items._id]['allpayments'] = []
-    }
-
-    for(let items of paymentInfo){
-        tempList[items.caseID]['payments'] += Number(items.payment)
-        tempList[items.caseID]['allpayments'].push(items)
-    }
-
-    for(let items of debtInfo){
-        let owed = "late"
-        if(tempList[items._id]['allpayments']){
-            owed = verifyAccountStatus(items, tempList[items._id]['allpayments'])
-        }
-
-        newList.push({ 
-            name: tempList[items._id]['name'],
-            fileId: tempList[items._id]['fileid'],
-            currentDebt: items.debtAmount - tempList[items._id]['payments'],
-            minPayment: items.minPayment,
-            paymentLate: owed,
-        })
-    }
-
-    return newList;
-}
-
-
 export async function insertNewDebt(req, res){
     const pagevalues = {
         name: req.body.name,
@@ -880,6 +765,257 @@ export async function editDebt(req, res){
 
 }
 
+export async function deletePayment(req, res){
+    try {
+        if(!req.params.id){
+            req.flash('error', "No payment selected");
+            return res.redirect(req.headers.referer);
+        }
+        
+        const deleted = await PaymentDB.deleteOne({ _id: req.params.id })
+        
+        if(deleted.acknowledged){ 
+            req.flash('msg', "Payment deleted"); 
+        }else{
+            req.flash('error', "Payment not deleted");
+        }
+
+        return res.redirect(req.headers.referer);
+    } catch (error) {
+        console.error(error)
+        req.flash('error', "An error occurred #008");
+
+        return res.redirect(req.headers.referer);
+    }
+}
+
+
+
+//-----------------------------------------------------------------
+
+function createListOfBills(startDate){
+    // startDate = new Date(startDate)
+    // startDate = startDate.setDate(startDate.getDate()+1)
+    const elapsed = monthElapsed(new Date(startDate))
+    const billed = []
+
+    //format bill date to the 1st
+    let billDate = new Date(startDate)
+        billDate.setDate(1)
+
+    //adding bills
+    for(let i = 0; i<elapsed; i++){
+       billed.push({
+            date: new Date(billDate.setMonth(billDate.getMonth()+1)),
+            //paymentAmount: minPayment,
+        })
+    }
+
+    return billed
+}
+
+function removeCaseAndVersion(payments){
+    let modifiedPayments = []
+
+    for(let items of payments){
+        modifiedPayments.push({
+            id: items._id,
+            date: items.date.setDate(items.date.getDate()+1), 
+            payment: Number(items.payment),
+            comment: items.comment,
+        })
+    }
+
+    modifiedPayments.sort(function(a,b){
+        return a.date - b.date;
+    });
+
+    return modifiedPayments
+}
+
+async function createDebtorInfo(fileIdentifier){
+    const selectedDebtor = await DebtorsDB.findOne(fileIdentifier)
+
+        if(!selectedDebtor){
+            req.flash('errors', req.params.id + ' is not a valid file id');
+            return res.redirect(req.headers.referer);
+        }
+        
+        const debtForSelected = await DebtDB.findOne({_id: selectedDebtor._id})
+        if(!debtForSelected){
+            req.flash('errors', 'Error debt information not found: ' + req.params.id);
+            return res.redirect(req.headers.referer);
+        }
+
+        //create information object
+        const debtorInfo = {
+            id: selectedDebtor._id,
+            name: selectedDebtor.name,
+            fileId: selectedDebtor.fileId,
+            startDate: debtForSelected.startDate.setDate(debtForSelected.startDate.getDate()+1),
+            minPayment: Number(debtForSelected.minPayment),
+            debt: debtForSelected.debtAmount,
+        }
+
+        return debtorInfo;
+}
+
+async function createTransactions(debtorData){
+
+    let payments = await PaymentDB.find({caseID: debtorData.id}); //randomizedPayments(100, debtForSelected.startDate)
+    payments = removeCaseAndVersion(payments)
+    const bills = createListOfBills(debtorData.startDate);
+
+    debtorData["transactions"] = [...payments, ...bills];
+    debtorData.transactions.sort(function(a,b){
+        return a.date - b.date;
+    });
+
+    return debtorData;
+}
+
+function calcMerge(debtorInfo){
+    try {
+        if(!debtorInfo.billed || !debtorInfo.payments){ return debtorInfo }
+
+        //initializing bills and payments
+        for(let bill of debtorInfo.billed){
+            bill.space = 1
+        }
+
+        for(let payment of debtorInfo.payments){
+            payment.space = 1
+        }
+
+       //-----------------
+       //calcuting space need for payment and bills
+       let bill = 0
+       let payment = 0
+       let balance = -debtorInfo.minPayment + Number(debtorInfo.payments[payment].payment)
+       let billContinue = () => {
+           balance += Number(debtorInfo.payments[payment].payment)
+       }
+       let paymentContinue = () => {
+           balance += -debtorInfo.minPayment
+       }
+       let zeroStart = () => {
+           if(payment >= debtorInfo.payments.length) return
+           balance = -debtorInfo.minPayment + Number(debtorInfo.payments[payment].payment)
+       }
+      
+       while((balance > 0 || payment < debtorInfo.payments.length-1) && bill < debtorInfo.billed.length){
+           if(balance < 0 && bill < debtorInfo.billed.length) {
+               payment++ //payment ends
+               debtorInfo.billed[bill].space++ //bill continues
+               billContinue()
+           }
+
+           if(balance > 0 && payment < debtorInfo.payments.length){
+               debtorInfo.payments[payment].space++ //payment continues
+               bill++ //bill ends
+               paymentContinue()
+           }
+
+           if(balance === 0){
+               bill++ //bill ends
+               payment++ //pay ends
+               zeroStart()
+           }
+       }
+
+        return debtorInfo
+
+    } catch (error) {
+        throw error 
+        //req.flash('errors', 'An error occured with the database. #004');
+        //return res.redirect(req.headers.referer);
+    }
+}
+
+function calcPaidStatus(debtorInfo){
+    let totalPaid = debtorInfo.totalPaid
+
+    for(let items of debtorInfo.billed){
+        if(totalPaid >= debtorInfo.minPayment){
+            items.payment = "paid"
+            totalPaid -= debtorInfo.minPayment
+        }else if(totalPaid >= 0){
+            items.payment = totalPaid - debtorInfo.minPayment
+            totalPaid = 0
+        }
+    }
+
+    return debtorInfo;
+}
+
+function verifyAccountStatus(debtInfo, paymentInfo){
+    let paidAmount = 0
+    let excusedDate = debtInfo.startDate
+
+    for(let payments of paymentInfo){
+        if(payments.payment > 0){
+            paidAmount += Number(payments.payment)
+        }else if(payments.payment !== undefined){
+            paidAmount = 0
+            if(payments.date > excusedDate) excusedDate = payments.date
+        }
+    }
+
+    const currentBills = monthElapsed(new Date(excusedDate)) * debtInfo.minPayment
+
+    if(currentBills > paidAmount){
+        return true
+    }else{
+        return false
+    }
+}
+
+//-------------------------------------------------------------------------
+
+function buildList(debtorInfo, debtInfo, paymentInfo){
+    const tempList = {}
+    const newList = []
+
+    for(let items of debtorInfo){
+        tempList[items._id] = {}
+        tempList[items._id]['name'] = items.name
+        tempList[items._id]['fileid'] = items.fileId
+        tempList[items._id]['payments'] = 0
+        tempList[items._id]['allpayments'] = []
+    }
+
+    for(let items of paymentInfo){
+        tempList[items.caseID]['payments'] += Number(items.payment)
+        tempList[items.caseID]['allpayments'].push(items)
+    }
+
+    for(let items of debtInfo){
+        let owed = "late"
+        if(tempList[items._id]['allpayments']){
+            owed = verifyAccountStatus(items, tempList[items._id]['allpayments'])
+        }
+
+        newList.push({ 
+            name: tempList[items._id]['name'],
+            fileId: tempList[items._id]['fileid'],
+            currentDebt: items.debtAmount - tempList[items._id]['payments'],
+            minPayment: items.minPayment,
+            paymentLate: owed,
+        })
+    }
+
+    return newList;
+}
+
+function monthElapsed(endDate, starterDater = new Date()) {
+    let months;
+    months = (starterDater.getFullYear() - endDate.getFullYear()) * 12;
+    months -= endDate.getUTCMonth();
+    months += starterDater.getUTCMonth();
+
+    return months <= 0 ? 0 : months;
+}
+
 function dataVerifier(data){
     const errors = [];
 
@@ -954,129 +1090,4 @@ function dataVerifier(data){
     }
     
     return errors
-}
-
-export async function deletePayment(req, res){
-    try {
-        if(!req.params.id){
-            req.flash('error', "No payment selected");
-            return res.redirect(req.headers.referer);
-        }
-        
-        const deleted = await PaymentDB.deleteOne({ _id: req.params.id })
-        
-        if(deleted.acknowledged){ 
-            req.flash('msg', "Payment deleted"); 
-        }else{
-            req.flash('error', "Payment not deleted");
-        }
-
-        return res.redirect(req.headers.referer);
-    } catch (error) {
-        console.error(error)
-        req.flash('error', "An error occurred #008");
-
-        return res.redirect(req.headers.referer);
-    }
-}
-
-function verifyAccountStatus(debtInfo, paymentInfo){
-    let paidAmount = 0
-    let excusedDate = debtInfo.startDate
-
-    for(let payments of paymentInfo){
-        if(payments.payment > 0){
-            paidAmount += Number(payments.payment)
-        }else if(payments.payment !== undefined){
-            paidAmount = 0
-            if(payments.date > excusedDate) excusedDate = payments.date
-        }
-    }
-
-    const currentBills = monthElapsed(new Date(excusedDate)) * debtInfo.minPayment
-
-    if(currentBills > paidAmount){
-        return true
-    }else{
-        return false
-    }
-}
-
-//-----------------------------------------------------------------
-
-function createListOfBills(startDate){
-    // startDate = new Date(startDate)
-    // startDate = startDate.setDate(startDate.getDate()+1)
-    const elapsed = monthElapsed(new Date(startDate))
-    const billed = []
-
-    //format bill date to the 1st
-    let billDate = new Date(startDate)
-        billDate.setDate(1)
-
-    //adding bills
-    for(let i = 0; i<elapsed; i++){
-       billed.push({
-            date: new Date(billDate.setMonth(billDate.getMonth()+1)),
-            //paymentAmount: minPayment,
-        })
-    }
-
-    return billed
-}
-
-function removeCaseAndVersion(payments){
-    let modifiedPayments = []
-
-    for(let items of payments){
-        modifiedPayments.push({
-            id: items._id,
-            date: items.date.setDate(items.date.getDate()+1), 
-            payment: Number(items.payment),
-            comment: items.comment,
-        })
-    }
-
-    return modifiedPayments
-}
-
-async function createDebtorInfo(fileIdentifier){
-    const selectedDebtor = await DebtorsDB.findOne(fileIdentifier)
-
-        if(!selectedDebtor){
-            req.flash('errors', req.params.id + ' is not a valid file id');
-            return res.redirect(req.headers.referer);
-        }
-        
-        const debtForSelected = await DebtDB.findOne({_id: selectedDebtor._id})
-        if(!debtForSelected){
-            req.flash('errors', 'Error debt information not found: ' + req.params.id);
-            return res.redirect(req.headers.referer);
-        }
-
-        //create information object
-        const debtorInfo = {
-            id: selectedDebtor._id,
-            name: selectedDebtor.name,
-            fileId: selectedDebtor.fileId,
-            startDate: debtForSelected.startDate.setDate(debtForSelected.startDate.getDate()+1),
-            minPayment: Number(debtForSelected.minPayment),
-            debt: debtForSelected.debtAmount,
-        }
-
-        return debtorInfo;
-}
-
-async function createTransactions(debtorData){
-
-    let payments = await PaymentDB.find({caseID: debtorData.id}); //randomizedPayments(100, debtForSelected.startDate)
-    payments = removeCaseAndVersion(payments)
-    const bills = createListOfBills(debtorData.startDate);
-
-    debtorData["transactions"] = [...payments, ...bills];
-    debtorData.transactions.sort(function(a,b){
-        return a.date - b.date;
-    });
-
-    return debtorData;
 }
