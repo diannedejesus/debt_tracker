@@ -51,7 +51,7 @@
                     <td class="table-active" colspan="1"><%= currencyFormat.format(debtorInfo.debt) %></td>
                     <td colspan="1"></td>
                     <td colspan="2">Payments Made</td>
-                    <td class="table-active" colspan="1"><%= debtorInfo.payments.length %></td>
+                    <td class="table-active" colspan="1"><%= debtorInfo.transactions.filter(item => item.payment !== undefined && item.payment !== 0).length %></td>
                 </tr>
                 <tr>
                     <td colspan="2">Payment</td>
@@ -85,60 +85,71 @@
                     <th>Final Balance</th>
                 </tr>
                 <% let runningBalance = debtorInfo.debt %>
-                <% let counter = 1 %>
-                <% if (typeof debtorInfo.payments !== 'undefined'){ %>
-                    <% for(let payment of debtorInfo.payments){ %>
-                <tr class="<%= payment.paymentAmount === 0 ? 'highlight' : '' %>">
-                    <td>#<%= counter %></td>
-                    <% let formatDate = new Date(payment.paymentDate) %>
-                        <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric' }) %> -->
+                <% let counter = 0 %>
+                <% if (typeof debtorInfo.transactions !== 'undefined'){ %>
+                    <% for(let payment of debtorInfo.transactions){ %>
+                        <% if (payment.payment !== undefined) { %>
+                            <!-- <% counter++ %> -->  
+                        
+                <tr class="<%= payment.payment === 0 ? 'highlight' : '' %>">
+                    <td><%= counter %></td>
+                    <% let formatDate = new Date(payment.date) %>
+                    <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric' }) %> -->
                     <td><%= formatDate %></td>
-                    <td><%= payment.paymentAmount === 0 ? 'Excused' : currencyFormat.format(runningBalance) %></td>
-                    <td><%= payment.paymentAmount === 0 ? '': currencyFormat.format(payment.paymentAmount) %></td>
-                    <!-- <%= runningBalance -= payment.paymentAmount %> -->
-                    <td colspan="2"><%= payment.paymentComment ? payment.paymentComment : "" %></td>
-                    <td class="table-active"><%= payment.paymentAmount === 0 ? '' : currencyFormat.format(runningBalance) %></td>
+                    <td><%= payment.payment === 0 ? 'Excused' : currencyFormat.format(runningBalance) %></td>
+                    <td><%= payment.payment === 0 ? '': currencyFormat.format(payment.payment) %></td>
+                    <!-- <%= runningBalance -= payment.payment %> -->
+                    <td colspan="2"><%= payment.comment ? payment.comment : "" %></td>
+                    <td class="table-active"><%= payment.payment === 0 ? '' : currencyFormat.format(runningBalance) %></td>
                 </tr>
-                        <!-- <% counter++ %> -->
-                    <% } %>
-                <% } %>
-
-                <% let totalPaid = debtorInfo.totalPaid %>
-                <% for(let bill of debtorInfo.billed){ %>
-                    <% if(totalPaid > 0){ %>
-                        <% totalPaid -= bill.paymentAmount %>
-                        <% if(totalPaid < 0){ %>
-                            <tr>
-                                <td>#<%= counter %></td>
-                                <% let formatDate = new Date(bill.paymentDate) %>
-                                    <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric' }) %> -->
-                                <td><%= formatDate %></td>
-                                <td></td>
-                                <td><%= currencyFormat.format(totalPaid) %></td>
-                                <td colspan="2">Bill Owed</td>
-                                <td class="table-active"></td>
-                            </tr>
-                            <!-- <% counter++ %> -->
                         <% } %>
-                    <% }else{ %>
-                        <tr>
-                            <td>#<%= counter %></td>
-                            <% let formatDate = new Date(bill.paymentDate) %>
-                                <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric' }) %> -->
-                            <td><%= formatDate %></td>
-                            <td></td>
-                            <td>-<%= bill.paymentAmount %></td>
-                            <td colspan="2">Bill Owed</td>
-                            <td class="table-active"></td>
-                        </tr>
-                        <!-- <% counter++ %> -->
                     <% } %>
                 <% } %>
 
+                <% let outstandingBalance = 0 %>
+                <% for(let bill of debtorInfo.transactions){ %>
+                    <!-- <% counter++ %> -->
+
+                    <% if (bill.payment === undefined) { %>
+                        <% outstandingBalance += -1*debtorInfo.minPayment %>
+                    <% } else if (bill.payment === 0) { %>
+                        <% outstandingBalance = 0 %>
+                    <% } else { %>
+                        <% outstandingBalance += bill.payment %>
+                    <% } %>
+
+                <% } %>
+                <tr>
+                    <td colspan="2"></td>
+                    <td colspan="1"></td>
+                    <td colspan="1"></td>
+                    <td colspan="2"></td>
+                    <td colspan="1"></td>
+                </tr>
+                <tr class="table-dark"> 
+                    <th colspan="7">Current Payment Summary</th>
+                </tr>
+                <tr>
+                    <td colspan="3">Next Payment:</td>
+                    <td><%= currencyFormat.format(-debtorInfo.minPayment) %></td>
+                    <td>date</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="3">Current Amount Owed:</td>
+                    <td colspan="2" class="border-bottom border-dark border-1"><%= currencyFormat.format(outstandingBalance) %></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="3">Total Amount Owed:</td>
+                    <td colspan="2" ><%= currencyFormat.format(outstandingBalance) %></td>
+                    <td></td>
+                    <td></td>
+                </tr>
 
             <% } %>
-            
-             <%= console.table(debtorInfo.billed) %>
         </table>
     </main>
 

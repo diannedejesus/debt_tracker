@@ -237,7 +237,13 @@ export async function getPrintView(req, res){
             return res.redirect(req.headers.referer);
         }
 
-        const debtorInfo = await buildDebtorInfo(caseFileId)
+        let debtorInfo = await createDebtorInfo(caseFileId)
+        debtorInfo = await createTransactions(debtorInfo)
+        debtorInfo.totalPaid = debtorInfo.transactions.reduce((sum, current) => {
+            let currentNum = current.payment === undefined ? 0 : Number(current.payment);
+            return sum + currentNum;
+        }, 0);
+        
 
         res.render('printview', {
             user: req.user,
@@ -257,6 +263,37 @@ export async function getPrintView(req, res){
         })
     }
 }
+
+// export async function getPrintView(req, res){
+//     try {
+//         const debtorList =  await DebtorsDB.find().select("name fileId")
+//         let caseFileId = {fileId: req.params.id}
+        
+//         if(!caseFileId.fileId){
+//             req.flash('errors', 'No file id sent');
+//             return res.redirect(req.headers.referer);
+//         }
+
+//         const debtorInfo = await buildDebtorInfo(caseFileId)
+
+//         res.render('printview', {
+//             user: req.user,
+//             debtorInfo,
+//             debtorList,
+//             messages: [...req.flash('msg')],
+//             errors: [...req.flash('errors')],
+//         })
+//     } catch (error) {
+//         console.error(error)
+//         req.flash('errors', error);
+
+//         res.render('printview', {
+//             user: req.user,
+//             messages: [...req.flash('msg')],
+//             errors: [...req.flash('errors')],
+//         })
+//     }
+// }
 
 export async function getDebtorList(req, res){
     try {
