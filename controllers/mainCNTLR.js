@@ -921,6 +921,8 @@ function calcMerge(debtorInfo){
             payment.space = 1
         }
 
+        if(debtorInfo.payments.length <= 0) return debtorInfo
+        
        //-----------------
        //calcuting space need for payment and bills
        let bill = 0
@@ -938,15 +940,14 @@ function calcMerge(debtorInfo){
        }
       
        while((balance > 0 || payment < debtorInfo.payments.length-1) && bill < debtorInfo.billed.length){
-        console.log(debtorInfo.payments[payment])
             if(debtorInfo.payments[payment].payment === 0){
                 if (debtorInfo.payments[payment].date > debtorInfo.billed[bill].date) {
                     debtorInfo.payments[payment].space++ //payment continues
                     bill++ //bill ends
-                    continue
                 } else {
                     payment++ //payment ends
                 }
+                continue
             }
 
            if(balance < 0 && bill < debtorInfo.billed.length) {
