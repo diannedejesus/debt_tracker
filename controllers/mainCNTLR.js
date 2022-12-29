@@ -243,7 +243,7 @@ export async function getPrintView(req, res){
             let currentNum = current.payment === undefined ? 0 : Number(current.payment);
             return sum + currentNum;
         }, 0);
-        
+
 
         res.render('printview', {
             user: req.user,
@@ -364,57 +364,57 @@ export async function getDashboard(req, res){
 
 //-----------------------------------------------------
 
-async function buildDebtorInfo(caseFileId){
-    try {
-        const selectedDebtor = await DebtorsDB.findOne(caseFileId)
+// async function buildDebtorInfo(caseFileId){
+//     try {
+//         const selectedDebtor = await DebtorsDB.findOne(caseFileId)
 
-        if(!selectedDebtor){
-            req.flash('errors', req.params.id + ' is not a valid file id');
-            return res.redirect(req.headers.referer);
-        }
+//         if(!selectedDebtor){
+//             req.flash('errors', req.params.id + ' is not a valid file id');
+//             return res.redirect(req.headers.referer);
+//         }
         
-        const debtForSelected = await DebtDB.findOne({_id: selectedDebtor._id})
-        if(!debtForSelected){
-            req.flash('errors', 'Error debt information not found: ' + req.params.id);
-            return res.redirect(req.headers.referer);
-        }
+//         const debtForSelected = await DebtDB.findOne({_id: selectedDebtor._id})
+//         if(!debtForSelected){
+//             req.flash('errors', 'Error debt information not found: ' + req.params.id);
+//             return res.redirect(req.headers.referer);
+//         }
 
-        const payments = await PaymentDB.find({caseID: selectedDebtor._id}) //randomizedPayments(100, debtForSelected.startDate)
+//         const payments = await PaymentDB.find({caseID: selectedDebtor._id}) //randomizedPayments(100, debtForSelected.startDate)
 
-        //create information object
-        const debtorInfo = {
-            name: selectedDebtor.name,
-            fileId: selectedDebtor.fileId,
-            startDate: debtForSelected.startDate.setDate(debtForSelected.startDate.getDate()+1),
-            minPayment: Number(debtForSelected.minPayment),
-            debt: debtForSelected.debtAmount,
-            late: verifyAccountStatus(debtForSelected, payments),
-            totalPaid: payments.reduce((sum, current) => sum + Number(current.payment), 0),
-            payments: removeCaseAndVersion(payments),
-            billed: createListOfBills(debtForSelected.startDate.setDate(debtForSelected.startDate.getDate()+1)),
-        }
+//         //create information object
+//         const debtorInfo = {
+//             name: selectedDebtor.name,
+//             fileId: selectedDebtor.fileId,
+//             startDate: debtForSelected.startDate.setDate(debtForSelected.startDate.getDate()+1),
+//             minPayment: Number(debtForSelected.minPayment),
+//             debt: debtForSelected.debtAmount,
+//             late: verifyAccountStatus(debtForSelected, payments),
+//             totalPaid: payments.reduce((sum, current) => sum + Number(current.payment), 0),
+//             payments: removeCaseAndVersion(payments),
+//             billed: createListOfBills(debtForSelected.startDate.setDate(debtForSelected.startDate.getDate()+1)),
+//         }
 
-        debtorInfo["transactions"] = [...debtorInfo.payments, ...debtorInfo.billed]
-        debtorInfo.transactions.sort(function(a,b){
-            console.log(a.date)
-            return a.date - b.date;
-        });
+//         debtorInfo["transactions"] = [...debtorInfo.payments, ...debtorInfo.billed]
+//         debtorInfo.transactions.sort(function(a,b){
+//             console.log(a.date)
+//             return a.date - b.date;
+//         });
         
 
-        if(!payments){ return debtorInfo }
+//         if(!payments){ return debtorInfo }
 
-        debtorInfo.payments.sort(function(a,b){
-            return a.date - b.date;
-        });
+//         debtorInfo.payments.sort(function(a,b){
+//             return a.date - b.date;
+//         });
 
-        return debtorInfo
+//         return debtorInfo
 
-    } catch (error) {
-        console.error(error);
-        //req.flash('errors', 'An error occured with the database. #004');
-        //return res.redirect(req.headers.referer);
-    }
-}
+//     } catch (error) {
+//         console.error(error);
+//         //req.flash('errors', 'An error occured with the database. #004');
+//         //return res.redirect(req.headers.referer);
+//     }
+// }
 
 export async function insertNewPayment(req, res){
 //NOTE:: Rework
@@ -831,8 +831,6 @@ export async function deletePayment(req, res){
 //-----------------------------------------------------------------
 
 function createListOfBills(startDate){
-    // startDate = new Date(startDate)
-    // startDate = startDate.setDate(startDate.getDate()+1)
     const elapsed = monthElapsed(new Date(startDate))
     const billed = []
 
@@ -844,7 +842,6 @@ function createListOfBills(startDate){
     for(let i = 0; i<elapsed; i++){
        billed.push({
             date: new Date(billDate.setMonth(billDate.getMonth()+1)),
-            //paymentAmount: minPayment,
         })
     }
 
@@ -941,6 +938,17 @@ function calcMerge(debtorInfo){
        }
       
        while((balance > 0 || payment < debtorInfo.payments.length-1) && bill < debtorInfo.billed.length){
+        console.log(debtorInfo.payments[payment])
+            if(debtorInfo.payments[payment].payment === 0){
+                if (debtorInfo.payments[payment].date > debtorInfo.billed[bill].date) {
+                    debtorInfo.payments[payment].space++ //payment continues
+                    bill++ //bill ends
+                    continue
+                } else {
+                    payment++ //payment ends
+                }
+            }
+
            if(balance < 0 && bill < debtorInfo.billed.length) {
                payment++ //payment ends
                debtorInfo.billed[bill].space++ //bill continues

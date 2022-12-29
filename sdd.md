@@ -420,6 +420,7 @@ Funtionality
 - verify if checking for duplicate excused payments
 - dont permit excused payments if there is no debt
 - catch errors produced by database in config/database
+- if the selected name is the same of as another you cant select it in the dropdown
 
 <!-- NOTES
 Account Creation & Login

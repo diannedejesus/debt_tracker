@@ -127,28 +127,48 @@
                     <td colspan="1"></td>
                 </tr>
                 <tr class="table-dark"> 
-                    <th colspan="7">Current Payment Summary</th>
+                    <th colspan="7">Payments Summary</th>
                 </tr>
+                <% let paymentOwed = 0 %> 
                 <tr>
                     <td colspan="3">Next Payment:</td>
-                    <td><%= currencyFormat.format(-debtorInfo.minPayment) %></td>
-                    <td>date</td>
+                    <% if (Math.abs(outstandingBalance) >= Math.abs(debtorInfo.minPayment)) { %>
+                        <td><%= currencyFormat.format(-debtorInfo.minPayment) %></td>
+                        <% paymentOwed = debtorInfo.minPayment %>
+                        <% formatDate = new Date() %>
+                        <% formatDate.setDate(1) %>
+                        <% formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric' }) %>
+
+                    <% } else if (Math.abs(outstandingBalance) >  0 ) { %>
+                        <td><%= currencyFormat.format(-(debtorInfo.minPayment + outstandingBalance)) %></td>
+                        <% paymentOwed = debtorInfo.minPayment + outstandingBalance %>
+                        <% formatDate = new Date() %>
+                        <% formatDate.setDate(1) %>
+                        <% formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric' }) %>
+                    <% } else { %>
+                        <td><%= currencyFormat.format(-debtorInfo.minPayment) %></td>
+                        <% paymentOwed = 0 %>
+                        <% formatDate = new Date() %>
+                        <% formatDate.setMonth(formatDate.getMonth()+1) %>
+                        <% formatDate.setDate(1) %>
+                        <% formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric' }) %>
+                    <% } %>
+                    <td><%= formatDate %></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="3">Overdue Amount Owed:</td>
+                    <td colspan="2" class="border-bottom border-dark border-1"><%= currencyFormat.format(outstandingBalance+paymentOwed) %></td>
                     <td></td>
                     <td></td>
                 </tr>
                 <tr>
                     <td colspan="3">Current Amount Owed:</td>
-                    <td colspan="2" class="border-bottom border-dark border-1"><%= currencyFormat.format(outstandingBalance) %></td>
+                    <td colspan="2"><%= currencyFormat.format(outstandingBalance) %></td>
                     <td></td>
                     <td></td>
                 </tr>
-                <tr>
-                    <td colspan="3">Total Amount Owed:</td>
-                    <td colspan="2" ><%= currencyFormat.format(outstandingBalance) %></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-
             <% } %>
         </table>
     </main>
