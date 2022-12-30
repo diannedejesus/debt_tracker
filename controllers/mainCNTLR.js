@@ -82,7 +82,6 @@ export async function getEditPayment(req, res){
             date: paymentinfo.date,
             comment: paymentinfo.comment
         }
-        console.log(paymentData)
 
         res.render('editpayment', {
             user: req.user,
@@ -96,6 +95,44 @@ export async function getEditPayment(req, res){
         req.flash('errors', 'Error finding database info.');
 
         res.render('editpayment', {
+            user: req.user,
+            messages: [...req.flash('msg')],
+            errors: [...req.flash('errors')],
+        })
+    }
+}
+
+export async function getEditExcusedPayment(req, res){
+    if(!req.params.paymentid){
+        //NOTE::verify id passed to it
+        req.flash('error', "No payment selected");
+        return res.redirect(req.headers.referer);
+    }
+
+    try {
+        const debtorList =  await DebtorsDB.find().select("name fileId")
+        const paymentinfo = await PaymentDB.findOne({_id: req.params.paymentid})
+
+        const DataInfo = {
+            id: paymentinfo._id,
+            fileID: req.params.fileId,
+            date: paymentinfo.date,
+            comment: paymentinfo.comment
+        }
+
+        res.render('editexcusedpayment', {
+            user: req.user,
+            debtorList,
+            dataInfo: DataInfo,
+            messages: [...req.flash('msg')],
+            errors: [...req.flash('errors')],
+        })
+        
+    } catch (error) {
+        console.error(error)
+        req.flash('errors', 'Error finding database info.');
+
+        res.render('editexcusedpayment', {
             user: req.user,
             messages: [...req.flash('msg')],
             errors: [...req.flash('errors')],
@@ -588,6 +625,64 @@ export async function excusedPayment(req, res){
     })
  
 }
+export async function editExcusedPayment(req, res){
+    const errors = dataVerifier({ //validate user submitted info
+        payment: req.body.payment,
+        date: req.body.date,
+        fileid: req.body.fileid,
+        mongoId: req.body.id,
+    })
+
+    if(errors.length) {
+        req.flash('errors', errors);
+        return res.redirect(req.headers.referer);
+    }
+
+    
+    try {
+        //find id
+        const debtorRef = await DebtorsDB.findOne({fileId: req.body.fileid})
+        if(!debtorRef){ errors.push('Case not found'); }
+
+        //find duplicates
+        const similiarPayments = await PaymentDB.find({
+            date: req.body.date, 
+            caseID: debtorRef._id
+        })
+
+        if(similiarPayments.length > 0){ errors.push(`We found an excused payment for the same date for this account.`); }
+
+        //return errors
+        if(errors.length) {
+            req.flash('errors', errors);
+            return res.redirect(req.headers.referer);
+        }
+
+        //update database
+        const excusedUpdated = await PaymentDB.updateOne({_id: req.body.id},{
+            debtorRef: debtorRef._id,
+            date: req.body.date,
+            comment: req.body.comment
+        })
+console.log(excusedUpdated)
+
+        if(excusedUpdated.modifiedCount > 0){
+            //NOTE::MODIFY FOR THIS AND OTHERS (editpayment) SHOULD REDIRECT TO THE PAGE THAT CALLED IT COULD BE TABLE VIEW OR MERGE VIEW
+            req.flash('msg', "updated successfully");
+            res.redirect(`/cases/${req.body.fileid}`)
+        }else{
+            req.flash('errors', "Unable to update");
+            return res.redirect(req.headers.referer);
+        }
+
+    } catch (error) {
+        console.error(error.message);
+        errors.push('An error occured with the database. #005');
+
+        return res.redirect(req.headers.referer);
+    }
+
+}
 
 export async function editPayment(req, res){
     const errors = dataVerifier({ //validate user submitted info
@@ -922,7 +1017,7 @@ function calcMerge(debtorInfo){
         }
 
         if(debtorInfo.payments.length <= 0) return debtorInfo
-        
+
        //-----------------
        //calcuting space need for payment and bills
        let bill = 0

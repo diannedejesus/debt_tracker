@@ -382,7 +382,7 @@ Fixes
 - Adjust views for distint screens (https://stackoverflow.com/questions/47760132/any-way-to-get-breakpoint-specific-width-classes)
 
 Modifications
-- the excused payment should show the bills that where excused (requieres rewriting print view payments)
+- [X] the excused payment should show the bills that where excused (requieres rewriting print view payments)
 - editing excused payments
 
 Funtionality
@@ -439,11 +439,10 @@ if the authentication code is not created and/or displayed the administrator can
 
 NOTE:: Check testing routes with postmen or similar app to ensure restrictions work. [research]
 NOTE:: Revisit tests
-NOTE:: verify error handling, throw errors [research]
 NOTE:: submitting request for delete or others without forms [research]
 NOTE:: try consolidating views
 NOTE:: removing all saved session to prevent access to revoked user.
-NOTE:: verify changeing password hashing to data model
+NOTE:: verify changing password hashing to data model
 NOTE:: status codes
 
 NOTE:: Fix style, so on large screen it does not stretch completely but d-grid makes small its float to bottom of page
@@ -451,6 +450,7 @@ NOTE:: Fix style, so on large screen it does not stretch completely but d-grid m
 DONE:: Verify callback and awaits in same application. Is it ok?? [research]
 DONE:: Verify render vs redirect?? [research]
 Done:: How to validate a comment field
+DONE:: verify error handling, throw errors [research]
  -->
 
 ### Completed

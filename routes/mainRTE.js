@@ -25,6 +25,9 @@ router.post('/delPayment/:id', ensureAuth, mainController.deletePayment)
 router.get('/editPayment/:fileId/:paymentid', ensureAuth, mainController.getEditPayment)
 router.post('/editPayment', ensureAuth, mainController.editPayment)
 
+router.get('/editexcusedpayment/:fileId/:paymentid', ensureAuth, mainController.getEditExcusedPayment)
+router.post('/editexcusedpayment', ensureAuth, mainController.editExcusedPayment)
+
 router.get('/editDebtor/:id', ensureAuth, mainController.getEditDebtor)
 router.post('/editDebt', ensureAuth, mainController.editDebt)
 
