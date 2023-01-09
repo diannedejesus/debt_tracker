@@ -625,6 +625,7 @@ export async function excusedPayment(req, res){
     })
  
 }
+
 export async function editExcusedPayment(req, res){
     const errors = dataVerifier({ //validate user submitted info
         payment: req.body.payment,
@@ -1033,10 +1034,26 @@ function calcMerge(debtorInfo){
            if(payment >= debtorInfo.payments.length) return
            balance = -debtorInfo.minPayment + Number(debtorInfo.payments[payment].payment)
        }
-      
-       while((balance > 0 || payment < debtorInfo.payments.length-1) && bill < debtorInfo.billed.length){
+       let statusDoneProcessing = () => {
+            if(payment < debtorInfo.payments.length-1 && bill < debtorInfo.billed.length){
+                return true
+            }
+
+            if(balance > 0 && bill < debtorInfo.billed.length){
+                return true
+            }
+
+            if(payment < debtorInfo.payments.length && bill < debtorInfo.billed.length){
+                if(debtorInfo.payments[payment].payment === 0) return true
+            }
+
+            return false
+       }
+
+       while(statusDoneProcessing()){
             if(debtorInfo.payments[payment].payment === 0){
-                if (debtorInfo.payments[payment].date > debtorInfo.billed[bill].date) {
+                if (new Date(debtorInfo.payments[payment].date) > new Date(debtorInfo.billed[bill].date)) {
+                    console.log(new Date(debtorInfo.payments[payment].date), new Date(debtorInfo.billed[bill].date))
                     debtorInfo.payments[payment].space++ //payment continues
                     bill++ //bill ends
                 } else {
@@ -1062,6 +1079,7 @@ function calcMerge(debtorInfo){
                payment++ //pay ends
                zeroStart()
            }
+          
        }
 
         return debtorInfo

@@ -421,6 +421,14 @@ Funtionality
 - dont permit excused payments if there is no debt
 - catch errors produced by database in config/database
 - if the selected name is the same of as another you cant select it in the dropdown
+- verify edit payment (error of invalid database id when editing)
+- merge view does not calculate late payment correctly
+- merge view error, excuse date includes next month as excused
+- merge view calculates payments made after an excused payment for the excused payment
+- merge view has wrong edit for excused payments
+- merge payment button error
+- normalize date format then change mergeformat function
+
 
 <!-- NOTES
 Account Creation & Login
