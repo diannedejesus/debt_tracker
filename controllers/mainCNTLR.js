@@ -1024,6 +1024,7 @@ function calcMerge(debtorInfo){
        let bill = 0
        let payment = 0
        let balance = -debtorInfo.minPayment + Number(debtorInfo.payments[payment].payment)
+
        let billContinue = () => {
            balance += Number(debtorInfo.payments[payment].payment)
        }
@@ -1051,13 +1052,17 @@ function calcMerge(debtorInfo){
        }
 
        while(statusDoneProcessing()){
-            if(debtorInfo.payments[payment].payment === 0){
-                if (new Date(debtorInfo.payments[payment].date) > new Date(debtorInfo.billed[bill].date)) {
+            if(balance < 0 && debtorInfo.payments[payment].payment === 0){
+                let paymentDate = new Date(debtorInfo.payments[payment].date)
+                paymentDate = paymentDate.setMonth(paymentDate.getMonth()-1)
+                
+                if (paymentDate > debtorInfo.billed[bill].date) {
                     console.log(new Date(debtorInfo.payments[payment].date), new Date(debtorInfo.billed[bill].date))
                     debtorInfo.payments[payment].space++ //payment continues
                     bill++ //bill ends
                 } else {
-                    payment++ //payment ends
+                    //payment++ //payment ends
+                    balance = 0
                 }
                 continue
             }
