@@ -1,0 +1,34 @@
+<%- include('header.ejs') %>
+
+    <main class="d-flex justify-content-center container-fluid flex-fill">
+        <section class="w-75">  
+            <h1>Excuse a Payment</h1>
+            <form class="col g-3" action="/editexcusedpayment" method="POST">
+                <div class="row p-2">
+                    <label class="form-label">File ID:</label>
+                    <input type="text" name="fileid" class="form-control" list="debtors" placeholder="File ID" value="<%= typeof dataInfo !== 'undefined' ? dataInfo.fileID : '' %>">
+                    <datalist id="debtors">
+                        <% if (typeof debtorList !== 'undefined'){ %>
+                            <% for(let debtor of debtorList){ %>
+                        <option value="<%= debtor.fileId %>">(<%= debtor.name %>)</option>
+                            <% } %>
+                        <% } %>
+                    </datalist>
+                </div>
+                <div class="row p-2">
+                    <label class="form-label">Date:</label>
+                    <input type="date" class="form-control" name="date" value="<% if(typeof dataInfo !== 'undefined' && dataInfo.date) { %><%= new Date(dataInfo.date).toJSON().slice(0,10) %><% } %>">
+                </div>
+                <div class="row p-2">
+                    <label class="form-label">Comments:</label>
+                    <input type="text" class="form-control" name="comment" placeholder="Comments" value="<%= typeof dataInfo !== 'undefined' ? dataInfo.comment : '' %>">
+                </div>
+                <input type="hidden" name="id" value="<%= dataInfo.id %>">
+                <div class="row p-2">
+                    <input type="submit" class="btn btn-primary">
+                </div>
+            </form>
+        </section>
+    </main>
+
+<%- include('footer.ejs') %>
