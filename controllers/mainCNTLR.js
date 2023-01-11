@@ -1056,6 +1056,32 @@ function calcPaidStatus(debtorInfo){
         }
     }
 
+    let balance = 0;
+    let billCounter = 0
+    let paymentCounter = 0
+
+    if(balance === 0){
+        balance = debtorInfo.payments[paymentCounter].payment - debtorInfo.minPayment
+        if(balance >= 0){ 
+            debtorInfo.billed[billCounter].payment = "paid"
+            billCounter++
+        }
+        paymentCounter++
+    }else if(balance < 0){
+        balance += debtorInfo.payments[paymentCounter].payment
+        if(balance >= 0){
+            debtorInfo.billed[billCounter].payment = "paid"
+            billCounter++
+        }
+        paymentCounter++
+    }else if(balance > 0){
+        balance -= debtorInfo.minPayment
+        if(balance >= 0){
+            debtorInfo.billed[billCounter].payment = "paid"
+            billCounter++
+        }
+    }
+
     return debtorInfo;
 }
 
