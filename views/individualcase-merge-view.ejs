@@ -119,8 +119,12 @@
                                         <form class="p-1" action="/delPayment/<%= debtorInfo.payments[payments].id %>" method="POST">
                                             <input type="submit" value="X" class="btn btn-secondary btn-outline-light btn-sm"> 
                                         </form>
-
-                                        <form class="p-1" action="/editPayment/<%= debtorInfo.fileId %>/<%= debtorInfo.payments[payments].id %>" method="GET">
+                                        
+                                        <% if (debtorInfo.payments[payments].payment === 0) { %>
+                                            <form class="p-1" action="/editexcusedpayment/<%= debtorInfo.fileId %>/<%= debtorInfo.payments[payments].id %>" method="GET">
+                                        <% } else { %>
+                                            <form class="p-1" action="/editPayment/<%= debtorInfo.fileId %>/<%= debtorInfo.payments[payments].id %>" method="GET">
+                                        <% } %>
                                             <input type="submit" value="edit" class="btn btn-secondary btn-outline-light btn-sm">
                                         </form>
                                     </div>

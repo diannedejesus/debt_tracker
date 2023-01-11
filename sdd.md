@@ -424,8 +424,8 @@ Funtionality
 - verify edit payment (error of invalid database id when editing)
 - merge view does not calculate late payment correctly
 - [X] merge view error, excuse date includes next month as excused
-- merge view has wrong edit for excused payments
-- merge payment button error
+- [X] merge view has wrong edit for excused payments
+- [X] merge payment button error
 - normalize date format then change mergeformat function
 - merge does not calcuted paid status correctly
 
