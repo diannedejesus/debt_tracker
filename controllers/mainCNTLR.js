@@ -1057,11 +1057,9 @@ function calcMerge(debtorInfo){
                 paymentDate = paymentDate.setMonth(paymentDate.getMonth()-1)
                 
                 if (paymentDate > debtorInfo.billed[bill].date) {
-                    console.log(new Date(debtorInfo.payments[payment].date), new Date(debtorInfo.billed[bill].date))
                     debtorInfo.payments[payment].space++ //payment continues
                     bill++ //bill ends
                 } else {
-                    //payment++ //payment ends
                     balance = 0
                 }
                 continue

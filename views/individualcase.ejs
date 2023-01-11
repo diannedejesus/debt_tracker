@@ -76,7 +76,7 @@
                 </tr>
                 <tr>
                     <td colspan="5" style="text-align:right">
-                        <% if(debtorInfo.late) { %><a class="btn btn-primary btn-sm" href="/excusepayment/<%= debtorInfo.fileId %>">Excuse</a><% } %> <a class="btn btn-primary btn-sm" href="#<%= debtorInfo.fileId %>">Payment</a>
+                        <% if(debtorInfo.late) { %><a class="btn btn-primary btn-sm" href="/excusepayment/<%= debtorInfo.fileId %>">Excuse</a><% } %> <a class="btn btn-primary btn-sm" href="../registerpayment">Payment</a>
                     </td>
                 </tr>
                 <tr colspan="5">
@@ -135,10 +135,14 @@
                                         <% } %>
                                     </td>
                                 </tr>
-
                             <% }) %>
                             </tbody>
                         </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="5" style="text-align:right">
+                        <% if(debtorInfo.transactions.length > 15){ %> <a class="btn btn-primary btn-sm" href="../registerpayment">Payment</a> <% } %>
                     </td>
                 </tr>
             </tbody>
