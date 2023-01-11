@@ -422,7 +422,8 @@ Funtionality
 - catch errors produced by database in config/database
 - if the selected name is the same of as another you cant select it in the dropdown
 - verify edit payment (error of invalid database id when editing)
-- merge view does not calculate late payment correctly
+- [X] merge view does not calculate late payment correctly
+    - but added transaction which is extra data
 - [X] merge view error, excuse date includes next month as excused
 - [X] merge view has wrong edit for excused payments
 - [X] merge payment button error

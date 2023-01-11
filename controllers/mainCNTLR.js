@@ -244,6 +244,7 @@ export async function getCaseInfoMerge(req, res){
         }, 0);
         createMergeInfo = calcPaidStatus(createMergeInfo)
         createMergeInfo = calcMerge(createMergeInfo)
+        createMergeInfo.late = verifyAccountStatus(createMergeInfo, await createTransactions(createMergeInfo.payments));
 
         res.render('individualcase-merge-view', {
             user: req.user,
@@ -401,57 +402,6 @@ export async function getDashboard(req, res){
 
 //-----------------------------------------------------
 
-// async function buildDebtorInfo(caseFileId){
-//     try {
-//         const selectedDebtor = await DebtorsDB.findOne(caseFileId)
-
-//         if(!selectedDebtor){
-//             req.flash('errors', req.params.id + ' is not a valid file id');
-//             return res.redirect(req.headers.referer);
-//         }
-        
-//         const debtForSelected = await DebtDB.findOne({_id: selectedDebtor._id})
-//         if(!debtForSelected){
-//             req.flash('errors', 'Error debt information not found: ' + req.params.id);
-//             return res.redirect(req.headers.referer);
-//         }
-
-//         const payments = await PaymentDB.find({caseID: selectedDebtor._id}) //randomizedPayments(100, debtForSelected.startDate)
-
-//         //create information object
-//         const debtorInfo = {
-//             name: selectedDebtor.name,
-//             fileId: selectedDebtor.fileId,
-//             startDate: debtForSelected.startDate.setDate(debtForSelected.startDate.getDate()+1),
-//             minPayment: Number(debtForSelected.minPayment),
-//             debt: debtForSelected.debtAmount,
-//             late: verifyAccountStatus(debtForSelected, payments),
-//             totalPaid: payments.reduce((sum, current) => sum + Number(current.payment), 0),
-//             payments: removeCaseAndVersion(payments),
-//             billed: createListOfBills(debtForSelected.startDate.setDate(debtForSelected.startDate.getDate()+1)),
-//         }
-
-//         debtorInfo["transactions"] = [...debtorInfo.payments, ...debtorInfo.billed]
-//         debtorInfo.transactions.sort(function(a,b){
-//             console.log(a.date)
-//             return a.date - b.date;
-//         });
-        
-
-//         if(!payments){ return debtorInfo }
-
-//         debtorInfo.payments.sort(function(a,b){
-//             return a.date - b.date;
-//         });
-
-//         return debtorInfo
-
-//     } catch (error) {
-//         console.error(error);
-//         //req.flash('errors', 'An error occured with the database. #004');
-//         //return res.redirect(req.headers.referer);
-//     }
-// }
 
 export async function insertNewPayment(req, res){
 //NOTE:: Rework
@@ -665,7 +615,6 @@ export async function editExcusedPayment(req, res){
             date: req.body.date,
             comment: req.body.comment
         })
-console.log(excusedUpdated)
 
         if(excusedUpdated.modifiedCount > 0){
             //NOTE::MODIFY FOR THIS AND OTHERS (editpayment) SHOULD REDIRECT TO THE PAGE THAT CALLED IT COULD BE TABLE VIEW OR MERGE VIEW
