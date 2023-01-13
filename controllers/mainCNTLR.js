@@ -1069,12 +1069,20 @@ function calcPaidStatus(debtorInfo){
             }
             paymentCounter++
         }else if(balance < 0){
-            balance += debtorInfo.payments[paymentCounter].payment
-            if(balance >= 0){
-                debtorInfo.billed[billCounter].payment = "paid"
+            if(paymentCounter < debtorInfo.payments.length){
+                balance += debtorInfo.payments[paymentCounter].payment
+                if(balance >= 0){
+                    debtorInfo.billed[billCounter].payment = "paid"
+                    billCounter++
+                }
+                //check if there are more payments
+                paymentCounter++
+            }else{ 
+                debtorInfo.billed[billCounter].payment = Math.abs(balance) < debtorInfo.minPayment ? balance : debtorInfo.minPayment
                 billCounter++
+                balance -=debtorInfo.minPayment
             }
-            paymentCounter++
+            
         }else if(balance > 0){
             balance -= debtorInfo.minPayment
             if(balance >= 0){
@@ -1083,6 +1091,8 @@ function calcPaidStatus(debtorInfo){
             }
         }
     }
+
+    console.log(debtorInfo)
     return debtorInfo;
 }
 
