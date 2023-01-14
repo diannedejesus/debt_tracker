@@ -1056,6 +1056,20 @@ function calcPaidStatus(debtorInfo){
     //     }
     // }
 
+    // if(balance < 0 && debtorInfo.payments[payment].payment === 0){
+    //     let paymentDate = new Date(debtorInfo.payments[payment].date)
+    //     paymentDate = paymentDate.setMonth(paymentDate.getMonth()-1)
+        
+    //     if (paymentDate > debtorInfo.billed[bill].date) {
+    //         debtorInfo.payments[payment].space++ //payment continues
+    //         bill++ //bill ends
+    //     } else {
+    //         balance = 0
+    //     }
+    //     continue
+    // }
+
+
     let balance = 0;
     let billCounter = 0
     let paymentCounter = 0
@@ -1063,28 +1077,43 @@ function calcPaidStatus(debtorInfo){
     while(billCounter < debtorInfo.billed.length){ 
         if(balance === 0){
             balance = debtorInfo.payments[paymentCounter].payment - debtorInfo.minPayment
+
             if(balance >= 0){ 
                 debtorInfo.billed[billCounter].payment = "paid"
                 billCounter++
             }
+
             paymentCounter++
         }else if(balance < 0){
             if(paymentCounter < debtorInfo.payments.length){
-                balance += debtorInfo.payments[paymentCounter].payment
-                if(balance >= 0){
-                    debtorInfo.billed[billCounter].payment = "paid"
-                    billCounter++
+                if(debtorInfo.payments[paymentCounter].payment === 0) {
+                    let paymentDate = new Date(debtorInfo.payments[paymentCounter].date)
+                    paymentDate = paymentDate.setMonth(paymentDate.getMonth()-1)
+    
+                    if (paymentDate > debtorInfo.billed[billCounter].date) {
+                        debtorInfo.billed[billCounter].payment = "excused"
+                        billCounter++
+                    }else{
+                        paymentCounter++
+                    }
+                }else{
+                    balance += debtorInfo.payments[paymentCounter].payment
+
+                    if(balance >= 0){
+                        debtorInfo.billed[billCounter].payment = "paid"
+                        billCounter++
+                    }
+                    //check if there are more payments
+                    paymentCounter++
                 }
-                //check if there are more payments
-                paymentCounter++
             }else{ 
                 debtorInfo.billed[billCounter].payment = Math.abs(balance) < debtorInfo.minPayment ? balance : -debtorInfo.minPayment
                 billCounter++
                 balance -=debtorInfo.minPayment
             }
-            
         }else if(balance > 0){
             balance -= debtorInfo.minPayment
+
             if(balance >= 0){
                 debtorInfo.billed[billCounter].payment = "paid"
                 billCounter++

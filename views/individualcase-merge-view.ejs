@@ -140,7 +140,7 @@
                         <% let formatDate = new Date(debtorInfo.billed[bills].date) %>
                     <!-- <%= formatDate = formatDate.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' }) %> -->
                                 <td class="<%= bills % 2 === 0 ? 'table-active' : '' %> border-top border-secondary" rowspan="<%= debtorInfo.billed[bills].space == 0 ? 1 : debtorInfo.billed[bills].space %>" colspan="1"><%= formatDate %></td>
-                                <td class="<%= bills % 2 === 0 ? 'table-active' : '' %> border-top border-secondary" rowspan="<%= debtorInfo.billed[bills].space == 0 ? 1 : debtorInfo.billed[bills].space %>" colspan="1"><%= debtorInfo.billed[bills].payment === "paid" ? debtorInfo.billed[bills].payment : currencyFormat.format(runningBalance +=debtorInfo.billed[bills].payment) %></td>
+                                <td class="<%= bills % 2 === 0 ? 'table-active' : '' %> border-top border-secondary" rowspan="<%= debtorInfo.billed[bills].space == 0 ? 1 : debtorInfo.billed[bills].space %>" colspan="1"><%= typeof debtorInfo.billed[bills].payment === "string" ? debtorInfo.billed[bills].payment : currencyFormat.format(runningBalance +=debtorInfo.billed[bills].payment) %></td>
                     
                         <% skipDebts = i + debtorInfo.billed[bills].space %>
                         
