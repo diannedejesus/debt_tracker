@@ -1060,7 +1060,7 @@ function calcPaidStatus(debtorInfo){
     let billCounter = 0
     let paymentCounter = 0
     
-    for(let i=0; i<debtorInfo.billed.length; i++){ 
+    while(billCounter < debtorInfo.billed.length){ 
         if(balance === 0){
             balance = debtorInfo.payments[paymentCounter].payment - debtorInfo.minPayment
             if(balance >= 0){ 
@@ -1078,7 +1078,7 @@ function calcPaidStatus(debtorInfo){
                 //check if there are more payments
                 paymentCounter++
             }else{ 
-                debtorInfo.billed[billCounter].payment = Math.abs(balance) < debtorInfo.minPayment ? balance : debtorInfo.minPayment
+                debtorInfo.billed[billCounter].payment = Math.abs(balance) < debtorInfo.minPayment ? balance : -debtorInfo.minPayment
                 billCounter++
                 balance -=debtorInfo.minPayment
             }
