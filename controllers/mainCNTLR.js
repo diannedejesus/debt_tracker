@@ -886,7 +886,7 @@ function createListOfBills(startDate){
     //adding bills
     for(let i = 0; i<elapsed; i++){
        billed.push({
-            date: new Date(billDate.setMonth(billDate.getMonth()+1)),
+            date: new Date(billDate.setMonth(billDate.getMonth()+1)).valueOf(),
         })
     }
 
@@ -1082,15 +1082,17 @@ function calcPaidStatus(debtorInfo){
                 debtorInfo.billed[billCounter].payment = "paid"
                 billCounter++
             }
-
-            paymentCounter++
+            if(debtorInfo.payments[paymentCounter].payment !== 0) {
+                paymentCounter++
+            }
         }else if(balance < 0){
             if(paymentCounter < debtorInfo.payments.length){
+                console.log(debtorInfo.payments[paymentCounter].date, debtorInfo.billed[billCounter].date)
                 if(debtorInfo.payments[paymentCounter].payment === 0) {
-                    let paymentDate = new Date(debtorInfo.payments[paymentCounter].date)
-                    paymentDate = paymentDate.setMonth(paymentDate.getMonth()-1)
+                    // let paymentDate = new Date(debtorInfo.payments[paymentCounter].date)
+                    // paymentDate = paymentDate.setMonth(paymentDate.getMonth()-1).valueOf()
     
-                    if (paymentDate > debtorInfo.billed[billCounter].date) {
+                    if (debtorInfo.payments[paymentCounter].date > debtorInfo.billed[billCounter].date) {
                         debtorInfo.billed[billCounter].payment = "excused"
                         billCounter++
                     }else{
