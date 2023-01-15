@@ -415,9 +415,9 @@ Funtionality
 - [X] verify if expired reset keys still show up as pending.
 
 
-- payment button on page should prefill some information
-- test late payment verifier
-- verify if checking for duplicate excused payments
+- [X] payment button on page should prefill some information
+- [X] test late payment verifier
+- [X] verify if checking for duplicate excused payments
 - dont permit excused payments if there is no debt
 - catch errors produced by database in config/database
 - [X] if the selected name is the same of as another you cant select it in the dropdown

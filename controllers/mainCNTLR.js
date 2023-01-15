@@ -15,9 +15,25 @@ export async function index(req, res){
 export async function getRegPayment(req, res){
     try {
         const debtorList =  await DebtorsDB.find().select("name fileId")
+        const pagevalue = {
+            fileid: req.params.fileId,
+        }
+        const errors = dataVerifier(pagevalue)
+    
+        if(errors.length) {
+            req.flash('errors', errors);
+            return res.render('newpayment', { 
+                user: req.user, 
+                pagevalue,
+                debtorList, 
+                messages: [...req.flash('msg')], 
+                errors: [...req.flash('errors')], 
+            });
+        }
 
         res.render('newpayment', {
             user: req.user,
+            pagevalue,
             debtorList,
             messages: [...req.flash('msg')],
             errors: [...req.flash('errors')],
@@ -518,12 +534,12 @@ export async function excusedPayment(req, res){
         if(!debtorRef){ errors.push('Case not found'); }
 
         const similiarPayments = await PaymentDB.find({
-            payment: 0, 
+            payment: 0,
             date: req.body.date, 
             caseID: debtorRef._id
         })
 
-        if(similiarPayments.length > 0){ errors.push(`We found a payment for the same amount and date for this account.`); }
+        if(similiarPayments.length > 0){ errors.push(`We found an excused payment for the same date for this account.`); }
 
     } catch (error) {
         console.error(error.message);
@@ -597,6 +613,7 @@ export async function editExcusedPayment(req, res){
 
         //find duplicates
         const similiarPayments = await PaymentDB.find({
+            payment: 0,
             date: req.body.date, 
             caseID: debtorRef._id
         })
