@@ -418,7 +418,7 @@ Funtionality
 - [X] payment button on page should prefill some information
 - [X] test late payment verifier
 - [X] verify if checking for duplicate excused payments
-- dont permit excused payments if there is no debt
+- [X] dont permit excused payments if there is no debt
 - catch errors produced by database in config/database
 - [X] if the selected name is the same of as another you cant select it in the dropdown
 - [X] verify edit payment (error of invalid database id when editing)
@@ -430,6 +430,7 @@ Funtionality
 - [~] normalize date format then change mergeformat function (fixed for merge verify other functions)
 - [X] merge does not calcuted paid status correctly
 - might want to differentiate bills and payments visual on table view
+- might want to verify duplicate excused payment on a range and just exact date.
 
 <!-- NOTES
 Account Creation & Login
