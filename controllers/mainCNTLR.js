@@ -60,6 +60,22 @@ export async function getRegdebt(req, res){
 export async function getExcusedPayment(req, res){
     try {
         const debtorList =  await DebtorsDB.find().select("name fileId")
+
+        if(!req.params.id){
+            req.flash('error', "No payment selected");
+            return res.redirect(req.headers.referer);
+        }else{
+            const pagevalue = {
+                fileid: req.params.id,
+            }
+            const errors = dataVerifier(pagevalue)
+        
+            if(errors.length) {
+                req.flash('errors', errors);
+                return res.redirect(req.headers.referer);
+            }
+        }
+
         const dataInfo = {
             fileid: req.params.id,
             date: new Date(),
@@ -87,6 +103,17 @@ export async function getEditPayment(req, res){
     if(!req.params.paymentid || !req.params.fileId){
         req.flash('error', "No payment selected");
         return res.redirect(req.headers.referer);
+    }else{
+        const pagevalue = {
+            fileid: req.params.fileId,
+            mongoId: req.params.paymentid
+        }
+        const errors = dataVerifier(pagevalue)
+    
+        if(errors.length) {
+            req.flash('errors', errors);
+            return res.redirect(req.headers.referer);
+        }
     }
 
     try {
@@ -119,10 +146,20 @@ export async function getEditPayment(req, res){
 }
 
 export async function getEditExcusedPayment(req, res){
-    if(!req.params.paymentid){
-        //NOTE::verify id passed to it
+    if(!req.params.paymentid || !req.params.fileId){
         req.flash('error', "No payment selected");
         return res.redirect(req.headers.referer);
+    }else{
+        const pagevalue = {
+            fileid: req.params.fileId,
+            mongoId: req.params.paymentid
+        }
+        const errors = dataVerifier(pagevalue)
+    
+        if(errors.length) {
+            req.flash('errors', errors);
+            return res.redirect(req.headers.referer);
+        }
     }
 
     try {
@@ -260,7 +297,7 @@ export async function getCaseInfoMerge(req, res){
         }, 0);
         createMergeInfo = calcPaidStatus(createMergeInfo)
         createMergeInfo = calcMerge(createMergeInfo)
-        createMergeInfo.late = verifyAccountStatus(createMergeInfo, await createTransactions(createMergeInfo.payments));
+        createMergeInfo.late = verifyAccountStatus(createMergeInfo, createMergeInfo.payments);
 
         res.render('individualcase-merge-view', {
             user: req.user,
@@ -386,7 +423,7 @@ export async function getDashboard(req, res){
         }
 
         for(let items of debtsInfo){
-            const payments = await PaymentDB.find({caseID: items._id}) //NOTE:: can slow things if dealing with bad connection or lots of items
+            const payments = await PaymentDB.find({caseID: items._id})
             const latePayments = verifyAccountStatus(items, payments)
      
             if(latePayments){
@@ -420,7 +457,6 @@ export async function getDashboard(req, res){
 
 
 export async function insertNewPayment(req, res){
-//NOTE:: Rework
     const debtorList =  await DebtorsDB.find().select("name fileId")
     let debtorRef = ""
     const pagevalues = {
@@ -480,9 +516,8 @@ export async function insertNewPayment(req, res){
         comment: req.body.comment
     })
 
-//NOTE:: verify
     //save to database
-    newPayment.save((err) => {
+    newPayment.save((err) => { //NOTE:: Callback
         if(err){
             console.error(err._message)
             req.flash('errors', 'There was an error submitting the data to the database. #003');
@@ -571,9 +606,8 @@ export async function excusedPayment(req, res){
         comment: req.body.comment
     })
 
-//NOTE:: verify
     //save to database
-    excusedPayment.save((err) => {
+    excusedPayment.save((err) => { //NOTE:: Callback
         if(err){
             console.error(err._message)
             req.flash('errors', 'There was an error submitting the data to the database. #003');
@@ -638,7 +672,6 @@ export async function editExcusedPayment(req, res){
         })
 
         if(excusedUpdated.modifiedCount > 0){
-            //NOTE::MODIFY FOR THIS AND OTHERS (editpayment) SHOULD REDIRECT TO THE PAGE THAT CALLED IT COULD BE TABLE VIEW OR MERGE VIEW
             req.flash('msg', "updated successfully");
             res.redirect(`/cases/${req.body.fileid}`)
         }else{
@@ -741,9 +774,8 @@ export async function insertNewDebt(req, res){
         fileId: req.body.fileid,
     })
 
-//NOTE:: verify
     //submit data to db
-    newDebtor.save((err, savedDoc) => {
+    newDebtor.save((err, savedDoc) => { //NOTE:: Callback
         if(err && err.code === 11000){
             console.error(err)
             req.flash('errors', 'The file id already exist, a person can not have two debts.');

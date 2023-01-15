@@ -377,24 +377,31 @@ Once these wireframes are approved by the client, include them in the user inter
 -->
 
 ## Goals and milestones
-Fixes
+
+### Visuals
+- ? might want to differentiate bills and payments visual on table view
 - change look of highlighted excused payment
 - Adjust views for distint screens (https://stackoverflow.com/questions/47760132/any-way-to-get-breakpoint-specific-width-classes)
+- ? if implemented future bills look should be modified to distinguish them
 
-Modifications
-- [X] the excused payment should show the bills that where excused (requieres rewriting print view payments)
-- [X] editing excused payments
+### Modifications
+- ? might want to verify duplicate excused payment on a range and just exact date.
+- Have the title of each page include the name/title of current page being viewed
+- ? Evaluate whether to add future bills if payments exceed currently dued.
 
-Funtionality
-- add future bills if payments exceed currently dued.
-    - Change how these look to distinguish them
+### Funtionality
+- verify how password reset and initial creation should be displayed and handled. since we need to know whether it was successful but dont want it stuck in pending if password was recovered and reset is not needed. 
+- [~] normalize date format then change mergeformat function (fixed for merge verify other functions)
+- catch errors produced by database in config/database
+
+### Issues
+<!-- Things that should be looked into but an alternative solution was/can be implemented  -->
+
 
 
 <!-- Secondary Goals, Wishlist Feature, Future -->
 
-### Additional Features
-* [X] Modify so currency is displayed as such
-* [X] Have the individual case page have an option to switch to another case with out going to list page.
+## Additional Features
 * Access log: Keep track of case workers' logins, edits, and views. Plus changes made to users and debts
 * Letters: This is a wish list item. A page that produces a letter for different situations when working with debt accounts.
 * Have revoke and reset accounts ask for user password for extra security
@@ -403,34 +410,15 @@ Funtionality
 * Edit an account to change type
 * Implement secure a chosen password verifier.
 * Review code / optimize
+    
 
-### Issues
-<!-- Things that should be looked into but an alternative solution was/can be implemented  -->
-- Fix the style sheet of pages
-    - [X] create header for pages that are guest / not signed in users
-    - Change page titles
-
-### Brain Dump
-- verify how password reset and initial creation should be displayed and handled. since we need to know whether it was successful but dont want it stuck in pending if password was recovered and reset is not needed. 
-- [X] verify if expired reset keys still show up as pending.
-
-
-- [X] payment button on page should prefill some information
-- [X] test late payment verifier
-- [X] verify if checking for duplicate excused payments
-- [X] dont permit excused payments if there is no debt
-- catch errors produced by database in config/database
-- [X] if the selected name is the same of as another you cant select it in the dropdown
-- [X] verify edit payment (error of invalid database id when editing)
-- [X] merge view does not calculate late payment correctly
-    - but added transaction which is extra data
-- [X] merge view error, excuse date includes next month as excused
-- [X] merge view has wrong edit for excused payments
-- [X] merge payment button error
-- [~] normalize date format then change mergeformat function (fixed for merge verify other functions)
-- [X] merge does not calcuted paid status correctly
-- might want to differentiate bills and payments visual on table view
-- might want to verify duplicate excused payment on a range and just exact date.
+## Brain Dump
+- Edits and inserts done from a case view (merge or table) page should redirect back to that view. 
+    - Edit payment
+    - Edit excused payment
+    - Edit case
+    - Insert excused payment
+    - Insert payment 
 
 <!-- NOTES
 Account Creation & Login
@@ -527,6 +515,7 @@ DONE:: verify error handling, throw errors [research]
     - [X] verify
     - [X] submit
 
+
 * Issues Resolved
 - [X] can we use req.flash to store other messages besides errors? [test using other name and merging to messages]
 - [X] how to handle the reset of an admin password [implement owner/appAdmin account who can create admins but admins can't manage]
@@ -546,6 +535,20 @@ DONE:: verify error handling, throw errors [research]
 - [X] verify how other routes need to handle revoked access [research]
     - [X] Implement warning about revoking access, saying it only stop the user from logging in at their next attempt.
     - [-] how to remove the current session of a user?
+- [X] verify if expired reset keys still show up as pending.
+- [X] payment button on page should prefill some information
+- [X] test late payment verifier
+- [X] verify if checking for duplicate excused payments
+- [X] dont permit excused payments if there is no debt
+- [X] if the selected name is the same of as another you cant select it in the dropdown
+- [X] verify edit payment (error of invalid database id when editing)
+- [X] merge view does not calculate late payment correctly
+    - [x] but added transaction which is extra data
+- [X] merge view error, excuse date includes next month as excused
+- [X] merge view has wrong edit for excused payments
+- [X] merge payment button error
+- [X] merge does not calcuted paid status correctly
+
 Fixes
 - [X] update the debt list and dashboard page with the new calculation for when a debt is late.
 - [X] excused payment access
@@ -569,8 +572,12 @@ Modifications
 - [X] add payment button to cases
     - [X] one at the top of payment and another at the bottom if a certain number of payments/bills have been added.
 -  [X] modify how excused payment are shown in print view
-    
 - [X] in print view if an amount is owed then print the bills owed and the amount for each bill.
+- [X] the excused payment should show the bills that where excused (requieres rewriting print view payments)
+- [X] editing excused payments
+* [X] Modify so currency is displayed as such
+* [X] Have the individual case page have an option to switch to another case with out going to list page.
+- [X] create header for pages that are guest / not signed in users
 
 Funtionality
 - [X] merge view: edit so it displays all payments even if no more bills are due
