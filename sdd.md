@@ -383,7 +383,7 @@ Fixes
 
 Modifications
 - [X] the excused payment should show the bills that where excused (requieres rewriting print view payments)
-- editing excused payments
+- [X] editing excused payments
 
 Funtionality
 - add future bills if payments exceed currently dued.
@@ -420,8 +420,8 @@ Funtionality
 - verify if checking for duplicate excused payments
 - dont permit excused payments if there is no debt
 - catch errors produced by database in config/database
-- if the selected name is the same of as another you cant select it in the dropdown
-- verify edit payment (error of invalid database id when editing)
+- [X] if the selected name is the same of as another you cant select it in the dropdown
+- [X] verify edit payment (error of invalid database id when editing)
 - [X] merge view does not calculate late payment correctly
     - but added transaction which is extra data
 - [X] merge view error, excuse date includes next month as excused
@@ -429,7 +429,7 @@ Funtionality
 - [X] merge payment button error
 - [~] normalize date format then change mergeformat function (fixed for merge verify other functions)
 - [X] merge does not calcuted paid status correctly
-
+- might want to differentiate bills and payments visual on table view
 
 <!-- NOTES
 Account Creation & Login

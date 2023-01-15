@@ -44,7 +44,7 @@
                         <option selected value="debtorInfo.fileId"><%= debtorInfo.name %></option>
                         <% if (typeof debtorList !== 'undefined'){ %>
                             <% for(let debtor of debtorList){ %>
-                                <% if (debtorInfo.name !== debtor.name){ %>
+                                <% if (debtorInfo.fileId !== debtor.fileId){ %>
                         <option value="<%= debtor.fileId %>"><%= debtor.name %></option>
                                 <% } %>
                             <% } %>
