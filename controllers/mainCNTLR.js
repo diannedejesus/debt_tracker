@@ -76,7 +76,7 @@ export async function getEditPayment(req, res){
     try {
         const paymentinfo = await PaymentDB.findOne({_id: req.params.paymentid})
         const paymentData = {
-            _id: paymentinfo._id,
+            id: paymentinfo._id,
             fileID: req.params.fileId,
             payment: paymentinfo.payment,
             date: paymentinfo.date,
@@ -1044,32 +1044,6 @@ function calcMerge(debtorInfo){
 }
 
 function calcPaidStatus(debtorInfo){
-    // let totalPaid = debtorInfo.totalPaid
-
-    // for(let items of debtorInfo.billed){
-    //     if(totalPaid >= debtorInfo.minPayment){
-    //         items.payment = "paid"
-    //         totalPaid -= debtorInfo.minPayment
-    //     }else if(totalPaid >= 0){
-    //         items.payment = totalPaid - debtorInfo.minPayment
-    //         totalPaid = 0
-    //     }
-    // }
-
-    // if(balance < 0 && debtorInfo.payments[payment].payment === 0){
-    //     let paymentDate = new Date(debtorInfo.payments[payment].date)
-    //     paymentDate = paymentDate.setMonth(paymentDate.getMonth()-1)
-        
-    //     if (paymentDate > debtorInfo.billed[bill].date) {
-    //         debtorInfo.payments[payment].space++ //payment continues
-    //         bill++ //bill ends
-    //     } else {
-    //         balance = 0
-    //     }
-    //     continue
-    // }
-
-
     let balance = 0;
     let billCounter = 0
     let paymentCounter = 0
@@ -1087,11 +1061,8 @@ function calcPaidStatus(debtorInfo){
             }
         }else if(balance < 0){
             if(paymentCounter < debtorInfo.payments.length){
-                console.log(debtorInfo.payments[paymentCounter].date, debtorInfo.billed[billCounter].date)
+                
                 if(debtorInfo.payments[paymentCounter].payment === 0) {
-                    // let paymentDate = new Date(debtorInfo.payments[paymentCounter].date)
-                    // paymentDate = paymentDate.setMonth(paymentDate.getMonth()-1).valueOf()
-    
                     if (debtorInfo.payments[paymentCounter].date > debtorInfo.billed[billCounter].date) {
                         debtorInfo.billed[billCounter].payment = "excused"
                         billCounter++
@@ -1105,7 +1076,7 @@ function calcPaidStatus(debtorInfo){
                         debtorInfo.billed[billCounter].payment = "paid"
                         billCounter++
                     }
-                    //check if there are more payments
+
                     paymentCounter++
                 }
             }else{ 
@@ -1123,7 +1094,6 @@ function calcPaidStatus(debtorInfo){
         }
     }
 
-    console.log(debtorInfo)
     return debtorInfo;
 }
 

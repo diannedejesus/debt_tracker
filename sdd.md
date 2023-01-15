@@ -427,8 +427,8 @@ Funtionality
 - [X] merge view error, excuse date includes next month as excused
 - [X] merge view has wrong edit for excused payments
 - [X] merge payment button error
-- normalize date format then change mergeformat function
-- merge does not calcuted paid status correctly
+- [~] normalize date format then change mergeformat function (fixed for merge verify other functions)
+- [X] merge does not calcuted paid status correctly
 
 
 <!-- NOTES
