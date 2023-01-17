@@ -23,6 +23,36 @@ export function randomizedPayments(maxPayment, startDate){
     return randomPayments
 }
 
+function createPayments(){
+    //name: Random Person
+    //fileId: 404
+
+    const today = new Date()
+    const startDate = randomDate(today.setFullYear(today.getFullYear()-5), today)
+    const totalMonths = monthElapsed(startDate) + 2
+    const totalPayments =  Math.floor(Math.random() * totalMonths)
+    const minPayment = Math.floor(Math.random() * 100)
+    const debtAmount = Math.floor(Math.random() * 5000)
+
+
+
+}
+//payments
+    //amount of payment
+    //amount of each payment
+
+//debt
+
+//date
+
+//temp save of generated data in database
+//this gets added to list
+//only one?
+
+//button to create new random
+
+
+
 function randomizedPaymentsZero(maxPayment, startDate){
     const paymentAmounts = Math.floor(Math.random() * 4);
     const randomPayments = []
