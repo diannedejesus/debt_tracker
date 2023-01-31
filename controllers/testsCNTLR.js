@@ -23,6 +23,9 @@ export function randomizedPayments(maxPayment, startDate){
     return randomPayments
 }
 
+//debtor: name / id / start / payment / debt / payments [date, payment, comment]
+//need to also include options for excused payments
+
 function createPayments(){
     //name: Random Person
     //fileId: 404
@@ -33,9 +36,37 @@ function createPayments(){
     const totalPayments =  Math.floor(Math.random() * totalMonths)
     const minPayment = Math.floor(Math.random() * 100)
     const debtAmount = Math.floor(Math.random() * 5000)
+    const randomizedPayments = []
 
+    while(randomizedPayments.length < totalPayments && totalPaid < debtAmount){
+        let currentPay = Math.floor(Math.random() * (minPayment * 2))
+        totalPaid += currentPay
 
+        randomizedPayments.push({
+            date: randomDate(startDate, new Date()),
+            payment: currentPay,
+            comment: '',
+        })
+    }
 
+    //test for randomuser
+    //if true update
+    //if not insert
+    
+    const randomDebtor = {
+        name: "Random Person",
+        fileId: "404",
+    }
+
+    const randomDebt = {
+        debtAmount,
+        minPayment,
+        startDate,
+    }
+
+    //payments
+
+    
 }
 //payments
     //amount of payment
@@ -48,7 +79,7 @@ function createPayments(){
 //temp save of generated data in database
 //this gets added to list
 //only one?
-
+//showing of scenarios
 //button to create new random
 
 
