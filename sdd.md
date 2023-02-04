@@ -385,7 +385,7 @@ Once these wireframes are approved by the client, include them in the user inter
 - ? if implemented future bills look should be modified to distinguish them
 
 ### Modifications
-- ? might want to verify duplicate excused payment on a range and just exact date.
+- ? might want to verify duplicate excused payment on a range and not just with the exact date.
 - Have the title of each page include the name/title of current page being viewed
 - ? Evaluate whether to add future bills if payments exceed currently dued.
 

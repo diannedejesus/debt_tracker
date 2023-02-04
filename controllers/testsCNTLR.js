@@ -1,5 +1,6 @@
 import DebtDB from '../models/Debts.js';
 import DebtorsDB from '../models/Debtors.js';
+import mainControl from '../controllers/mainCNTLR.js'
 
 
 
@@ -84,6 +85,7 @@ function createPayments(){
 
 
 
+
 function randomizedPaymentsZero(maxPayment, startDate){
     const paymentAmounts = Math.floor(Math.random() * 4);
     const randomPayments = []
@@ -109,7 +111,7 @@ function randomizedPaymentsZero(maxPayment, startDate){
 
 
 function randomDate(start, end){
-    return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()))
+    return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
 }
 
 function monthElapsed(endDate, starterDater = new Date()) {
@@ -118,4 +120,77 @@ function monthElapsed(endDate, starterDater = new Date()) {
     months -= endDate.getMonth();
     months += starterDater.getMonth();
     return months <= 0 ? 0 : months;
+}
+
+
+//-----------------DEMO-----------------------------------
+
+export function demoDebtor(req, res){
+    const generatedData = baseCase()
+
+    req.body = {
+        name: generatedData.name,
+        debtamount: generatedData.debtAmount,
+        fileid: generatedData.fileId,
+        minpayment: generatedData.minPayment,
+        startdate: generatedData.startDate,
+    }
+
+    mainControl.insertNewDebt(req, res)
+}
+
+export function demoPayments(req, res){
+    const generatedData = randomPayments(maxpayamount,startdate,maxpay,debt)
+
+    req.body = {
+        payment: req.body.payment,
+        date: req.body.date,
+        fileid: req.body.fileid,
+        comment: req.body.comment,
+    }
+
+    mainControl.insertNewPayment(req, res)
+}
+
+
+
+
+
+
+function baseCase(){
+    const today = new Date()
+
+    let basicCase = {
+        debtor: "Random Person", //https://generatorfun.com/funny-name-generator
+        fileId: `${Math.floor(Math.random() * 500)}-${String.fromCharCode(Math.floor(Math.random() * 25))}`,
+        debtAmount: Math.floor(25 + Math.random() * 5000),
+        minPayment: Math.floor(1 + Math.random() * 150),
+        startDate: randomDate(today.setFullYear(today.getFullYear()-20), today)
+    }
+
+    if(basicCase.debtAmount < basicCase.minPayment){
+        minPayment: Math.floor(1 + Math.random() * basicCase.debtAmount)
+    }
+
+    return basicCase;
+}
+
+
+function randomPayments(maxPaymentAmounts, startDate, maxPayment, debt){
+    const paymentAmounts = Math.floor(Math.random() * maxPayment) //
+    const randomPayments = []
+    let totalPaid = 0
+
+    while(randomPayments.length < paymentAmounts && totalPaid < debt){
+        let currentPay = Math.floor(Math.random() * maxPaymentAmounts)
+        totalPaid += currentPay
+
+        randomPayments.push({
+            date: randomDate(startDate, new Date()),
+            payment: currentPay,
+            comment: '', //https://api.chucknorris.io/
+        })
+    }
+
+    return randomPayments;
 }
