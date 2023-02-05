@@ -538,7 +538,6 @@ export async function insertNewPayment(req, res){
             errors: [...req.flash('errors')],
         })
     })
-
 }
 
 export async function excusedPayment(req, res){

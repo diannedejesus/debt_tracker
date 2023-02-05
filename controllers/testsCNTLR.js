@@ -1,6 +1,6 @@
 import DebtDB from '../models/Debts.js';
 import DebtorsDB from '../models/Debtors.js';
-import mainControl from '../controllers/mainCNTLR.js'
+import '../controllers/mainCNTLR.js'
 
 
 
@@ -136,25 +136,27 @@ export function demoDebtor(req, res){
         startdate: generatedData.startDate,
     }
 
-    mainControl.insertNewDebt(req, res)
+    insertNewDebt(req, res)
 }
 
-export function demoPayments(req, res){
-    const generatedData = randomPayments(maxpayamount,startdate,maxpay,debt)
+export async function demoPayments(req, res){
+    const debt = await DebtDB.findOne({fileId: req.body.fileid})
+    const paymentRange = debt.minPayment * 2.3
+    const paymentQuantity = monthElapsed(debt.startDate)
 
-    req.body = {
-        payment: req.body.payment,
-        date: req.body.date,
-        fileid: req.body.fileid,
-        comment: req.body.comment,
+    const generatedData = randomPayments(paymentRange, debt.startDate, paymentQuantity, debt.debt)
+
+    for(let i=0; i<generatedData.length; i++){
+        req.body = {
+            fileid: req.body.fileid,
+            payment: generatedData[i].payment,
+            date: generatedData[i].date,
+            comment: generatedData[i].comment,
+        }
+    
+        await insertNewPayment(req, res)
     }
-
-    mainControl.insertNewPayment(req, res)
 }
-
-
-
-
 
 
 function baseCase(){
@@ -175,14 +177,13 @@ function baseCase(){
     return basicCase;
 }
 
-
-function randomPayments(maxPaymentAmounts, startDate, maxPayment, debt){
-    const paymentAmounts = Math.floor(Math.random() * maxPayment) //
+function randomPayments(paymentTotal, startDate, paymentQuantity, debtTotal){
+    const paymentAmounts = Math.floor(Math.random() * paymentQuantity) //
     const randomPayments = []
     let totalPaid = 0
 
-    while(randomPayments.length < paymentAmounts && totalPaid < debt){
-        let currentPay = Math.floor(Math.random() * maxPaymentAmounts)
+    while(randomPayments.length < paymentAmounts && totalPaid < debtTotal){
+        let currentPay = Math.floor(Math.random() * paymentTotal)
         totalPaid += currentPay
 
         randomPayments.push({
