@@ -290,6 +290,12 @@ export async function getCaseInfoMerge(req, res){
         const payments = await PaymentDB.find({caseID: createMergeInfo.id}) //randomizedPayments(100, debtForSelected.startDate)
         
         createMergeInfo.billed = createListOfBills(createMergeInfo.startDate)
+
+        if(createMergeInfo.billed.length * createMergeInfo.minPayment > createMergeInfo.debt){
+            let actualBills = Math.ceil(createMergeInfo.debt/createMergeInfo.minPayment)
+            createMergeInfo.billed.splice(actualBills)
+        }
+
         createMergeInfo.payments = removeCaseAndVersion(payments),
         createMergeInfo.totalPaid = createMergeInfo.payments.reduce((sum, current) => {
             let currentNum = current.payment === undefined ? 0 : Number(current.payment);
@@ -997,6 +1003,11 @@ async function createTransactions(debtorData){
     payments = removeCaseAndVersion(payments)
     const bills = createListOfBills(debtorData.startDate);
 
+    if(bills.length * debtorData.minPayment > debtorData.debt){
+        let actualBills = Math.ceil(debtorData.debt/debtorData.minPayment)
+        bills.splice(actualBills)
+    }
+
     debtorData["transactions"] = [...payments, ...bills];
     debtorData.transactions.sort(function(a,b){
         return a.date - b.date;
@@ -1099,47 +1110,71 @@ function calcPaidStatus(debtorInfo){
     let balance = 0;
     let billCounter = 0
     let paymentCounter = 0
+
+    if(debtorInfo.payments.length === 0) balance = null
     
+    //run as long as we have bills
     while(billCounter < debtorInfo.billed.length){ 
+        //if the balance is 0
         if(balance === 0){
+            //then use the current payment and subtract a bill
             balance = debtorInfo.payments[paymentCounter].payment - debtorInfo.minPayment
 
+            //if the balance is now positive or still 0
             if(balance >= 0){ 
+                //the bill is marked as paid and we move to the next bill
                 debtorInfo.billed[billCounter].payment = "paid"
                 billCounter++
             }
+            //if the current payment is not an excused payment we move to the next payment
             if(debtorInfo.payments[paymentCounter].payment !== 0) {
                 paymentCounter++
             }
-        }else if(balance < 0){
-            if(paymentCounter < debtorInfo.payments.length){
-                
+        }else if(balance < 0 || balance === null){ //if balance is a negative number
+            //if we still have more payments
+            if(paymentCounter < debtorInfo.payments.length){ 
+                //if current paymenttt is an excused payment
                 if(debtorInfo.payments[paymentCounter].payment === 0) {
+                    //if the date of the excused payment is bigger then the current owed bill
                     if (debtorInfo.payments[paymentCounter].date > debtorInfo.billed[billCounter].date) {
+                        //mark the bill as excused and move to the next bill
                         debtorInfo.billed[billCounter].payment = "excused"
                         billCounter++
                     }else{
+                        //if not bigger then move to the next payment, no more bills are excused with this payment
                         paymentCounter++
                     }
                 }else{
+                    //if not an excused payment then add the current payment to the owed balance
                     balance += debtorInfo.payments[paymentCounter].payment
-
+                    //if balance is not positive or zero
                     if(balance >= 0){
+                        //mark bill as paid and move to the next bill
                         debtorInfo.billed[billCounter].payment = "paid"
                         billCounter++
                     }
-
+                    //move to the next payment since a current bill is still due
                     paymentCounter++
                 }
-            }else{ 
-                debtorInfo.billed[billCounter].payment = Math.abs(balance) < debtorInfo.minPayment ? balance : -debtorInfo.minPayment
-                billCounter++
-                balance -=debtorInfo.minPayment
-            }
-        }else if(balance > 0){
-            balance -= debtorInfo.minPayment
+            }else{//if we have no more payments
+                //then the current payment is equal to
 
+                if(balance == null){
+                    debtorInfo.billed[billCounter].payment = -debtorInfo.minPayment
+                    billCounter++
+                    balance -=debtorInfo.minPayment
+                }else{
+                    debtorInfo.billed[billCounter].payment = Math.abs(balance) < debtorInfo.minPayment ? balance : -debtorInfo.minPayment
+                    billCounter++
+                    balance -=debtorInfo.minPayment
+                }
+            }
+        }else if(balance > 0){ //if balance is positive
+            //subtract current bill from balance
+            balance -= debtorInfo.minPayment
+            //if balance is still positive or 0
             if(balance >= 0){
+                //mark bill as paid move to next bill
                 debtorInfo.billed[billCounter].payment = "paid"
                 billCounter++
             }

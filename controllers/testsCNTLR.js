@@ -156,7 +156,7 @@ export async function demoPayments(req, res){
             comment: generatedData[i].comment,
         }
     
-        await insertNewPayment(req, res)
+        await mainController.insertNewPayment(req, res)
     }
 
 }

@@ -420,7 +420,7 @@ Once these wireframes are approved by the client, include them in the user inter
     - Insert excused payment
     - Insert payment 
 
-- Bills can't be more than debt owed
+- [X] Bills can't be more than debt owed
 - Debt paid logic needed
 
 

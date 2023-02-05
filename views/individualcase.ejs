@@ -76,6 +76,10 @@
                 </tr>
                 <tr>
                     <td colspan="5" style="text-align:right">
+                        <form class="p-1" action="/tests/demoPayments" method="POST">
+                            <input type="hidden" name="fileid" value="<%= debtorInfo.fileId %>">
+                            <input type="submit" value="Create Demo Payments" class="btn btn-secondary btn-outline-light btn-sm"> 
+                        </form>
                         <% if(debtorInfo.late) { %><a class="btn btn-primary btn-sm" href="/excusepayment/<%= debtorInfo.fileId %>">Excuse</a><% } %> <a class="btn btn-primary btn-sm" href="../registerpayment/<%= debtorInfo.fileId %>">Payment</a>
                     </td>
                 </tr>
@@ -116,8 +120,15 @@
                                         <% if(runningBalance < 0) runningBalance = 0 %>  
                                     <% } else { %>
                                         <% runningBalance += item.payment %> 
-                                    <% } %> 
-                                    <td><%= currencyFormat.format(runningBalance) %> </td>
+                                    <% } %>
+                                    
+                                    <td>
+                                        <% if (Math.abs(runningBalance) > debtorInfo.debt-debtorInfo.totalPaid) { %>
+                                            <%= currencyFormat.format(-(debtorInfo.debt-debtorInfo.totalPaid)) %>
+                                        <% } else { %>
+                                            <%= currencyFormat.format(runningBalance) %>
+                                        <% } %> 
+                                    </td>
                                     <td>
                                         <% if (item.payment !== undefined) { %>
                                             <div class="d-flex">
