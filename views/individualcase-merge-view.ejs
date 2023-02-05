@@ -156,7 +156,7 @@
             </tr>
             <tr>
                 <td colspan="5" style="text-align:right">
-                    <% if(bills + payments > 15){ %> <a class="btn btn-primary btn-sm" href="../registerpayment">Payment</a> <% } %>
+                    <% if(bills + payments > 15){ %> <a class="btn btn-primary btn-sm" href="../registerpayment/<%= debtorInfo.fileId %>">Payment</a> <% } %>
                 </td>
             </tr>
                 <% } %>

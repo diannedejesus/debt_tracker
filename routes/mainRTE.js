@@ -7,7 +7,7 @@ const router = express.Router()
 
 
 router.get('/', mainController.index)
-router.get('/dashboard', ensureAuth, mainController.getDashboard)
+router.get('/dashboard', ensureAuth, mainController.getDebtorList)
 router.get('/debtors', ensureAuth, mainController.getDebtorList)
 
 router.get('/registerdebt', ensureAuth, mainController.getRegdebt)

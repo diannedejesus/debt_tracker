@@ -1253,6 +1253,7 @@ function dataVerifier(data){
     }
     
     if(data.startdate !== undefined){
+        console.log(data.startdate)
         if(!validator.isLength(data.startdate, {min: 1})){
             errors.push('Start date cannot be empty');
         } else if(!validator.isDate(data.startdate)){

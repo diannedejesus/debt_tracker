@@ -420,6 +420,10 @@ Once these wireframes are approved by the client, include them in the user inter
     - Insert excused payment
     - Insert payment 
 
+- Bills can't be more than debt owed
+- Debt paid logic needed
+
+
 <!-- NOTES
 Account Creation & Login
 To setup the page you need to go to the route "pageurl/auth/admin" to create the intial owner account. After the owner account is created this page won't let you create anymore accounts. The newly created owner account can create any kind of new accounts. If all owner accounts are remove or revoked then this page can be used to create a new owner account.

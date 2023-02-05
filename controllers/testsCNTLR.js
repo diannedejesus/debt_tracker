@@ -1,6 +1,6 @@
 import DebtDB from '../models/Debts.js';
 import DebtorsDB from '../models/Debtors.js';
-import '../controllers/mainCNTLR.js'
+import * as mainController from '../controllers/mainCNTLR.js'
 
 
 
@@ -111,6 +111,7 @@ function randomizedPaymentsZero(maxPayment, startDate){
 
 
 function randomDate(start, end){
+    start = new Date(start)
     return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
 }
 
@@ -125,18 +126,19 @@ function monthElapsed(endDate, starterDater = new Date()) {
 
 //-----------------DEMO-----------------------------------
 
-export function demoDebtor(req, res){
+export async function demoDebtor(req, res){
     const generatedData = baseCase()
 
     req.body = {
-        name: generatedData.name,
-        debtamount: generatedData.debtAmount,
+        name: generatedData.debtor,
+        debtamount: generatedData.debtAmount.toString(),
         fileid: generatedData.fileId,
-        minpayment: generatedData.minPayment,
-        startdate: generatedData.startDate,
+        minpayment: generatedData.minPayment.toString(),
+        startdate: new Date(generatedData.startDate).toJSON().slice(0,10),
     }
 
-    insertNewDebt(req, res)
+    await mainController.insertNewDebt(req, res)
+
 }
 
 export async function demoPayments(req, res){
@@ -156,6 +158,7 @@ export async function demoPayments(req, res){
     
         await insertNewPayment(req, res)
     }
+
 }
 
 
@@ -164,7 +167,7 @@ function baseCase(){
 
     let basicCase = {
         debtor: "Random Person", //https://generatorfun.com/funny-name-generator
-        fileId: `${Math.floor(Math.random() * 500)}-${String.fromCharCode(Math.floor(Math.random() * 25))}`,
+        fileId: `${Math.floor(Math.random() * 500)}-${String.fromCharCode(Math.floor(Math.random() * 25)+65)}`,
         debtAmount: Math.floor(25 + Math.random() * 5000),
         minPayment: Math.floor(1 + Math.random() * 150),
         startDate: randomDate(today.setFullYear(today.getFullYear()-20), today)

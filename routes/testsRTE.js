@@ -4,7 +4,8 @@ import { ensureAuth, ensureGuest } from '../middleware/auth.js';
 
 const router = express.Router()
 
-
+router.get('/demoDebtor', ensureAuth, testController.demoDebtor)
+router.post('/demoPayments', ensureAuth, testController.demoPayments)
 
 
 
