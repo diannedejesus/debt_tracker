@@ -142,35 +142,31 @@ export async function demoDebtor(req, res){
 }
 
 export async function demoPayments(req, res){
-    const debt = await DebtDB.findOne({fileId: req.body.fileid})
+    const debtorId = await DebtorsDB.findOne({fileId: req.body.fileid}).select("_id")
+    const debt = await DebtDB.findOne({_id: debtorId._id})
     const paymentRange = debt.minPayment * 2.3
-    const paymentQuantity = monthElapsed(debt.startDate)
+    let currentPay = Math.floor(Math.random() * paymentRange)
+    let calEndDate = new Date(debt.startDate).setMonth(new Date(debt.startDate).getMonth()+(debt.debtAmount/debt.minPayment))
+    let currentDate = randomDate(debt.startDate, new Date(calEndDate))
 
-    const generatedData = randomPayments(paymentRange, debt.startDate, paymentQuantity, debt.debt)
-
-    for(let i=0; i<generatedData.length; i++){
         req.body = {
             fileid: req.body.fileid,
-            payment: generatedData[i].payment,
-            date: generatedData[i].date,
-            comment: generatedData[i].comment,
+            payment: currentPay.toString(),
+            date: new Date(currentDate).toJSON().slice(0,10),
+            comment: '', //https://api.chucknorris.io/
         }
     
         await mainController.insertNewPayment(req, res)
-    }
-
 }
 
 
 function baseCase(){
-    const today = new Date()
-
     let basicCase = {
         debtor: "Random Person", //https://generatorfun.com/funny-name-generator
         fileId: `${Math.floor(Math.random() * 500)}-${String.fromCharCode(Math.floor(Math.random() * 25)+65)}`,
         debtAmount: Math.floor(25 + Math.random() * 5000),
         minPayment: Math.floor(1 + Math.random() * 150),
-        startDate: randomDate(today.setFullYear(today.getFullYear()-20), today)
+        startDate: randomDate(new Date().setFullYear(new Date().getFullYear()-10), new Date())
     }
 
     if(basicCase.debtAmount < basicCase.minPayment){
@@ -180,21 +176,22 @@ function baseCase(){
     return basicCase;
 }
 
-function randomPayments(paymentTotal, startDate, paymentQuantity, debtTotal){
-    const paymentAmounts = Math.floor(Math.random() * paymentQuantity) //
-    const randomPayments = []
-    let totalPaid = 0
+// function randomPayments(paymentTotal, startDate, paymentQuantity, debtTotal){
+//     const paymentAmounts = Math.floor(Math.random() * paymentQuantity) //
+//     const randomPayments = []
+//     let totalPaid = 0
+ 
+//     while(randomPayments.length < paymentAmounts && totalPaid < debtTotal){ 
+//         let currentPay = Math.floor(Math.random() * paymentTotal)
+//         totalPaid += currentPay
 
-    while(randomPayments.length < paymentAmounts && totalPaid < debtTotal){
-        let currentPay = Math.floor(Math.random() * paymentTotal)
-        totalPaid += currentPay
+//         randomPayments.push({
+//             date: randomDate(startDate, new Date()),
+//             payment: currentPay,
+//             comment: '', //https://api.chucknorris.io/
+//         })
+//     }
 
-        randomPayments.push({
-            date: randomDate(startDate, new Date()),
-            payment: currentPay,
-            comment: '', //https://api.chucknorris.io/
-        })
-    }
+//     return randomPayments;
+// }
 
-    return randomPayments;
-}

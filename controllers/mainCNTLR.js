@@ -461,7 +461,6 @@ export async function getDashboard(req, res){
 
 //-----------------------------------------------------
 
-
 export async function insertNewPayment(req, res){
     const debtorList =  await DebtorsDB.find().select("name fileId")
     let debtorRef = ""
@@ -536,13 +535,15 @@ export async function insertNewPayment(req, res){
             });
         }
 
-        req.flash('msg', 'Successfully saved.');
-        res.render('newpayment', {
-            user: req.user,
-            debtorList,
-            messages: [...req.flash('msg')], 
-            errors: [...req.flash('errors')],
-        })
+        req.flash('msg', 'Payment Successfully saved.');
+        res.redirect(req.headers.referer);
+
+        // res.render('newpayment', {
+        //     user: req.user,
+        //     debtorList,
+        //     messages: [...req.flash('msg')], 
+        //     errors: [...req.flash('errors')],
+        // })
     })
 }
 
@@ -828,12 +829,13 @@ export async function insertNewDebt(req, res){
                     });
                 }
 
-                req.flash('msg', 'Data saved successfully.');
-                return res.render('newdebt', { 
-                    user: req.user, 
-                    messages: [...req.flash('msg')], 
-                    errors: [...req.flash('errors')],
-                });
+                req.flash('msg', 'Debt Data saved successfully.');
+                res.redirect(req.headers.referer);
+                // return res.render('newdebt', { 
+                //     user: req.user, 
+                //     messages: [...req.flash('msg')], 
+                //     errors: [...req.flash('errors')],
+                // });
             })
         }
     })
@@ -1213,6 +1215,7 @@ function buildList(debtorInfo, debtInfo, paymentInfo){
     const newList = []
 
     for(let items of debtorInfo){
+        console.log( items.name)
         tempList[items._id] = {}
         tempList[items._id]['name'] = items.name
         tempList[items._id]['fileid'] = items.fileId
@@ -1221,6 +1224,7 @@ function buildList(debtorInfo, debtInfo, paymentInfo){
     }
 
     for(let items of paymentInfo){
+        
         tempList[items.caseID]['payments'] += Number(items.payment)
         tempList[items.caseID]['allpayments'].push(items)
     }
