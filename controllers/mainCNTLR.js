@@ -486,15 +486,25 @@ export async function insertNewPayment(req, res){
     //find id
     try {
         debtorRef = await DebtorsDB.findOne({fileId: req.body.fileid})
+        let debtInfo = await DebtDB.findOne({_id: debtorRef._id})
+        const paymentInfo = await PaymentDB.find({caseID: debtorRef._id})
+        let paymentSum = paymentInfo.reduce((accumulator, currentValue) => accumulator + Number(currentValue.payment), 0 )
+        let pendingBalance = debtInfo.debtAmount - paymentSum
+
         if(!debtorRef){ errors.push('Case not found'); }
 
         const similiarPayments = await PaymentDB.find({
-            payment: req.body.payment, 
-            date: req.body.date, 
+            payment: req.body.payment,
+            date: req.body.date,
             caseID: debtorRef._id
         })
 
         if(similiarPayments.length > 0){ errors.push(`We found a payment for the same amount and date for this account.`); }
+
+        if(pendingBalance < req.body.payment){errors.push(`Can't add payment. Amount is more than the debt owed for this account. This account owes ${pendingBalance}`)}
+        //debtInfo.debtAmount
+        //can add a payment over the current debt
+        //errors.push(`Can't add payment. Amount is more than the debt owed for this account. This account owes ${pendingBalance}`)
 
     } catch (error) {
         console.error(error.message);

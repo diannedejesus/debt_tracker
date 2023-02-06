@@ -421,7 +421,8 @@ Once these wireframes are approved by the client, include them in the user inter
     - Insert payment 
 
 - [X] Bills can't be more than debt owed
-- Debt paid logic needed
+- [~] Debt paid logic needed
+    - implement logic in edit payments
 
 
 <!-- NOTES
