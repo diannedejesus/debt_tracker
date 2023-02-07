@@ -589,8 +589,9 @@ export async function excusedPayment(req, res){
 
         if(similiarPayments.length > 0) errors.push(`We found an excused payment for the same date for this account.`); 
 
+        console.log(verifyAccountStatus(debtorRef, await PaymentDB.find({caseID: debtorRef._id})))
         //verify debt status
-        if(!verifyAccountStatus(debtorRef, await PaymentDB.find({caseID: debtorRef._id}))) errors.push(`This account does not have any deliquent payments`);
+        if(verifyAccountStatus(debtorRef, await PaymentDB.find({caseID: debtorRef._id}))) errors.push(`This account does not have any deliquent payments`);
 
 
     } catch (error) {
@@ -719,7 +720,7 @@ export async function editPayment(req, res){
         //find id
         const debtorRef = await DebtorsDB.findOne({fileId: req.body.fileid})
         if(!debtorRef){ errors.push('Case not found'); }
-        
+
         let debtInfo = await DebtDB.findOne({_id: debtorRef._id})
         const paymentInfo = await PaymentDB.find({caseID: debtorRef._id})
         let paymentSum = paymentInfo.reduce((accumulator, currentValue) => accumulator + Number(currentValue.payment), 0 )
