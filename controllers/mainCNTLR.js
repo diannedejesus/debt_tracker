@@ -589,7 +589,6 @@ export async function excusedPayment(req, res){
 
         if(similiarPayments.length > 0) errors.push(`We found an excused payment for the same date for this account.`); 
 
-        console.log(verifyAccountStatus(debtorRef, await PaymentDB.find({caseID: debtorRef._id})))
         //verify debt status
         if(verifyAccountStatus(debtorRef, await PaymentDB.find({caseID: debtorRef._id}))) errors.push(`This account does not have any deliquent payments`);
 
