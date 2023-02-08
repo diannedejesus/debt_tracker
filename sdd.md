@@ -379,20 +379,20 @@ Once these wireframes are approved by the client, include them in the user inter
 ## Goals and milestones
 
 ### Visuals
-- ? might want to differentiate bills and payments visual on table view
-- change look of highlighted excused payment
+- ? might want to differentiate bills and payments visually in table view
+* change look of highlighted excused payment
 - Adjust views for distint screens (https://stackoverflow.com/questions/47760132/any-way-to-get-breakpoint-specific-width-classes)
-- ? if implemented future bills look should be modified to distinguish them
+* ? if implemented future bills look should be modified to distinguish them
 
 ### Modifications
 - ? might want to verify duplicate excused payment on a range and not just with the exact date.
 - Have the title of each page include the name/title of current page being viewed
-- ? Evaluate whether to add future bills if payments exceed currently dued.
+* ? Evaluate whether to add future bills if payments exceed currently dued.
 
 ### Funtionality
 - verify how password reset and initial creation should be displayed and handled. since we need to know whether it was successful but dont want it stuck in pending if password was recovered and reset is not needed. 
 - [~] normalize date format then change mergeformat function (fixed for merge verify other functions)
-- catch errors produced by database in config/database
+* catch errors produced by database in config/database
 
 ### Issues
 <!-- Things that should be looked into but an alternative solution was/can be implemented  -->

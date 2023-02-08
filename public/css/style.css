@@ -69,6 +69,10 @@ h1{
      font-style: italic;
 }
 
+.highlight2, .table .highlight2{
+     background-color:lightblue;
+}
+
 /* ------------------------ */
 
 .printview, .printview tr, .printview th, .printview td{
