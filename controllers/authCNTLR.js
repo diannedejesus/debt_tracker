@@ -73,7 +73,7 @@ export async function getUserAdmin(req, res){
     });
   } else {
     req.flash('errors', 'Not an administrator account');
-    res.render('dashboard', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
+    res.render('debtors', { user: req.user, messages: [...req.flash('msg')], errors: [...req.flash('errors')], });
   }
 };
 
@@ -119,7 +119,7 @@ export async function loginUser(req, res, next){
 
     req.logIn(user, (err) => {
       if(err) return next(err);
-      res.redirect(req.session.returnTo || '/dashboard')
+      res.redirect(req.session.returnTo || '/debtors')
     })
   })(req, res, next)
 }
