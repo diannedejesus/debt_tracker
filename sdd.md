@@ -391,7 +391,8 @@ Once these wireframes are approved by the client, include them in the user inter
 
 ### Funtionality
 - verify how password reset and initial creation should be displayed and handled. since we need to know whether it was successful but dont want it stuck in pending if password was recovered and reset is not needed. 
-- [~] normalize date format then change mergeformat function (fixed for merge verify other functions)
+    - track change with date possible
+- [X] normalize date format then change mergeformat function (fixed for merge verify other functions)
 * catch errors produced by database in config/database
 
 ### Issues

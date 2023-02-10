@@ -4,6 +4,12 @@ import DebtorsDB from '../models/Debtors.js';
 import PaymentDB from '../models/PaymentLog.js';
 import { randomizedPayments } from '../controllers/testsCNTLR.js'
 
+var is_date = function(input) {
+    if ( Object.prototype.toString.call(input) === "[object Date]" ) 
+      return true;
+    return false;   
+};
+
 export async function index(req, res){  
     res.render('index.ejs', { 
         user: req.user,
@@ -950,7 +956,7 @@ export async function deletePayment(req, res){
 //-----------------------------------------------------------------
 
 function createListOfBills(startDate){
-    const elapsed = monthElapsed(new Date(startDate))
+    const elapsed = monthElapsed(startDate)
     const billed = []
 
     //format bill date to the 1st
@@ -973,7 +979,7 @@ function removeCaseAndVersion(payments){
     for(let items of payments){
         modifiedPayments.push({
             id: items._id,
-            date: items.date.setDate(items.date.getDate()+1), 
+            date: items.date.setDate(items.date.getDate()+1),
             payment: Number(items.payment),
             comment: items.comment,
         })
@@ -1213,7 +1219,7 @@ function verifyAccountStatus(debtInfo, paymentInfo){
         }
     }
 
-    const currentBills = monthElapsed(new Date(excusedDate)) * debtInfo.minPayment
+    const currentBills = monthElapsed(excusedDate) * debtInfo.minPayment
 
     if(currentBills > paidAmount){
         return true
@@ -1263,6 +1269,9 @@ function buildList(debtorInfo, debtInfo, paymentInfo){
 
 function monthElapsed(endDate, starterDater = new Date()) {
     let months;
+    endDate = is_date(endDate) ? endDate : new Date(endDate)
+    starterDater = is_date(starterDater) ? starterDater : new Date(starterDater)
+
     months = (starterDater.getFullYear() - endDate.getFullYear()) * 12;
     months -= endDate.getUTCMonth();
     months += starterDater.getUTCMonth();
@@ -1306,7 +1315,6 @@ function dataVerifier(data){
     }
     
     if(data.startdate !== undefined){
-        console.log(data.startdate)
         if(!validator.isLength(data.startdate, {min: 1})){
             errors.push('Start date cannot be empty');
         } else if(!validator.isDate(data.startdate)){

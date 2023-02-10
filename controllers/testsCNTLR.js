@@ -14,7 +14,7 @@ export function randomizedPayments(maxPayment, startDate){
         totalPaid += currentPay
 
         randomPayments.push({
-            date: randomDate(startDate, new Date()),
+            date: randomDate(startDate, new Date()), //DATE CHECK
             payment: currentPay,
             comment: '',
             space: 0,
@@ -32,8 +32,8 @@ function createPayments(){
     //fileId: 404
 
     const today = new Date()
-    const startDate = randomDate(today.setFullYear(today.getFullYear()-5), today)
-    const totalMonths = monthElapsed(startDate) + 2
+    const startDate = randomDate(today.setFullYear(today.getFullYear()-5), today) //DATE CHECK
+    const totalMonths = monthElapsed(startDate) + 2 //DATE CHECK
     const totalPayments =  Math.floor(Math.random() * totalMonths)
     const minPayment = Math.floor(Math.random() * 100)
     const debtAmount = Math.floor(Math.random() * 5000)
@@ -44,7 +44,7 @@ function createPayments(){
         totalPaid += currentPay
 
         randomizedPayments.push({
-            date: randomDate(startDate, new Date()),
+            date: randomDate(startDate, new Date()), //DATE CHECK
             payment: currentPay,
             comment: '',
         })
@@ -96,7 +96,7 @@ function randomizedPaymentsZero(maxPayment, startDate){
         totalPaid += currentPay
 
         randomPayments.push({
-            date: randomDate(startDate, new Date()),
+            date: randomDate(startDate, new Date()), //DATE CHECK
             payment: currentPay,
             comment: '',
             space: 0,
@@ -110,14 +110,14 @@ function randomizedPaymentsZero(maxPayment, startDate){
 }
 
 
-function randomDate(start, end){
-    start = new Date(start)
-    return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+function randomDate(start, end){ //DATE CHECK
+    start = new Date(start) //DATE CHECK
+    return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())); //DATE CHECK
 }
 
 function monthElapsed(endDate, starterDater = new Date()) {
     let months;
-    months = (starterDater.getFullYear() - endDate.getFullYear()) * 12;
+    months = (starterDater.getFullYear() - endDate.getFullYear()) * 12; //DATE CHECK
     months -= endDate.getMonth();
     months += starterDater.getMonth();
     return months <= 0 ? 0 : months;
@@ -134,7 +134,7 @@ export async function demoDebtor(req, res){
         debtamount: generatedData.debtAmount.toString(),
         fileid: generatedData.fileId,
         minpayment: generatedData.minPayment.toString(),
-        startdate: new Date(generatedData.startDate).toJSON().slice(0,10),
+        startdate: new Date(generatedData.startDate).toJSON().slice(0,10), //DATE CHECK
     }
 
     await mainController.insertNewDebt(req, res)
@@ -146,13 +146,13 @@ export async function demoPayments(req, res){
     const debt = await DebtDB.findOne({_id: debtorId._id})
     const paymentRange = debt.minPayment * 2.3
     let currentPay = Math.floor(Math.random() * paymentRange)
-    let calEndDate = new Date(debt.startDate).setMonth(new Date(debt.startDate).getMonth()+(debt.debtAmount/debt.minPayment))
-    let currentDate = randomDate(debt.startDate, new Date(calEndDate))
+    let calEndDate = new Date(debt.startDate).setMonth(new Date(debt.startDate).getMonth()+(debt.debtAmount/debt.minPayment)) //DATE CHECK
+    let currentDate = randomDate(debt.startDate, new Date(calEndDate)) //DATE CHECK
 
         req.body = {
             fileid: req.body.fileid,
             payment: currentPay.toString(),
-            date: new Date(currentDate).toJSON().slice(0,10),
+            date: new Date(currentDate).toJSON().slice(0,10), //DATE CHECK
             comment: '', //https://api.chucknorris.io/
         }
     
@@ -166,7 +166,7 @@ function baseCase(){
         fileId: `${Math.floor(Math.random() * 500)}-${String.fromCharCode(Math.floor(Math.random() * 25)+65)}`,
         debtAmount: Math.floor(25 + Math.random() * 5000),
         minPayment: Math.floor(1 + Math.random() * 150),
-        startDate: randomDate(new Date().setFullYear(new Date().getFullYear()-10), new Date())
+        startDate: randomDate(new Date().setFullYear(new Date().getFullYear()-10), new Date()) //DATE CHECK
     }
 
     if(basicCase.debtAmount < basicCase.minPayment){
